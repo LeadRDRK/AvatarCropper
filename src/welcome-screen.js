@@ -19,7 +19,7 @@ function init(_container) {
     title.element.id = "title";
     titleBox.appendChild(title);
 
-    var versionLabel = new pbfe.Label("by LeadRDRK - v1.1");
+    var versionLabel = new pbfe.Label("by LeadRDRK - v1.2");
     titleBox.appendChild(versionLabel);
 
     var buttonsBox = new pbfe.Flexbox("column");
