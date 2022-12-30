@@ -1,7 +1,7 @@
 # Avatar Cropper
-Simple and accurate image cropping tool that runs in your browser. Designed for the task of cropping avatar images, **with GIF support!**
+Simple and accurate image cropping tool that runs in your browser, works great on both mobile and desktop.
 
-Made with extremely paranoid people in mind. You'll never miss a single pixel ever again!
+Designed for the task of cropping avatar images, with GIF support! Made with extremely paranoid people in mind. You'll never miss a single pixel ever again!
 
 Use it here: [https://leadrdrk.eu.org/avatarcropper](https://leadrdrk.eu.org/avatarcropper)
 
