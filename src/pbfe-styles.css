@@ -1,0 +1,165 @@
+.pbfeContainer {
+    width: 100%;
+    height: 100%;
+    min-height: -webkit-fill-available;
+}
+
+.pbfeContainer > .pbfeFlexbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.pbfeButton {
+    border: none;
+    outline: none;
+    background-color: #497e99;
+    color: #eee;
+    padding: 0.5rem 0.75rem 0.5rem 0.75rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.25s;
+}
+
+.pbfeButton:hover {
+    background-color: #4e7183;
+    transform: scale(1.05, 1.05);
+}
+
+.pbfeDialog {
+    pointer-events: none;
+    position: absolute;
+    padding: 0.75rem 1rem 0 1rem;
+    border-radius: 6px;
+    top: 50%;
+    left: calc(7% - 1rem);
+    width: 86%;
+    transform: translate(0%, -40%);
+    opacity: 0;
+    transition: 0.25s;
+    min-height: 2rem;
+    background-color: #252729;
+}
+
+.pbfeDialog.show {
+    pointer-events: all;
+    transform: translate(0%, -50%);
+    opacity: 1;
+}
+
+.pbfeDialogTitle {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.pbfeDialogButtons {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    justify-content: flex-end;
+    column-gap: 0.25rem;
+}
+
+.pbfeDialogButtons .pbfeButton {
+    font-size: 1.025rem;
+    flex-basis: 25%;
+}
+
+.pbfeDialogButtons .pbfeButton:hover {
+    margin-left: 0.15rem;
+    margin-right: 0.15rem;
+}
+
+#pbfeShadow {
+    pointer-events: none;
+    visibility: hidden;
+    background-color: transparent;
+    transition: 0.25s;
+}
+
+#pbfeShadow.show {
+    pointer-events: all;
+    visibility: visible;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.pbfeInput[type="text"], .pbfeInput[type="number"] {
+    padding: 0.25rem;
+    font-size: 1.05rem;
+    border-radius: 6px;
+    color: #ccc;
+    background-color: #232627;
+    border: 1px solid #515f66;
+    outline: 0;
+    min-width: 0;
+}
+
+.pbfeInput[type="checkbox"] {
+    height: 1.05rem;
+}
+
+.pbfeInput[type="text"]:focus, .pbfeInput[type="text"]:hover,
+.pbfeInput[type="number"]:focus, .pbfeInput[type="number"]:hover {
+    border: 1px solid #2e789c;
+}
+
+.pbfeProgressBar {
+    border-radius: 6px;
+    background-color: #ccc;
+    height: 0.5rem;
+}
+
+.pbfeProgressBarInner {
+    position: relative;
+    border-radius: 6px;
+    background-color: #497e99;
+    transition: 0.25s;
+}
+
+.pbfeProgressBarInner.indeterminate {
+    width: 20%;
+    animation: loopProgress 1.5s linear 0s infinite alternate;
+}
+
+@keyframes loopProgress {
+    from { left: 0%; width: 20%; }
+    to   { left: 80%; width: 20%; }
+}
+
+.pbfeToast {
+    position: fixed;
+    bottom: -3rem;
+    left: 50%;
+    width: 80%;
+    transform: translate(-50%, 0);
+    padding: 0.75rem 1rem 0.75rem 1rem;
+    background-color: #2e2e2e;
+    transition: 0.3s ease;
+    border-radius: 6px;
+    border-bottom: 0.25rem transparent solid;
+    opacity: 0;
+}
+
+.pbfeToast.show {
+    bottom: 1rem;
+    opacity: 1;
+    animation: toastFlash 0.5s linear 0.2s;
+}
+
+@keyframes toastFlash {
+    from { border-bottom: 0.25rem #497e99 solid; }
+    to   { border-bottom: 0.25rem transparent solid; }
+}
+
+@media screen and (min-width: 512px) {
+    .pbfeDialog {
+        left: 50%;
+        width: unset;
+        transform: translate(-50%, -50%) scale(1.15, 1.15);
+    }
+    .pbfeDialog.show {
+        transform: translate(-50%, -50%) scale(1, 1);
+    }
+}

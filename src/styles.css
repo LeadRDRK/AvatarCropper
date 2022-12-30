@@ -1,0 +1,304 @@
+@font-face {
+    font-family: 'IBM Plex Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(IBM_Plex_Sans.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+body {
+    margin: 0;
+}
+
+body, button {
+    background-color: #262626;
+    color: #eee;
+    font-family: "IBM Plex Sans", BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+}
+
+#title {
+    font-size: 3rem;
+}
+
+#welcomeScreen {
+    gap: 10%;
+    flex-direction: column;
+    animation: 0.5s ease-out 0s 1 wsOpen;
+    opacity: 1;
+    transition: 0.25s;
+    z-index: 2;
+}
+
+#welcomeScreen.hide {
+    transform: scale(1.2, 1.2);
+    opacity: 0;
+}
+
+@keyframes wsOpen {
+    from {
+        gap: 5%;
+        opacity: 0;
+    }
+    to {
+        gap: 10%;
+        opacity: 1;
+    }
+}
+
+#welcomeScreen .pbfeFlexbox .pbfeButton {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    font-size: 1.25rem;
+}
+
+#openButtonsBox {
+    background-color: #2e2e2e;
+    padding: 2rem;
+    border-radius: 6px;
+    box-shadow: 0 0 16px 6px #1a1a1a;
+}
+
+#dndOverlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.25);
+    border: 0.25rem #dda91a dashed;
+    pointer-events: none;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    z-index: 200;
+}
+
+#urlInput {
+    width: 100%;
+}
+
+#editorBox {
+    flex-direction: column;
+    z-index: 1;
+    flex-wrap: nowrap;
+    user-select: none;
+    touch-action: none;
+    transition: 0.25s;
+}
+
+#editorBox.hide {
+    transform: scale(0.8, 0.8);
+    opacity: 0;
+}
+
+#editorInnerBox {
+    position: relative;
+    flex: none;
+    width: 100%;
+    height: calc(100vh - 16rem);
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transition: 0.5s;
+}
+
+#editorCanvas {
+    image-rendering: pixelated;
+}
+
+#editorMenu {
+    position: relative;
+    flex: none;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    width: 100%;
+    height: 14rem;
+    background-color: #1a1a1a;
+    align-items: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transition: 0.5s;
+}
+
+#editorMenu *:nth-last-child(3) {
+    margin-bottom: 3rem;
+}
+
+#editorMenu .pbfeButton:hover {
+    transform: none;
+}
+
+#returnBtn, #hideBtn {
+    position: fixed;
+    bottom: 0;
+    white-space: nowrap;
+    border-radius: 0;
+    flex-basis: 50%;
+}
+
+#returnBtn {
+    right: 0;
+    left: 0;
+    background-color: #dda91a;
+    color: black;
+    font-weight: bold;
+    width: 50%;
+}
+
+#returnBtn:hover {
+    background-color: #be941f;
+}
+
+#hideBtn {
+    right: 0;
+    width: 50%;
+}
+
+.sectionTitle {
+    flex-basis: 100%;
+    background-color: #444;
+    font-weight: bold;
+    font-size: 0.95rem;
+    padding: 0.2rem 1rem 0.2rem 1rem;
+    margin-top: 0.75rem;
+    font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+}
+
+#editorMenu .sectionTitle:first-child {
+    margin-top: 0;
+}
+
+#notifBox {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: #333;
+    padding: 0.4rem 0.75rem 0.4rem 0.75rem;
+    border-radius: 6px;
+    left: 0.5rem;
+    top: 0.5rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: 0.15s;
+}
+
+#notifBox.show {
+    opacity: 1;
+}
+
+.menuInputBox {
+    display: flex;
+    flex-direction: row;
+    flex-basis: 100%;
+    padding: 0.6rem 0.75rem 0 0.75rem;
+    font-size: 0.95rem;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.menuInputBox.split {
+    flex: none;
+    width: calc(50% - 1.5rem);
+}
+
+.menuInputBox input {
+    flex-basis: 100%;
+    margin-left: 0.5rem;
+}
+
+.pbfeDialog .menuInputBox:first-child {
+    padding-top: 0;
+}
+
+.menuBtn {
+    margin: 0.6rem 0.75rem 0 0.75rem;
+    flex-basis: 100%;
+}
+
+.menuBtn.split {
+    flex: none;
+    width: calc(50% - 1.5rem);
+}
+
+.menuBtn.chosen {
+    background-color: #354851;
+}
+
+.fullscreenBtn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    font-size: 1.25rem;
+}
+
+.fullscreenBtn:hover {
+    transform: none;
+    color: white;
+}
+
+#previewBox {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0.75rem;
+    pointer-events: none;
+}
+
+#previewBox canvas {
+    margin-right: 0.5rem;
+}
+
+#previewBox .image0 {
+    width: 128px;
+    height: 128px;
+    border-radius: 128px;
+}
+
+#previewBox .image1 {
+    width: 64px;
+    height: 64px;
+    border-radius: 64px;
+}
+
+#previewBox .image2 {
+    width: 32px;
+    height: 32px;
+    border-radius: 32px;
+}
+
+@media screen and (min-width: 1024px) {
+    #welcomeScreen {
+        flex-direction: row;
+    }
+}
+
+@media screen and (min-width: 840px) {
+    #editorBox {
+        flex-direction: row;
+    }
+
+    #editorInnerBox {
+        width: calc(100vw - 16rem);
+        height: 100%;
+    }
+
+    #editorMenu {
+        width: 16rem;
+        height: calc(100% - 2rem);
+        bottom: 0;
+    }
+
+    #returnBtn {
+        width: 10rem;
+        right: 6rem;
+        left: unset;
+    }
+
+    #hideBtn {
+        width: 6rem;
+    }
+}
+
+@media screen and (min-width: 512px) {
+    #urlInput {
+        width: 20rem;
+    }
+}
