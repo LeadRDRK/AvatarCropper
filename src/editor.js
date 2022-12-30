@@ -40,10 +40,13 @@ function init(_container) {
     innerBox.addEventListener("wheel", wheelListener);
 
     if ("ontouchstart" in document) {
-        innerBox.addEventListener("touchstart", touchHandler, true);
-        document.addEventListener("touchmove", touchHandler, true);
-        document.addEventListener("touchend", touchHandler, true);
-        document.addEventListener("touchcancel", touchHandler, true);
+        innerBox.addEventListener("touchstart", touchToMouseEvent, true);
+        document.addEventListener("touchmove", touchToMouseEvent, true);
+        document.addEventListener("touchend", touchToMouseEvent, true);
+
+        innerBox.addEventListener("touchstart", touchStartListener);
+        document.addEventListener("touchmove", touchMoveListener);
+        document.addEventListener("touchend", touchEndListener);
     }
 
     document.addEventListener("keydown", function(e) {
@@ -238,37 +241,39 @@ function initMenuBox() {
 
     inputs.width.addEventListener("input", function() {
         var value = parseInputValue(this, "width");
-        if (!value) return; // also ignores 0
+        if (!value || value < 10) return;
         cropWidth = value;
         if (cropShape != cropShapes.FREEFORM) {
             inputs.height.value = value;
             cropHeight = value;
         }
+        setCropSize(cropWidth, cropHeight);
         redrawCanvas();
     });
 
     inputs.height.addEventListener("input", function() {
         var value = parseInputValue(this, "height");
-        if (!value) return;
+        if (!value || value < 10) return;
         cropHeight = value;
         if (cropShape != cropShapes.FREEFORM) {
             inputs.width.value = value;
             cropWidth = value;
         }
+        setCropSize(cropWidth, cropHeight);
         redrawCanvas();
     });
 
     inputs.xPos.addEventListener("input", function() {
         var value = parseInputValue(this, "position");
         if (value === undefined) return;
-        cropX = value;
+        setCropPosition(value, cropY);
         redrawCanvas();
     });
 
     inputs.yPos.addEventListener("input", function() {
         var value = parseInputValue(this, "position");
         if (value === undefined) return;
-        cropY = value;
+        setCropPosition(cropX, value);
         redrawCanvas();
     });
 
@@ -602,7 +607,7 @@ function setCanvasScale(scale) {
     showNotification("Zoom: " + (Math.round(scale * 1000)/10) + "%");
 }
 
-var cropX = 0, cropY = 0, cropWidth, cropHeight;
+var cropX = 0, cropY = 0, cropWidth = 0, cropHeight = 0;
 function draw() {
     var canvasEl = canvas.element;
     ctx.resetTransform();
@@ -841,32 +846,60 @@ function mouseMoveListener(e) {
             var xSign = (resizeFromLeft ? -1 : 1);
             var ySign = (resizeFromTop ? -1 : 1);
             if (isResizing) {
-                var width, height;
-                var dpx, dpy;
+                var width = cropWidth, height = cropHeight;
                 if (cropShape == cropShapes.FREEFORM) {
-                    width = cropWidth + dx * xSign;
-                    height = cropHeight + dy * ySign;
-                    dpx = dx;
-                    dpy = dy;
+                    width += dx * xSign;
+                    height += dy * ySign;
+                    if (resizeFromLeft) {
+                        px += dx;
+                        if (px < 0) {
+                            width += px;
+                            px = 0;
+                        }
+                    }
+                    if (resizeFromTop) {
+                        py += dy;
+                        if (py < 0) {
+                            height += py;
+                            py = 0;
+                        }
+                    }
                 }
                 else {
                     var delta = (Math.abs(dx) > Math.abs(dy)) ? dx * xSign : dy * ySign;
-                    width = height = cropWidth + delta;
-                    dpx = delta * xSign;
-                    dpy = delta * ySign;
+                    let left = px + delta * xSign,
+                        top = py + delta * ySign,
+                        right = left + width,
+                        bottom = top + height;
+                    
+                    // ouch
+                    if (left < 0) delta += left;
+                    else if (right > img.width) delta -= right - img.width;
+                    
+                    if (top < 0) delta += top;
+                    else if (bottom > img.height) delta -= bottom - img.height;
+
+                    width = height += delta;
+                    if (resizeFromLeft) px += delta * xSign;
+                    if (resizeFromTop) py += delta * ySign;
                 }
 
-                setCropSize(width, height);
+                if (resizeFromLeft && width < 10)
+                    px -= 10 - width;
+                else if (resizeFromTop && height < 10)
+                    py -= 10 - height;
 
-                if (resizeFromLeft) px += dpx;
-                if (resizeFromTop)  py += dpy;
+                // Set the crop positions first so setCropSize could clamp the values correctly
+                cropX = px; cropY = py;
+                setCropSize(width, height);
+                setCropPosition(px, py);
             }
             else {
                 px += dx;
                 py += dy;
+                setCropPosition(px, py);
             }
             
-            setCropPosition(px, py);
             redrawCanvas();
         }
         else {
@@ -893,24 +926,47 @@ function wheelListener(e) {
     setCanvasScale(canvasScale + incr);
 }
 
-function touchHandler(e) {
-    var touches = e.changedTouches,
-        first = touches[0],
-        type = "";
-    switch (e.type) {
-        case "touchstart": type = "mousedown"; break;
-        case "touchmove":  type = "mousemove"; break;        
-        case "touchend":   type = "mouseup";   break;
-        default:           return;
+var currentTouchId = null;
+function touchToMouseEvent(e) {
+    var touches = e.changedTouches;
+    var touch;
+    if (currentTouchId != null) {
+        for (let i = 0; i < touches.length; ++i) {
+            if (touches[i].identifier == currentTouchId) {
+                touch = touches[i];
+                break;
+            }
+        }
     }
+
+    var type = "";
+    switch (e.type) {
+        case "touchstart":
+            if (currentTouchId != null || touches.length == 0) return;
+            type = "mousedown";
+            touch = touches[0];
+            currentTouchId = touch.identifier;
+            break;
+
+        case "touchmove":
+            type = "mousemove";
+            break;
+        
+        case "touchend":
+            if (touch) currentTouchId = null;
+            type = "mouseup";
+            break;
+
+        default: return;
+    }
+
+    if (!touch) return;
 
     var simulatedEvent = new MouseEvent(type, {
         cancelable: true,
         view: window,
-        clientX: first.clientX,
-        clientY: first.clientY,
-        clientX: first.clientX,
-        clientY: first.clientY,
+        clientX: touch.clientX,
+        clientY: touch.clientY,
         ctrlKey: false,
         altKey: false,
         metaKey: false,
@@ -919,6 +975,33 @@ function touchHandler(e) {
     });
 
     this.dispatchEvent(simulatedEvent);
+}
+
+function getTouchDist(touch1, touch2) {
+    return Math.hypot(touch1.pageX - touch2.pageX, touch1.pageY - touch2.pageY);
+}
+
+var touchPinching = false;
+function touchStartListener(e) {
+    if (e.touches.length >= 2) {
+        touchPinching = true;
+        prevTouchDist = getTouchDist(e.touches[0], e.touches[1]);
+    }
+}
+
+var prevTouchDist;
+function touchMoveListener(e) {
+    if (touchPinching) {
+        var dist = getTouchDist(e.touches[0], e.touches[1]);
+        var diff = dist - prevTouchDist;
+        setCanvasScale(canvasScale + diff/200);
+        prevTouchDist = dist;
+    }
+}
+
+function touchEndListener(e) {
+    if (touchPinching && e.touches.length < 2)
+        touchPinching = false;
 }
 
 function isPointInRect(x, y, rect) {

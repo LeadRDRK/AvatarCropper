@@ -6,7 +6,7 @@ function init(container) {
     container.appendChild(dialog);
 
     progressBar = new pbfe.ProgressBar;
-    progressBar.width = "16rem";
+    progressBar.element.id = "loadingBar";
     dialog.appendChild(progressBar);
 }
 

@@ -72,7 +72,7 @@ body, button {
     z-index: 200;
 }
 
-#urlInput {
+#urlInput, #loadingBar {
     width: 100%;
 }
 
@@ -300,5 +300,9 @@ body, button {
 @media screen and (min-width: 512px) {
     #urlInput {
         width: 20rem;
+    }
+
+    #loadingBar {
+        width: 16rem;
     }
 }
