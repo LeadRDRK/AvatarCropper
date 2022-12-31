@@ -3,7 +3,9 @@ Simple and accurate image cropping tool that runs in your browser, works great o
 
 Designed for the task of cropping avatar images, with GIF support! Made with extremely paranoid people in mind. You'll never miss a single pixel ever again!
 
-Use it here: [https://leadrdrk.eu.org/avatarcropper](https://leadrdrk.eu.org/avatarcropper)
+**Use it here:** [https://leadrdrk.eu.org/avatarcropper](https://leadrdrk.eu.org/avatarcropper)
+
+![worthless promotional image](assets/ac_card.png)
 
 # Development
 This project uses Parcel as its build tool. Simply run `npm run start` to start the development server. If this is your first time, run `npm install` first to install the dependencies.
