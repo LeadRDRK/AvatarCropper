@@ -5,7 +5,15 @@ import loadingDialog from "./loading-dialog.js";
 import editor from "./editor.js";
 import toast from "./toast.js";
 
+function registerServiceWorker() {
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register(new URL('./sw.js', import.meta.url));
+    }
+}
+
 function init() {
+    registerServiceWorker();
+
     var container = new pbfe.Container;
     container.element.style.backgroundColor = "#1e1e1e";
     container.createShadow();

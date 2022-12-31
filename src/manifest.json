@@ -1,0 +1,46 @@
+{
+    "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+    "name": "Avatar Cropper",
+    "short_name": "Avatar Cropper",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#1e1e1e",
+    "description": "Simple and accurate avatar cropping tool.",
+    "icons": [{
+        "src": "icons/48x48.png",
+        "sizes": "48x48",
+        "type": "image/png"
+    }, {
+        "src": "icons/72x72.png",
+        "sizes": "72x72",
+        "type": "image/png"
+    }, {
+        "src": "icons/96x96.png",
+        "sizes": "96x96",
+        "type": "image/png"
+    }, {
+        "src": "icons/120x120.png",
+        "sizes": "120x120",
+        "type": "image/png"
+    }, {
+        "src": "icons/144x144.png",
+        "sizes": "144x144",
+        "type": "image/png"
+    }, {
+        "src": "icons/152x152.png",
+        "sizes": "152x152",
+        "type": "image/png"
+    }, {
+        "src": "icons/167x167.png",
+        "sizes": "167x167",
+        "type": "image/png"
+    }, {
+        "src": "icons/180x180.png",
+        "sizes": "180x180",
+        "type": "image/png"
+    }, {
+        "src": "icons/192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+    }]
+}
