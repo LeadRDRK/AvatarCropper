@@ -17,6 +17,14 @@ body, button {
     font-family: "IBM Plex Sans", BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 }
 
+a {
+    color: #75a5bd;
+}
+
+a:hover {
+    color: #538eac;
+}
+
 #title {
     font-size: 3rem;
 }

@@ -1,11 +1,15 @@
 import pbfe from "./pbfe.js"
 import editor from "./editor.js";
 import toast from "./toast.js";
+import aboutDialog from "./about-dialog.js";
+import privacyDialog from "./privacy-dialog.js";
 
 var container, box, urlDialog;
 
 function init(_container) {
     container = _container;
+    aboutDialog.init(container);
+    privacyDialog.init(container);
 
     box = new pbfe.Flexbox;
     box.element.id = "welcomeScreen";
@@ -19,7 +23,22 @@ function init(_container) {
     title.element.id = "title";
     titleBox.appendChild(title);
 
-    var versionLabel = new pbfe.Label("by LeadRDRK - v1.2");
+    var versionLabel = new pbfe.Label("v1.2 - ");
+
+    var aboutBtn = document.createElement("a");
+    aboutBtn.innerText = "About"
+    aboutBtn.href = "javascript:void(0);"
+    aboutBtn.setAttribute("draggable", false);
+    versionLabel.element.appendChild(aboutBtn);
+
+    versionLabel.element.appendChild(document.createTextNode(" | "));
+
+    var privacyBtn = document.createElement("a");
+    privacyBtn.innerText = "Privacy Policy"
+    privacyBtn.href = "javascript:void(0);"
+    privacyBtn.setAttribute("draggable", false);
+    versionLabel.element.appendChild(privacyBtn);
+
     titleBox.appendChild(versionLabel);
 
     var buttonsBox = new pbfe.Flexbox("column");
@@ -44,6 +63,8 @@ function init(_container) {
     openButton.addEventListener("click", openFilePicker);
     initURLDialog();
     urlButton.addEventListener("click", urlDialog.show.bind(urlDialog));
+    aboutBtn.addEventListener("click", aboutDialog.show.bind(aboutDialog));
+    privacyBtn.addEventListener("click", privacyDialog.show.bind(privacyDialog));
 
     welcomeScreen.shown = true;
 }

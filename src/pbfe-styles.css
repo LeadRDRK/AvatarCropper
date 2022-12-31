@@ -40,6 +40,7 @@
     opacity: 0;
     transition: 0.25s;
     min-height: 2rem;
+    max-width: 30rem;
     background-color: #252729;
 }
 
