@@ -26,6 +26,7 @@ The following languages are available for the project:
 Don't see your language on the list? You can help by adding it yourself!
 <details>
     <summary>How to add a language</summary>
+    
     - Before continuing, check the i18n folder first to see if your language is already being worked on.
     - If a translation does not exist for your language yet:
         1. Fork the repo.
