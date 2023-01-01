@@ -813,6 +813,7 @@ function mouseDownListener(e) {
     rect.width *= cropWidth/img.width;
     rect.height *= cropHeight/img.height;
 
+    var cursor;
     if (isPointInRect(e.clientX, e.clientY, rect)) {
         isInSelection = true;
         var cx = rect.x + rect.width/2;
@@ -821,10 +822,20 @@ function mouseDownListener(e) {
         if (isResizing) {
             resizeFromLeft = e.clientX < cx;
             resizeFromTop = e.clientY < cy;
+            if (resizeFromTop) {
+                if (resizeFromLeft) cursor = "nw-resize";
+                else cursor = "ne-resize";
+            }
+            else {
+                if (resizeFromLeft) cursor = "sw-resize";
+                else cursor = "se-resize";
+            }
         }
+        else cursor = "move";
     }
+    else cursor = "grabbing";
 
-    innerBox.element.style.cursor = "grabbing";
+    innerBox.element.style.cursor = cursor;
     mouseDown = true;
 }
 
