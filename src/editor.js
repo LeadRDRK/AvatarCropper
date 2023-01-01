@@ -330,8 +330,14 @@ function showNotification(text, time) {
 
 function initGifOptions() {
     gifOptionsDialog = new pbfe.Dialog(_("GIF Options"));
-    gifOptionsDialog.appendChild(createMenuInput("keepGifColors", _("Keep original colors"), true, "checkbox"));
+    gifOptionsDialog.appendChild(createMenuInput("startFrame", _("Start frame"), true, "number"));
+    gifOptionsDialog.appendChild(createMenuInput("endFrame", _("End frame"), true, "number"));
     gifOptionsDialog.appendChild(createMenuInput("loopCount", _("Loop count"), true, "number"));
+    gifOptionsDialog.appendChild(createMenuInput("keepGifColors", _("Keep original colors"), true, "checkbox"));
+
+    inputs.startFrame.value = 0;
+    inputs.endFrame.value = 0;
+    inputs.loopCount.value = 0;
 
     inputs.keepGifColors.style.paddingTop = "0";
     
@@ -436,10 +442,12 @@ function loadGif(file) {
             gifFrames[i] = { info, imageData };
         }
 
+        var lastFrame = gifReader.numFrames() - 1;
         inputs.frame.min = 0;
-        inputs.frame.max = gifReader.numFrames() - 1;
+        inputs.frame.max = lastFrame;
         inputs.frame.value = 0;
         inputs.frame.disabled = false;
+        inputs.endFrame.value = lastFrame;
         inputs.keepGifColors.checked = true;
     }
 }
@@ -464,9 +472,12 @@ function open(src, successCb) {
     }
     if (gifFrames.length) {
         gifFrames = [];
-        inputs.loopCount.value = 0;
         inputs.frame.value = 0;
         inputs.frame.disabled = true;
+
+        inputs.startFrame.value = 0;
+        inputs.endFrame.value = 0;
+        inputs.loopCount.value = 0;
         inputs.keepGifColors.checked = false;
     }
 
@@ -673,12 +684,15 @@ function renderAndSaveImage() {
 
 async function renderAndSaveGif() {
     var buf = [];
-    var writer = new GifWriter(buf, cropWidth, cropHeight, { loop: inputs.loopCount.value });
+    var writer = new GifWriter(buf, cropWidth, cropHeight, { loop: Math.floor(inputs.loopCount.value) });
+
+    var lastFrame = gifFrames.length ? gifFrames.length - 1 : 0;
+    var start = Math.max(0, Math.min(Math.floor(inputs.startFrame.value), lastFrame));
+    var length = Math.max(0, Math.min(Math.floor(inputs.endFrame.value), lastFrame)) + 1;
 
     loadingDialog.setProgress(0);
     loadingDialog.show();
-    var length = gifFrames.length ? gifFrames.length : 1;
-    for (let i = 0; i < length; ++i) {
+    for (let i = start; i < length; ++i) {
         // Allow rendering static image
         let delay = 0;
         if (gifFrames.length) {
