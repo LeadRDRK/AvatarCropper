@@ -25,24 +25,24 @@ The following languages are available for the project:
 
 Don't see your language on the list? You can help by adding it yourself!
 <details>
-    <summary>How to add a language</summary>
-    
-    - Before continuing, check the i18n folder first to see if your language is already being worked on.
-    - If a translation does not exist for your language yet:
-        1. Fork the repo.
-        2. Create a new branch for your translation.
-        3. Go to the `i18n` folder.
-        4. Copy the `vi-vn.json` file and rename it accordingly.
-            - The name must be a ISO 639-1 code with country (if needed)
-            - e.g. `en-us` is for English (United States)
-        5. Translate all the strings in your newly created file.
-        6. Add your language to `langs.json`
-        7. Add your language to the README, in the Translations section.
-            - Format: `- Language (added by [@username](https://github.com/username))`
-        8. Create a pull request.
-    - If you didn't understand a single thing above: Create a new issue with your translation file and I'll do it for you!
-    - You should also update your translation whenever new strings are added.
-        - Occasionally check the `vi-vn.json` file for changes if possible.
+<summary>How to add a language</summary>
+
+- Before continuing, check the i18n folder first to see if your language is already being worked on.
+- If a translation does not exist for your language yet:
+    1. Fork the repo.
+    2. Create a new branch for your translation.
+    3. Go to the `i18n` folder.
+    4. Copy the `vi-vn.json` file and rename it accordingly.
+        - The name must be a ISO 639-1 code with country (if needed)
+        - e.g. `en-us` is for English (United States)
+    5. Translate all the strings in your newly created file.
+    6. Add your language to `langs.json`
+    7. Add your language to the README, in the Translations section.
+        - Format: `- Language (added by [@username](https://github.com/username))`
+    8. Create a pull request.
+- If you didn't understand a single thing above: Create a new issue with your translation file and I'll do it for you!
+- You should also update your translation whenever new strings are added.
+    - Occasionally check the `vi-vn.json` file for changes if possible.
 </details>
 
 # License
