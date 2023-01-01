@@ -289,6 +289,23 @@ Toast.prototype.hide = function() {
     this.element.classList.remove("show");
 }
 
+function Selector() {
+    var element = document.createElement("select");
+    this.element = element;
+    Widget.call(this);
+}
+
+Selector.prototype = inherit(Widget, "Selector");
+
+Selector.prototype.addOption = function(text, value) {
+    var option = document.createElement("option");
+    option.text = text;
+    if (value) option.value = value;
+    this.element.appendChild(option);
+}
+
+addElementGetterSetter(Selector, "value");
+
 const pbfe = {
     Container,
     Widget,
@@ -300,7 +317,8 @@ const pbfe = {
     Input,
     ProgressBar,
     Canvas,
-    Toast
+    Toast,
+    Selector
 }
 
 export default pbfe;

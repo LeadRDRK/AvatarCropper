@@ -3,6 +3,8 @@ import editor from "./editor.js";
 import toast from "./toast.js";
 import aboutDialog from "./about-dialog.js";
 import privacyDialog from "./privacy-dialog.js";
+import i18n, { _ } from "./i18n.js";
+import appInit from "./index.js";
 
 var container, box, urlDialog;
 
@@ -26,7 +28,7 @@ function init(_container) {
     var versionLabel = new pbfe.Label("v1.2 - ");
 
     var aboutBtn = document.createElement("a");
-    aboutBtn.innerText = "About"
+    aboutBtn.innerText = _("About");
     aboutBtn.href = "javascript:void(0);"
     aboutBtn.setAttribute("draggable", false);
     versionLabel.element.appendChild(aboutBtn);
@@ -34,25 +36,34 @@ function init(_container) {
     versionLabel.element.appendChild(document.createTextNode(" | "));
 
     var privacyBtn = document.createElement("a");
-    privacyBtn.innerText = "Privacy Policy"
+    privacyBtn.innerText = _("Privacy policy");
     privacyBtn.href = "javascript:void(0);"
     privacyBtn.setAttribute("draggable", false);
     versionLabel.element.appendChild(privacyBtn);
 
     titleBox.appendChild(versionLabel);
 
+    var langSelector = new pbfe.Selector;
+    langSelector.element.id = "langSelector";
+    var langs = i18n.getLanguages();
+    for (const i in langs) {
+        langSelector.addOption(langs[i].name, i);
+    }
+    langSelector.value = localStorage.getItem("lang");
+    titleBox.appendChild(langSelector);
+
     var buttonsBox = new pbfe.Flexbox("column");
     buttonsBox.element.id = "openButtonsBox";
     buttonsBox.flexBasis = "20%";
     buttonsBox.gap = "0.5rem";
     
-    var openButton = new pbfe.Button("Open File...");
+    var openButton = new pbfe.Button(_("Open File..."));
     buttonsBox.appendChild(openButton);
 
-    var urlButton = new pbfe.Button("Open URL...");
+    var urlButton = new pbfe.Button(_("Open URL..."));
     buttonsBox.appendChild(urlButton);
 
-    var hint = new pbfe.Label("You can also drag and drop an image here.");
+    var hint = new pbfe.Label(_("You can also drag and drop an image here."));
     hint.element.style.textAlign = "center";
     hint.element.style.fontStyle = "italic";
     buttonsBox.appendChild(hint);
@@ -66,13 +77,20 @@ function init(_container) {
     aboutBtn.addEventListener("click", aboutDialog.show.bind(aboutDialog));
     privacyBtn.addEventListener("click", privacyDialog.show.bind(privacyDialog));
 
+    langSelector.addEventListener("change", function() {
+        localStorage.setItem("lang", langSelector.value);
+        // Reinitialize the app
+        document.body.innerHTML = "";
+        appInit();
+    });
+
     welcomeScreen.shown = true;
 }
 
 function initURLDialog() {
-    urlDialog = new pbfe.Dialog("Open URL");
+    urlDialog = new pbfe.Dialog(_("Open URL"));
 
-    var hint = new pbfe.Label("You can also paste an image here.");
+    var hint = new pbfe.Label(_("You can also paste an image here."));
     hint.element.style.marginBottom = "0.5rem";
     urlDialog.appendChild(hint);
 
@@ -81,10 +99,10 @@ function initURLDialog() {
     input.placeholder = "https://example.com/image.png";
     urlDialog.appendChild(input);
 
-    var okButton = new pbfe.Button("OK");
+    var okButton = new pbfe.Button(_("OK"));
     urlDialog.appendButton(okButton);
 
-    var cancelButton = new pbfe.Button("Cancel");
+    var cancelButton = new pbfe.Button(_("Cancel"));
     urlDialog.appendButton(cancelButton);
 
     input.addEventListener("paste", function(e) {
@@ -106,7 +124,7 @@ function initURLDialog() {
 
     okButton.addEventListener("click", function() {
         if (input.value === "") {
-            toast.show("URL cannot be empty.");
+            toast.show(_("URL cannot be empty."));
             return;
         }
         urlDialog.hide();
@@ -155,7 +173,7 @@ inputEl.addEventListener("change", function(e) {
             return;
         }
     }
-    toast.show("Invalid image file.");
+    toast.show(_("Invalid image file."));
 });
 
 var welcomeScreen = {

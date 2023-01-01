@@ -1,8 +1,9 @@
 import pbfe from "./pbfe.js"
+import i18n, { _ } from "./i18n.js";
 
 var dialog;
 function init(container) {
-    dialog = new pbfe.Dialog("About");
+    dialog = new pbfe.Dialog(_("About"));
     dialog.element.style.textAlign = "center";
     dialog.body.style.lineHeight = "1.6rem";
     container.appendChild(dialog);
@@ -15,11 +16,11 @@ function init(container) {
     dialog.body.appendChild(banner);
     insertBr(dialog.body);
 
-    var text1 = document.createTextNode("Simple and accurate avatar cropping tool that runs in your browser.");
+    var text1 = document.createTextNode(_("Simple and accurate avatar cropping tool."));
     dialog.body.appendChild(text1);
     insertBr(dialog.body);
 
-    var text2 = document.createTextNode("Source code: ");
+    var text2 = document.createTextNode(_("Source code: "));
     dialog.body.appendChild(text2);
 
     var srcLink = document.createElement("a");
@@ -31,7 +32,20 @@ function init(container) {
     
     insertHr(dialog.body);
 
-    var okBtn = new pbfe.Button("OK");
+    var text3 = document.createElement("b");
+    text3.innerText = _("Translators");
+    dialog.body.appendChild(text3);
+    insertBr(dialog.body);
+
+    var langs = i18n.getLanguages();
+    for (const i in langs) {
+        var info = langs[i];
+        var entry = document.createTextNode(info.name + " - "  + info.author);
+        dialog.body.appendChild(entry);
+        insertBr(dialog.body);
+    }
+
+    var okBtn = new pbfe.Button(_("OK"));
     dialog.appendButton(okBtn);
     okBtn.addEventListener("click", hide);
 }

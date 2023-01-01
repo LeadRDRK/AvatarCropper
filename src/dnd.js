@@ -1,5 +1,6 @@
 import pbfe from "./pbfe.js";
 import toast from "./toast.js";
+import { _ } from "./i18n.js";
 
 function dispatchImageDrop(detail, element) {
     var idEvent = new CustomEvent("imagedrop", {detail: detail});
@@ -71,7 +72,7 @@ function DndHandler(container, element) {
                 if (dispatchFile(file, element)) return;
             }
         }
-        toast.show("Invalid image file.");
+        toast.show(_("Invalid image file."));
     });
 
     element.addEventListener("dragover", function(e) {

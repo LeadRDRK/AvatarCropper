@@ -1,8 +1,9 @@
 import pbfe from "./pbfe.js"
+import { _ } from "./i18n.js";
 
 var dialog, progressBar;
 function init(container) {
-    dialog = new pbfe.Dialog("Loading...");
+    dialog = new pbfe.Dialog(_("Loading..."));
     container.appendChild(dialog);
 
     progressBar = new pbfe.ProgressBar;

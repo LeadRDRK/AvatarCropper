@@ -272,6 +272,10 @@ a:hover {
     border-radius: 32px;
 }
 
+#langSelector {
+    margin-top: 1rem;
+}
+
 @media screen and (min-width: 1024px) {
     #welcomeScreen {
         flex-direction: row;

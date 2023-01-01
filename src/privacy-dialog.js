@@ -1,15 +1,16 @@
 import pbfe from "./pbfe.js"
+import { _ } from "./i18n.js";
 
 var dialog;
 function init(container) {
-    dialog = new pbfe.Dialog("Privacy Policy");
+    dialog = new pbfe.Dialog(_("Privacy policy"));
     dialog.body.style.lineHeight = "1.6rem";
     container.appendChild(dialog);
 
     dialog.body.innerText =
-        "This app runs entirely in your browser! No image or data is ever uploaded to any external server.";
+        _("This app runs entirely in your browser! No image or data is ever uploaded to any external server.");
 
-    var okBtn = new pbfe.Button("OK");
+    var okBtn = new pbfe.Button(_("OK"));
     dialog.appendButton(okBtn);
     okBtn.addEventListener("click", hide);
 }

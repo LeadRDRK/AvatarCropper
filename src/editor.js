@@ -3,6 +3,7 @@ import pbfe from "./pbfe.js";
 import toast from "./toast.js";
 import welcomeScreen from "./welcome-screen.js";
 import { GifReader, GifWriter } from "./omggif.js";
+import { _ } from "./i18n.js";
 
 var container, box;
 var innerBox, canvas, ctx;
@@ -109,11 +110,11 @@ function addShapeBtnHandler(button, value) {
     });
 }
 
-function parseInputValue(el, valueName) {
+function parseInputValue(el) {
     if (el.value == "") return;
     var value = Number(el.value);
     if (isNaN(value)) {
-        showNotification("Invalid " + valueName + " value");
+        showNotification(_("Invalid value"));
         return;
     }
     return value;
@@ -134,7 +135,7 @@ function initInnerBox() {
 
     var fullscreenBtn = new pbfe.Button("⛶");
     fullscreenBtn.element.classList.add("fullscreenBtn");
-    fullscreenBtn.element.title = "Toggle fullscreen";
+    fullscreenBtn.element.title = _("Toggle fullscreen");
     innerBox.appendChild(fullscreenBtn);
 
     fullscreenBtn.addEventListener("click", function() {
@@ -163,59 +164,59 @@ function initMenuBox() {
     box.appendChild(menuBox);
 
     /* Crop Area */
-    menuBox.appendChild(createSectionTitle("Crop Area"));
-    menuBox.appendChild(createMenuInput("width", "Width"));
-    menuBox.appendChild(createMenuInput("height", "Height"));
-    menuBox.appendChild(createMenuInput("xPos", "X Pos"));
-    menuBox.appendChild(createMenuInput("yPos", "Y Pos"));
-    menuBox.appendChild(createMenuInput("frame", "Frame", true, "range"));
+    menuBox.appendChild(createSectionTitle(_("Crop Area")));
+    menuBox.appendChild(createMenuInput("width", _("Width")));
+    menuBox.appendChild(createMenuInput("height", _("Height")));
+    menuBox.appendChild(createMenuInput("xPos", _("X Pos")));
+    menuBox.appendChild(createMenuInput("yPos", _("Y Pos")));
+    menuBox.appendChild(createMenuInput("frame", _("Frame"), true, "range"));
     inputs.frame.value = 0;
     inputs.frame.disabled = true;
 
     /* Crop Shape */
-    menuBox.appendChild(createSectionTitle("Crop Shape"));
+    menuBox.appendChild(createSectionTitle(_("Crop Shape")));
 
-    var circleBtn = new pbfe.Button("Circle");
+    var circleBtn = new pbfe.Button(_("Circle"));
     circleBtn.element.classList.add("menuBtn", "split", "chosen");
     menuBox.appendChild(circleBtn);
 
-    var squareBtn = new pbfe.Button("Square");
+    var squareBtn = new pbfe.Button(_("Square"));
     squareBtn.element.classList.add("menuBtn", "split");
     menuBox.appendChild(squareBtn);
 
-    var freeformBtn = new pbfe.Button("Freeform");
+    var freeformBtn = new pbfe.Button(_("Freeform"));
     freeformBtn.element.classList.add("menuBtn");
     menuBox.appendChild(freeformBtn);
 
     /* Viewport */
-    menuBox.appendChild(createSectionTitle("Viewport"));
-    menuBox.appendChild(createMenuInput("zoom", "Zoom", true, "range"));
-    menuBox.appendChild(createMenuInput("scaleDevicePixel", "Scale to device pixel", true, "checkbox"));
+    menuBox.appendChild(createSectionTitle(_("Viewport")));
+    menuBox.appendChild(createMenuInput("zoom", _("Zoom"), true, "range"));
+    menuBox.appendChild(createMenuInput("scaleDevicePixel", _("Scale to device pixel"), true, "checkbox"));
 
-    var fitBtn = new pbfe.Button("Fit image to viewport");
+    var fitBtn = new pbfe.Button(_("Fit image to viewport"));
     fitBtn.element.classList.add("menuBtn");
     menuBox.appendChild(fitBtn);
 
-    menuBox.appendChild(createMenuInput("showPreview", "Show preview", true, "checkbox"));
+    menuBox.appendChild(createMenuInput("showPreview", _("Show preview"), true, "checkbox"));
     inputs.showPreview.checked = true;
 
     /* Save */
-    menuBox.appendChild(createSectionTitle("Save"));
+    menuBox.appendChild(createSectionTitle(_("Save")));
 
-    var saveBtn = new pbfe.Button("Save image...");
+    var saveBtn = new pbfe.Button(_("Save image..."));
     saveBtn.element.classList.add("menuBtn");
     menuBox.appendChild(saveBtn);
 
-    var saveGifBtn = new pbfe.Button("Save as GIF...");
+    var saveGifBtn = new pbfe.Button(_("Save as GIF..."));
     saveGifBtn.element.classList.add("menuBtn");
     menuBox.appendChild(saveGifBtn);
 
     /* Other */
-    var returnBtn = new pbfe.Button("Open another image");
+    var returnBtn = new pbfe.Button(_("Open another image"));
     returnBtn.element.id = "returnBtn";
     menuBox.appendChild(returnBtn);
 
-    var hideBtn = new pbfe.Button("Hide panel");
+    var hideBtn = new pbfe.Button(_("Hide panel"));
     hideBtn.element.id = "hideBtn";
     menuBox.appendChild(hideBtn);
 
@@ -230,17 +231,17 @@ function initMenuBox() {
         if (innerStyle.width && innerStyle.height) {
             innerStyle.removeProperty("width");
             innerStyle.removeProperty("height");
-            hideBtn.text = "Hide panel";
+            hideBtn.text = _("Hide panel");
         }
         else {
             innerStyle.width = "100%";
             innerStyle.height = "100%";
-            hideBtn.text = "Show panel";
+            hideBtn.text = _("Show panel");
         }
     });
 
     inputs.width.addEventListener("input", function() {
-        var value = parseInputValue(this, "width");
+        var value = parseInputValue(this);
         if (!value || value < 10) return;
         cropWidth = value;
         if (cropShape != cropShapes.FREEFORM) {
@@ -252,7 +253,7 @@ function initMenuBox() {
     });
 
     inputs.height.addEventListener("input", function() {
-        var value = parseInputValue(this, "height");
+        var value = parseInputValue(this);
         if (!value || value < 10) return;
         cropHeight = value;
         if (cropShape != cropShapes.FREEFORM) {
@@ -264,14 +265,14 @@ function initMenuBox() {
     });
 
     inputs.xPos.addEventListener("input", function() {
-        var value = parseInputValue(this, "position");
+        var value = parseInputValue(this);
         if (value === undefined) return;
         setCropPosition(value, cropY);
         redrawCanvas();
     });
 
     inputs.yPos.addEventListener("input", function() {
-        var value = parseInputValue(this, "position");
+        var value = parseInputValue(this);
         if (value === undefined) return;
         setCropPosition(cropX, value);
         redrawCanvas();
@@ -348,20 +349,20 @@ function showNotification(text, time) {
 }
 
 function initGifOptions() {
-    gifOptionsDialog = new pbfe.Dialog("GIF Options");
-    gifOptionsDialog.appendChild(createMenuInput("keepGifColors", "Keep original colors", true, "checkbox"));
-    gifOptionsDialog.appendChild(createMenuInput("loopCount", "Loop count", true, "number"));
+    gifOptionsDialog = new pbfe.Dialog(_("GIF Options"));
+    gifOptionsDialog.appendChild(createMenuInput("keepGifColors", _("Keep original colors"), true, "checkbox"));
+    gifOptionsDialog.appendChild(createMenuInput("loopCount", _("Loop count"), true, "number"));
 
     inputs.keepGifColors.style.paddingTop = "0";
     
-    var saveBtn = new pbfe.Button("Save");
+    var saveBtn = new pbfe.Button(_("Save"));
     gifOptionsDialog.appendButton(saveBtn);
     saveBtn.addEventListener("click", function() {
         hideGifOptions();
         renderAndSaveGif();
     });
 
-    var cancelBtn = new pbfe.Button("Cancel");
+    var cancelBtn = new pbfe.Button(_("Cancel"));
     gifOptionsDialog.appendButton(cancelBtn);
     cancelBtn.addEventListener("click", hideGifOptions);
 
@@ -407,7 +408,7 @@ function loadGif(file) {
 
     reader.onloadend = function() {
         if (reader.error) {
-            toast.show("Failed to load GIF frames.");
+            toast.show(_("Failed to load GIF frames."));
             return;
         }
 
@@ -417,7 +418,7 @@ function loadGif(file) {
             gifReader = new GifReader(view);
         }
         catch (e) {
-            toast.show("Failed to load GIF frames: " + e.message);
+            toast.show(_("Failed to load GIF frames: ") + e.message);
             return;
         }
 
@@ -521,7 +522,7 @@ function open(src, successCb) {
             reset();
             successCb();
         }
-        else toast.show("Failed to load image.");
+        else toast.show(_("Failed to load image."));
         loadingDialog.hide();
         img.removeEventListener("finish", listener);
     });
@@ -604,7 +605,7 @@ function setCanvasScale(scale) {
     canvasScale = scale;
     canvas.element.style.transform = "scale(" + (canvasScale / ratio) + ")";
     inputs.zoom.value = Math.round(scale * 100);
-    showNotification("Zoom: " + (Math.round(scale * 1000)/10) + "%");
+    showNotification(_("Zoom: ") + (Math.round(scale * 1000)/10) + "%");
 }
 
 var cropX = 0, cropY = 0, cropWidth = 0, cropHeight = 0;
