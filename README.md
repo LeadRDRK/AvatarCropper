@@ -39,7 +39,7 @@ Don't see your language on the list? You can help by adding it yourself!
     6. Add your language to `langs.json`
     7. Add your language to the README, in the Translations section.
         - Format: `- Language (added by [@username](https://github.com/username))`
-    8. Create a pull request.
+    8. Commit your changes and create a pull request.
 - If you didn't understand a single thing above: Create a new issue with your translation file and I'll do it for you!
 - You should also update your translation whenever new strings are added.
     - Occasionally check the `vi-vn.json` file for changes if possible.
@@ -49,5 +49,4 @@ Don't see your language on the list? You can help by adding it yourself!
 Licensed under [GNU AGPLv3](LICENSE)
 
 External project licenses:
-- [IBM Plex Sans](https://github.com/IBM/plex): Open Font License
 - [omggif](https://github.com/deanm/omggif): MIT License
