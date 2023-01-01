@@ -300,8 +300,11 @@ function initMenuBox() {
     });
 
     inputs.frame.addEventListener("input", function() {
-        if (gifFrames.length)
-            loadGifFrame(inputs.frame.value).then(redrawCanvas);
+        if (gifFrames.length) {
+            var value = inputs.frame.value;
+            loadGifFrame(value).then(redrawCanvas);
+            showNotification(_("Frame: ") + value);
+        }
     });
 
     saveBtn.addEventListener("click", renderAndSaveImage);
