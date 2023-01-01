@@ -18,6 +18,7 @@
     "X Pos": "Vị trí X",
     "Y Pos": "Vị trí Y",
     "Frame": "Khung hình",
+    "Frame: ": "Khung hình: ",
     "Crop Shape": "Hình Dạng Cắt",
     "Circle": "Tròn",
     "Square": "Vuông",
@@ -44,5 +45,7 @@
     "Invalid image file.": "File ảnh không hợp lệ.",
     "Translators": "Các dịch giả",
     "Toggle fullscreen": "Bật/tắt chế độ toàn màn hình",
-    "Loading...": "Đang tải..."
+    "Loading...": "Đang tải...",
+    "Start frame": "Khung hình bắt đầu",
+    "End frame": "Khung hình kết thúc"
 }
