@@ -50,27 +50,7 @@ function init(_container) {
         document.addEventListener("touchend", touchEndListener);
     }
 
-    document.addEventListener("keydown", function(e) {
-        if (e.code) {
-            switch (e.code) {
-                case "ArrowUp":    setCropPosition(cropX, cropY - 1); break;
-                case "ArrowDown":  setCropPosition(cropX, cropY + 1); break;
-                case "ArrowLeft":  setCropPosition(cropX - 1, cropY); break;
-                case "ArrowRight": setCropPosition(cropX + 1, cropY); break;
-                default: return;
-            }
-        }
-        else {
-            switch (e.keyCode) {
-                case 38: setCropPosition(cropX, cropY - 1); break;
-                case 40: setCropPosition(cropX, cropY + 1); break;
-                case 37: setCropPosition(cropX - 1, cropY); break;
-                case 39: setCropPosition(cropX + 1, cropY); break;
-                default: return;
-            }
-        }
-        redrawCanvas();
-    });
+    document.addEventListener("keydown", keyDownListener);
 
     renderCanvas = document.createElement("canvas");
     renderCtx = renderCanvas.getContext("2d", { willReadFrequently: true });
@@ -574,12 +554,12 @@ function setCropPosition(x, y) {
     inputs.yPos.value = y;
 }
 
-function setCropSize(width, height) {
+function setCropSize(width, height, preferLower) {
     width = Math.max(10, Math.min(width, img.width - cropX));
     height = Math.max(10, Math.min(height, img.height - cropY));
 
     if (cropShape != cropShapes.FREEFORM) {
-        if (width < height) height = width;
+        if (preferLower ? width < height : width > height) height = width;
         else width = height;
     }
     cropWidth = width;
@@ -839,16 +819,22 @@ function mouseDownListener(e) {
     mouseDown = true;
 }
 
-var prevX, prevY;
+var prevX = null, prevY = null;
 function mouseMoveListener(e) {
     if (!mouseDown) return;
 
-    if (prevX && prevY) {
+    if (prevX != null && prevY != null) {
         var dx = e.clientX - prevX;
         var dy = e.clientY - prevY;
 
         var ratio = inputs.scaleDevicePixel.checked ? 1 : devicePixelRatio;
         var scale = canvasScale / ratio;
+
+        if (e.shiftKey) {
+            // = 1 pixel
+            dx = scale * Math.sign(dx);
+            dy = scale * Math.sign(dy);
+        }
         
         if (isInSelection) {
             dx = Math.round(dx / scale);
@@ -879,17 +865,22 @@ function mouseMoveListener(e) {
                 }
                 else {
                     var delta = (Math.abs(dx) > Math.abs(dy)) ? dx * xSign : dy * ySign;
-                    let left = px + delta * xSign,
-                        top = py + delta * ySign,
-                        right = left + width,
-                        bottom = top + height;
+                    var hDelta = delta * xSign,
+                        vDelta = delta * ySign;
+                    let left = px + hDelta,
+                        top = py + vDelta,
+                        right = left + width + delta,
+                        bottom = top + height + delta;
                     
-                    // ouch
-                    if (left < 0) delta += left;
-                    else if (right > img.width) delta -= right - img.width;
-                    
-                    if (top < 0) delta += top;
-                    else if (bottom > img.height) delta -= bottom - img.height;
+                    var d = 0;
+
+                    if (resizeFromLeft && left < 0) d = -left;
+                    if (resizeFromTop && top < 0) d = -top;
+
+                    if (right > img.width) d = right - img.width - hDelta;
+                    if (bottom > img.height) d = bottom - img.height - vDelta;
+
+                    if (d) delta = (d > delta ? 0 : delta - d);
 
                     width = height += delta;
                     if (resizeFromLeft) px += delta * xSign;
@@ -898,7 +889,8 @@ function mouseMoveListener(e) {
 
                 if (resizeFromLeft && width < 10)
                     px -= 10 - width;
-                else if (resizeFromTop && height < 10)
+                
+                if (resizeFromTop && height < 10)
                     py -= 10 - height;
 
                 // Set the crop positions first so setCropSize could clamp the values correctly
@@ -1014,6 +1006,40 @@ function touchMoveListener(e) {
 function touchEndListener(e) {
     if (touchPinching && e.touches.length < 2)
         touchPinching = false;
+}
+
+function keyDownListener(e) {
+    var code;
+    if (e.code) code = e.code;
+    else {
+        switch (e.keyCode) {
+            case 38: code = "ArrowUp";    break;
+            case 40: code = "ArrowDown";  break;
+            case 37: code = "ArrowLeft";  break;
+            case 39: code = "ArrowRight"; break;
+            default: return;
+        }
+    }
+    switch (code) {
+        case "ArrowUp": 
+            e.shiftKey ? setCropSize(cropWidth, cropHeight - 1, true) : setCropPosition(cropX, cropY - 1);
+            break;
+
+        case "ArrowDown":
+            e.shiftKey ? setCropSize(cropWidth, cropHeight + 1) : setCropPosition(cropX, cropY + 1);
+            break;
+
+        case "ArrowLeft":
+            e.shiftKey ? setCropSize(cropWidth - 1, cropHeight, true) : setCropPosition(cropX - 1, cropY);
+            break;
+
+        case "ArrowRight":
+            e.shiftKey ? setCropSize(cropWidth + 1, cropHeight) : setCropPosition(cropX + 1, cropY);
+            break;
+
+        default: return;
+    }
+    redrawCanvas();
 }
 
 function isPointInRect(x, y, rect) {
