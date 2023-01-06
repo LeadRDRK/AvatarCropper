@@ -202,8 +202,22 @@ a:hover {
     margin-left: 0.5rem;
 }
 
+.menuInputBox input[type="checkbox"] {
+    flex-basis: 1.05rem;
+    margin-left: auto;
+}
+
+.pbfeDialog .menuInputBox {
+    column-gap: 0.5rem;
+}
+
 .pbfeDialog .menuInputBox:first-child {
     padding-top: 0;
+}
+
+.pbfeDialog .menuInputBox input[type="number"] {
+    flex-basis: auto;
+    margin-left: auto;
 }
 
 .menuBtn {
@@ -265,7 +279,7 @@ a:hover {
 
 #langSelector {
     margin-top: 1rem;
-}
+} 
 
 @media screen and (min-width: 1024px) {
     #welcomeScreen {
