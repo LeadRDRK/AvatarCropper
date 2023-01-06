@@ -568,12 +568,12 @@ function setCropPosition(x, y) {
     inputs.yPos.value = y;
 }
 
-function setCropSize(width, height, preferLower) {
+function setCropSize(width, height, preferHigher) {
     width = Math.max(10, Math.min(width, img.width - cropX));
     height = Math.max(10, Math.min(height, img.height - cropY));
 
     if (cropShape != cropShapes.FREEFORM) {
-        if (preferLower ? width < height : width > height) height = width;
+        if (preferHigher ? width > height : width < height) height = width;
         else width = height;
     }
     cropWidth = width;
@@ -1039,19 +1039,19 @@ function keyDownListener(e) {
     }
     switch (code) {
         case "ArrowUp": 
-            e.shiftKey ? setCropSize(cropWidth, cropHeight - 1, true) : setCropPosition(cropX, cropY - 1);
+            e.shiftKey ? setCropSize(cropWidth, cropHeight - 1) : setCropPosition(cropX, cropY - 1);
             break;
 
         case "ArrowDown":
-            e.shiftKey ? setCropSize(cropWidth, cropHeight + 1) : setCropPosition(cropX, cropY + 1);
+            e.shiftKey ? setCropSize(cropWidth, cropHeight + 1, true) : setCropPosition(cropX, cropY + 1);
             break;
 
         case "ArrowLeft":
-            e.shiftKey ? setCropSize(cropWidth - 1, cropHeight, true) : setCropPosition(cropX - 1, cropY);
+            e.shiftKey ? setCropSize(cropWidth - 1, cropHeight) : setCropPosition(cropX - 1, cropY);
             break;
 
         case "ArrowRight":
-            e.shiftKey ? setCropSize(cropWidth + 1, cropHeight) : setCropPosition(cropX + 1, cropY);
+            e.shiftKey ? setCropSize(cropWidth + 1, cropHeight, true) : setCropPosition(cropX + 1, cropY);
             break;
 
         default: return;
