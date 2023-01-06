@@ -168,6 +168,8 @@ function initMenuBox() {
     freeformBtn.element.classList.add("menuBtn");
     menuBox.appendChild(freeformBtn);
 
+    menuBox.appendChild(createMenuInput("showGuidelines", _("Show guidelines"), true, "checkbox"));
+
     /* Viewport */
     menuBox.appendChild(createSectionTitle(_("Viewport")));
     menuBox.appendChild(createMenuInput("zoom", _("Zoom"), true, "range"));
@@ -262,6 +264,8 @@ function initMenuBox() {
     addShapeBtnHandler(circleBtn, cropShapes.CIRCLE);
     addShapeBtnHandler(squareBtn, cropShapes.SQUARE);
     addShapeBtnHandler(freeformBtn, cropShapes.FREEFORM);
+
+    inputs.showGuidelines.addEventListener("change", redrawCanvas);
 
     var zoomInput = inputs.zoom;
     zoomInput.min = 10;
@@ -602,6 +606,13 @@ function setCanvasScale(scale) {
     showNotification(_("Zoom: ") + (Math.round(scale * 1000)/10) + "%");
 }
 
+function drawLine(x1, y1, x2, y2) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+}
+
 var cropX = 0, cropY = 0, cropWidth = 0, cropHeight = 0;
 function draw() {
     var canvasEl = canvas.element;
@@ -620,14 +631,16 @@ function draw() {
         height = cropHeight + 1;
 
     ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1;
     ctx.translate(0.5, 0.5);
+    let cx, cy;
     if (cropShape == cropShapes.CIRCLE) {
         ctx.strokeRect(x, y, width, height);
-        var cx = cropX + cropWidth/2 - 0.5,
-            cy = cropY + cropHeight/2 - 0.5;
+        cx = cropX + cropWidth/2;
+        cy = cropY + cropHeight/2;
 
         ctx.beginPath();
-        ctx.arc(cx, cy, cropWidth/2 + 0.5, 0, 2 * Math.PI);
+        ctx.arc(cx - 0.5, cy - 0.5, cropWidth/2 + 0.5, 0, 2 * Math.PI);
     }
     else {
         ctx.beginPath();
@@ -641,6 +654,28 @@ function draw() {
     ctx.globalCompositeOperation = "destination-out";
     ctx.fillStyle = "#000000";
     ctx.fill();
+
+    // Draw guidelines
+    if (inputs.showGuidelines.checked) {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.setLineDash([10, 10]);
+        ctx.strokeStyle = "#ffff00";
+
+        // Reuse values if possible
+        if (!cx || !cy) {
+            cx = cropX + cropWidth/2;
+            cy = cropY + cropHeight/2;
+        }
+        
+        let right = cropX + cropWidth,
+            bottom = cropY + cropHeight;
+        drawLine(cx, cropY, cx, cy); // top
+        drawLine(cropX, cy, cx, cy); // left
+        drawLine(cx, bottom, cx, cy); // bottom
+        drawLine(right, cy, cx, cy); // right
+
+        ctx.setLineDash([]);
+    }
 
     // Draw image behind crop selector and shadow
     ctx.globalCompositeOperation = "destination-over";
