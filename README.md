@@ -49,4 +49,5 @@ Don't see your language on the list? You can help by adding it yourself!
 Licensed under [GNU AGPLv3](LICENSE)
 
 External project licenses:
+- [IBM Plex Sans](https://github.com/ibm/plex): Open Font License
 - [omggif](https://github.com/deanm/omggif): MIT License

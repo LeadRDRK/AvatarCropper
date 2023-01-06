@@ -1,3 +1,10 @@
+@font-face {
+    font-family: "IBM Plex Sans";
+    src: local("IBM Plex Sans"),
+         url("IBMPlexSans-Regular.woff2") format("woff2"),
+         url("IBMPlexSans-Regular.woff") format("woff");
+}
+
 body {
     margin: 0;
 }
