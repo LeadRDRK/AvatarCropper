@@ -690,24 +690,21 @@ async function renderAndSaveGif() {
     if (frames.length) gif.loadFrame(img, inputs.frame.value);
 }
 
-var mouseDown = false;
 var isInSelection = false;
 var isResizing = false;
 var resizeFromLeft = false;
 var resizeFromTop = false;
-function mouseDownListener(e) {
-    if (e.button != 0) return;
-    
+function checkMousePos(e) {
     var rect = canvas.element.getBoundingClientRect();
     // canvas rect -> selection rect
-    rect.x += rect.width*(cropX/img.width);
-    rect.y += rect.height*(cropY/img.height);
-    rect.width *= cropWidth/img.width;
-    rect.height *= cropHeight/img.height;
+    rect.x += rect.width * (cropX / img.width);
+    rect.y += rect.height * (cropY / img.height);
+    rect.width *= cropWidth / img.width;
+    rect.height *= cropHeight / img.height;
 
     var cursor;
-    if (isPointInRect(e.clientX, e.clientY, rect)) {
-        isInSelection = true;
+    isInSelection = isPointInRect(e.clientX, e.clientY, rect);
+    if (isInSelection) {
         var cx = rect.x + rect.width/2;
         var cy = rect.y + rect.height/2;
         isResizing = !isPointInCircle(e.clientX, e.clientY, cx, cy, rect.width / 2);
@@ -725,15 +722,28 @@ function mouseDownListener(e) {
         }
         else cursor = "move";
     }
-    else cursor = "grabbing";
+    else cursor = "grab";
 
     innerBox.element.style.cursor = cursor;
+}
+
+var mouseDown = false;
+function mouseDownListener(e) {
+    if (e.button != 0) return;
+
+    checkMousePos(e);
+    if (!isInSelection)
+        innerBox.element.style.cursor = "grabbing";
+
     mouseDown = true;
 }
 
 var prevX = null, prevY = null;
 function mouseMoveListener(e) {
-    if (!mouseDown) return;
+    if (!mouseDown) {
+        checkMousePos(e);
+        return;
+    }
 
     if (prevX != null && prevY != null) {
         var dx = e.clientX - prevX;
