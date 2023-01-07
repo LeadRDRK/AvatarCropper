@@ -2,8 +2,8 @@ import loadingDialog from "./loading-dialog.js";
 import pbfe from "./pbfe.js";
 import toast from "./toast.js";
 import welcomeScreen from "./welcome-screen.js";
-import { GifReader, GifWriter } from "./omggif.js";
 import { _ } from "./i18n.js";
+import gif from "./gif.js";
 
 var container, box;
 var innerBox, canvas, ctx;
@@ -304,9 +304,9 @@ function initMenuBox() {
     });
 
     inputs.frame.addEventListener("input", function() {
-        if (gifFrames.length) {
+        if (gif.hasFrames()) {
             var value = inputs.frame.value;
-            loadGifFrame(value).then(redrawCanvas);
+            gif.loadFrame(img, value).then(redrawCanvas);
             showNotification(_("Frame: ") + value);
         }
     });
@@ -394,82 +394,6 @@ function removeImgListeners() {
     img.removeEventListener("error", imgErrorListener);
 }
 
-var gifFrames = [];
-function loadGif(file) {
-    var reader = new FileReader;
-    reader.readAsArrayBuffer(file);
-
-    reader.onloadend = function() {
-        if (reader.error) {
-            toast.show(_("Failed to load GIF frames."));
-            return;
-        }
-
-        var view = new Uint8Array(reader.result);
-        var gifReader;
-        try {
-            gifReader = new GifReader(view);
-        }
-        catch (e) {
-            toast.show(_("Failed to load GIF frames: ") + e.message);
-            return;
-        }
-
-        var { width, height } = gifReader;
-        gifCanvas.width = width;
-        gifCanvas.height = height;
-        inputs.loopCount.value = gifReader.loopCount();
-
-        var lastNoDisposeFrame;
-        var clearBg;
-        for (let i = 0; i < gifReader.numFrames(); ++i) {
-            const info = gifReader.frameInfo(i);
-            let inheritFrame;
-            if (!clearBg) {
-                if (info.disposal == 3)
-                    inheritFrame = lastNoDisposeFrame;
-                else if (info.disposal != 0 && i > 0)
-                    inheritFrame = gifFrames[i - 1].imageData;
-            }
-            else clearBg = false;
-            
-            let imageData;
-            if (inheritFrame)
-                imageData = new ImageData(new Uint8ClampedArray(inheritFrame.data), width, height);
-            else
-                imageData = gifCtx.createImageData(width, height);
-
-            gifReader.decodeAndBlitFrameRGBA(i, imageData.data);
-            
-            if (info.disposal == 0)
-                lastNoDisposeFrame = imageData;
-            else if (info.disposal == 2)
-                clearBg = true;
-
-            gifFrames[i] = { info, imageData };
-        }
-
-        var lastFrame = gifReader.numFrames() - 1;
-        inputs.frame.min = 0;
-        inputs.frame.max = lastFrame;
-        inputs.frame.value = 0;
-        inputs.frame.disabled = false;
-        inputs.endFrame.value = lastFrame;
-        inputs.keepGifColors.checked = true;
-    }
-}
-
-var gifCanvas = document.createElement("canvas");
-var gifCtx = gifCanvas.getContext("2d");
-function loadGifFrame(frameNum) {
-    return new Promise(resolve => {
-        gifCtx.clearRect(0, 0, gifCanvas.width, gifCanvas.height);
-        gifCtx.putImageData(gifFrames[frameNum].imageData, 0, 0);
-        img.src = gifCanvas.toDataURL();
-        img.addEventListener("load", resolve, { once: true });
-    });
-}
-
 var usingObjectUrl = false;
 var currentName;
 function open(src, successCb) {
@@ -477,11 +401,9 @@ function open(src, successCb) {
         URL.revokeObjectURL(img.src);
         usingObjectUrl = false;
     }
-    if (gifFrames.length) {
-        gifFrames = [];
+    if (gif.reset()) {
         inputs.frame.value = 0;
         inputs.frame.disabled = true;
-
         inputs.startFrame.value = 0;
         inputs.endFrame.value = 0;
         inputs.loopCount.value = 0;
@@ -493,7 +415,7 @@ function open(src, successCb) {
 
     if (src instanceof File) {
         currentName = src.name.slice(0, src.name.lastIndexOf("."));
-        if (src.type == "image/gif") loadGif(src);
+        if (src.type == "image/gif") gif.load(src, inputs);
         src = URL.createObjectURL(src);
         usingObjectUrl = true;
     }
@@ -722,27 +644,29 @@ function renderAndSaveImage() {
 
 async function renderAndSaveGif() {
     var buf = [];
-    var writer = new GifWriter(buf, cropWidth, cropHeight, { loop: Math.floor(inputs.loopCount.value) });
+    var writer = new gif.Writer(buf, cropWidth, cropHeight, { loop: Math.floor(inputs.loopCount.value) });
 
-    var lastFrame = gifFrames.length ? gifFrames.length - 1 : 0;
+    var frames = gif.frames;
+    var lastFrame = frames.length ? frames.length - 1 : 0;
     var start = Math.max(0, Math.min(Math.floor(inputs.startFrame.value), lastFrame));
     var length = Math.max(0, Math.min(Math.floor(inputs.endFrame.value), lastFrame)) + 1;
 
     loadingDialog.setProgress(0);
     loadingDialog.show();
+    var keepGifColors = inputs.keepGifColors.checked;
     for (let i = start; i < length; ++i) {
         // Allow rendering static image
         let delay = 0;
-        if (gifFrames.length) {
-            await loadGifFrame(i);
-            delay = gifFrames[i].info.delay;
+        if (frames.length) {
+            await gif.loadFrame(img, i);
+            delay = frames[i].info.delay;
         }
         render();
 
         let imageData = renderCtx.getImageData(0, 0, cropWidth, cropHeight);
         let palette = [];
         let indexedPixels = [];
-        createGifFrame(imageData.data, palette, indexedPixels);
+        gif.createFrame(imageData.data, palette, indexedPixels, keepGifColors);
 
         writer.addFrame(0, 0, cropWidth, cropHeight, indexedPixels, {
             palette, delay, transparent: 0, disposal: 2
@@ -763,71 +687,7 @@ async function renderAndSaveGif() {
     }, 0);
 
     // Reload current frame
-    if (gifFrames.length) loadGifFrame(inputs.frame.value);
-}
-
-function createGifFrame(px, palette, indexedPixels) {
-    var keepGifColors = inputs.keepGifColors.checked;
-    palette.push(0); // transparent
-    for (let i = 0; i < px.length; i += 4) {
-        let r = px[i];
-        let g = px[i+1];
-        let b = px[i+2];
-        let a = px[i+3];
-
-        if (a == 0) {
-            indexedPixels.push(0);
-            continue;
-        }
-
-        let rgb = ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
-        let index, lastDiff = null;
-        for (let x = 1; x < palette.length; ++x) {
-            // Find color in palette
-            let prgb = palette[x];
-            if (prgb == rgb) {
-                index = x;
-                lastDiff = null;
-                break;
-            }
-
-            // Check if color is close
-            if (!keepGifColors || palette.length == 256) {
-                let pr = (prgb >> 16) & 0xff;
-                let pg = (prgb >> 8) & 0xff;
-                let pb = prgb & 0xff;
-                let diff = Math.abs(r - pr) + Math.abs(g - pg) + Math.abs(b - pb);
-                if (lastDiff == null || diff < lastDiff) {
-                    index = x;
-                    lastDiff = diff;
-                }
-            }
-        }
-        // Exponentially increase tolerance
-        var tolerance = 15 + (40 * Math.pow(2, 10 * (palette.length / 256) - 10));
-        if (palette.length != 256 && lastDiff > tolerance)
-            index = null;
-
-        if (!index)
-            index = palette.push(rgb) - 1;
-        
-        indexedPixels.push(index);
-    }
-
-    if (palette.length == 256) return;
-    // Palette length needs to be a power of 2
-    // We do a *bit* of twiddling
-    let v = palette.length; // max is 256 = 8 bits
-    --v;
-    v |= v >> 1;
-    v |= v >> 2;
-    v |= v >> 4;
-    ++v;
-
-    // Pad extra values
-    let needed = v - palette.length;
-    for (let i = 0; i < needed; ++i)
-        palette.push(0);
+    if (frames.length) gif.loadFrame(img, inputs.frame.value);
 }
 
 var mouseDown = false;
