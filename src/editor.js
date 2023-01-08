@@ -340,11 +340,15 @@ function initGifOptions() {
     gifOptionsDialog.appendChild(createMenuInput("startFrame", _("Start frame"), true, "number"));
     gifOptionsDialog.appendChild(createMenuInput("endFrame", _("End frame"), true, "number"));
     gifOptionsDialog.appendChild(createMenuInput("loopCount", _("Loop count"), true, "number"));
+    gifOptionsDialog.appendChild(createMenuInput("speedMult", _("Speed multiplier"), true, "number"));
     gifOptionsDialog.appendChild(createMenuInput("keepGifColors", _("Keep original colors"), true, "checkbox"));
 
     inputs.startFrame.value = inputs.startFrame.min = 0;
     inputs.endFrame.value = inputs.endFrame.min = 0;
     inputs.loopCount.value = inputs.loopCount.min = 0;
+    inputs.speedMult.value = 1;
+    inputs.speedMult.step = 0.25;
+    inputs.speedMult.min = 0;
 
     inputs.keepGifColors.style.paddingTop = "0";
     
@@ -655,12 +659,13 @@ async function renderAndSaveGif() {
     loadingDialog.setProgress(0);
     loadingDialog.show();
     var keepColors = inputs.keepGifColors.checked;
+    var speedMult = +inputs.speedMult.value;
     for (let i = start; i < length; ++i) {
         // Allow rendering static image
         let delay = 0;
         if (frames.length) {
             await gif.loadFrame(img, i);
-            delay = frames[i].info.delay;
+            delay = speedMult ? frames[i].info.delay / speedMult : 0;
         }
         render();
 
