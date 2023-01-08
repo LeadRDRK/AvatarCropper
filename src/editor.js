@@ -342,9 +342,9 @@ function initGifOptions() {
     gifOptionsDialog.appendChild(createMenuInput("loopCount", _("Loop count"), true, "number"));
     gifOptionsDialog.appendChild(createMenuInput("keepGifColors", _("Keep original colors"), true, "checkbox"));
 
-    inputs.startFrame.value = 0;
-    inputs.endFrame.value = 0;
-    inputs.loopCount.value = 0;
+    inputs.startFrame.value = inputs.startFrame.min = 0;
+    inputs.endFrame.value = inputs.endFrame.min = 0;
+    inputs.loopCount.value = inputs.loopCount.min = 0;
 
     inputs.keepGifColors.style.paddingTop = "0";
     
