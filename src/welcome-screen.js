@@ -27,19 +27,18 @@ function init(_container) {
 
     var versionLabel = new pbfe.Label("v1.3 - ");
 
-    var aboutBtn = document.createElement("a");
-    aboutBtn.innerText = _("About");
-    aboutBtn.href = "javascript:void(0);"
-    aboutBtn.setAttribute("draggable", false);
+    var aboutBtn = createHyperlink(_("About"), "javascript:void(0);");
     versionLabel.element.appendChild(aboutBtn);
+    
+    versionLabel.element.appendChild(document.createTextNode(" | "));
+
+    var privacyBtn = createHyperlink(_("Privacy"), "javascript:void(0);");
+    versionLabel.element.appendChild(privacyBtn);
 
     versionLabel.element.appendChild(document.createTextNode(" | "));
 
-    var privacyBtn = document.createElement("a");
-    privacyBtn.innerText = _("Privacy policy");
-    privacyBtn.href = "javascript:void(0);"
-    privacyBtn.setAttribute("draggable", false);
-    versionLabel.element.appendChild(privacyBtn);
+    var changelogBtn = createHyperlink(_("View changelog"), "https://github.com/LeadRDRK/AvatarCropper/releases", true);
+    versionLabel.element.appendChild(changelogBtn);
 
     titleBox.appendChild(versionLabel);
 
@@ -85,6 +84,15 @@ function init(_container) {
     });
 
     welcomeScreen.shown = true;
+}
+
+function createHyperlink(text, href, newTab) {
+    var a = document.createElement("a");
+    a.innerText = text;
+    a.href = href;
+    a.setAttribute("draggable", false);
+    if (newTab) a.target = "_blank";
+    return a;
 }
 
 function initURLDialog() {

@@ -3,7 +3,7 @@ import { _ } from "./i18n.js";
 
 var dialog;
 function init(container) {
-    dialog = new pbfe.Dialog(_("Privacy policy"));
+    dialog = new pbfe.Dialog(_("Privacy"));
     dialog.body.style.lineHeight = "1.6rem";
     container.appendChild(dialog);
 
