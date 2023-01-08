@@ -25,11 +25,11 @@ function init(_container) {
     title.element.id = "title";
     titleBox.appendChild(title);
 
-    var versionLabel = new pbfe.Label("v1.3 - ");
+    var versionLabel = new pbfe.Label("v1.4 - ");
 
     var aboutBtn = createHyperlink(_("About"), "javascript:void(0);");
     versionLabel.element.appendChild(aboutBtn);
-    
+
     versionLabel.element.appendChild(document.createTextNode(" | "));
 
     var privacyBtn = createHyperlink(_("Privacy"), "javascript:void(0);");
