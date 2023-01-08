@@ -60,6 +60,7 @@ a:hover {
 
 #openButtonsBox {
     background-color: #2e2e2e;
+    background-image: linear-gradient(#2e2e2e, #292929);
     padding: 2rem;
     border-radius: 6px;
     box-shadow: 0 0 16px 6px #1a1a1a;
@@ -145,6 +146,7 @@ a:hover {
     right: 0;
     left: 0;
     background-color: #dda91a;
+    background-image: linear-gradient(#dda91a, #b28815);
     color: black;
     font-weight: bold;
     width: 50%;
@@ -152,6 +154,7 @@ a:hover {
 
 #returnBtn:hover {
     background-color: #be941f;
+    background-image: linear-gradient(#c48b17, #9b6e12);
 }
 
 #hideBtn {
@@ -162,6 +165,7 @@ a:hover {
 .sectionTitle {
     flex-basis: 100%;
     background-color: #444;
+    background-image: linear-gradient(#444, #383838);
     font-weight: bold;
     font-size: 0.95rem;
     padding: 0.2rem 1rem 0.2rem 1rem;
@@ -174,7 +178,8 @@ a:hover {
 }
 
 #notifBox {
-    background-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.5);
+    background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(200, 200, 200, 0.5));
     color: #333;
     padding: 0.4rem 0.75rem 0.4rem 0.75rem;
     border-radius: 6px;
@@ -230,6 +235,11 @@ a:hover {
 .menuBtn {
     margin: 0.6rem 0.75rem 0 0.75rem;
     flex-basis: 100%;
+    font-size: 0.9rem;
+}
+
+#editorMenu .pbfeButton.menuBtn:hover {
+    transform: scale(1.025, 1.025);
 }
 
 .menuBtn.split {
@@ -239,6 +249,7 @@ a:hover {
 
 .menuBtn.chosen {
     background-color: #354851;
+    background-image: linear-gradient(#2f516a, #21394a);
 }
 
 .fullscreenBtn {

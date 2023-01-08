@@ -15,7 +15,8 @@
 .pbfeButton {
     border: none;
     outline: none;
-    background-color: #497e99;
+    background-color: #457f9c;
+    background-image: linear-gradient(#457f9c, #37667b);
     color: #eee;
     padding: 0.5rem 0.75rem 0.5rem 0.75rem;
     cursor: pointer;
@@ -25,6 +26,7 @@
 
 .pbfeButton:hover {
     background-color: #4e7183;
+    background-image: linear-gradient(#3e6d8e, #31546d);
     transform: scale(1.05, 1.05);
 }
 
@@ -42,6 +44,8 @@
     min-height: 2rem;
     max-width: 30rem;
     background-color: #252729;
+    background-image: linear-gradient(hsl(210, 6%, 19%) 0%, #252729 20%, #1f2123 100%);
+    box-shadow: 0 0 16px 4px rgba(0, 0, 0, 0.25);
 }
 
 .pbfeDialog.show {
@@ -92,6 +96,7 @@
     border-radius: 6px;
     color: #ccc;
     background-color: #232627;
+    background-image: linear-gradient(#232627, #1f2223);
     border: 1px solid #515f66;
     outline: 0;
     min-width: 0;
@@ -161,6 +166,7 @@
 
 .pbfeSelector {
     background-color: #232627;
+    background-image: linear-gradient(#232627, #1f2223);
     color: #eee;
     border: 1px solid #515f66;
     border-radius: 6px;
