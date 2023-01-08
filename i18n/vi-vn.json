@@ -1,6 +1,7 @@
 {
     "About": "Giới thiệu",
-    "Privacy policy": "Chính sách bảo mật",
+    "Privacy": "Quyền riêng tư",
+    "View changelog": "Xem nhật ký thay đổi",
     "Open File...": "Mở File...",
     "Open URL...": "Mở URL...",
     "Open URL": "Mở URL",
@@ -47,5 +48,7 @@
     "Toggle fullscreen": "Bật/tắt chế độ toàn màn hình",
     "Loading...": "Đang tải...",
     "Start frame": "Khung hình bắt đầu",
-    "End frame": "Khung hình kết thúc"
+    "End frame": "Khung hình kết thúc",
+    "Show guidelines": "Hiển thị các đường dẫn",
+    "Speed multiplier": "Số nhân tốc độ"
 }
