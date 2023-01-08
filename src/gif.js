@@ -76,7 +76,38 @@ function loadFrame(img, frameNum) {
     });
 }
 
-function createFrame(px, palette, indexedPixels, keepGifColors) {
+function Renderer(width, height, gopts) {
+    this.buffer = [];
+    this.writer = new GifWriter(this.buffer, width, height, gopts);
+}
+
+Renderer.prototype.addFrame = function(imageData, opts) {
+    let delay = opts.delay != undefined ? opts.delay : 0;
+    let disposal = opts.disposal != undefined ? opts.disposal : 2;
+    let keepColors = opts.keepColors;
+    let x = opts.x != undefined ? opts.x : 0;
+    let y = opts.y != undefined ? opts.y : 0;
+
+    let width = imageData.width;
+    let height = imageData.height;
+
+    let palette = [];
+    let indexedPixels = [];
+    let transparent = createFrame(imageData.data, palette, indexedPixels, keepColors);
+    this.writer.addFrame(x, y, width, height, indexedPixels, {
+        palette, delay, transparent, disposal
+    });
+}
+
+Renderer.prototype.end = function() {
+    this.writer.end();
+}
+
+Renderer.prototype.getUint8Array = function() {
+    return Uint8Array.from(this.buffer);
+}
+
+function createFrame(px, palette, indexedPixels, keepColors) {
     var transparentIndex = null;
     for (let i = 0; i < px.length; i += 4) {
         let r = px[i];
@@ -110,7 +141,7 @@ function createFrame(px, palette, indexedPixels, keepGifColors) {
             }
 
             // Check if color is close
-            if (!keepGifColors || palette.length == 256) {
+            if (!keepColors || palette.length == 256) {
                 let pr = (prgb >> 16) & 0xff;
                 let pg = (prgb >> 8) & 0xff;
                 let pb = prgb & 0xff;
@@ -167,10 +198,9 @@ function hasFrames() {
 }
 
 var gif = {
-    Writer: GifWriter,
+    Renderer,
     load,
     loadFrame,
-    createFrame,
     reset,
     hasFrames,
     frames

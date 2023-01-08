@@ -436,8 +436,10 @@ function open(src, successCb) {
         var success = e.detail;
         if (success) {
             loadingDialog.setProgress(1);
+
             canvas.element.width = img.width;
             canvas.element.height = img.height;
+
             show();
             reset();
             successCb();
@@ -643,8 +645,7 @@ function renderAndSaveImage() {
 }
 
 async function renderAndSaveGif() {
-    var buf = [];
-    var writer = new gif.Writer(buf, cropWidth, cropHeight, { loop: Math.floor(inputs.loopCount.value) });
+    var renderer = new gif.Renderer(cropWidth, cropHeight, { loop: Math.floor(inputs.loopCount.value) });
 
     var frames = gif.frames;
     var lastFrame = frames.length ? frames.length - 1 : 0;
@@ -653,7 +654,7 @@ async function renderAndSaveGif() {
 
     loadingDialog.setProgress(0);
     loadingDialog.show();
-    var keepGifColors = inputs.keepGifColors.checked;
+    var keepColors = inputs.keepGifColors.checked;
     for (let i = start; i < length; ++i) {
         // Allow rendering static image
         let delay = 0;
@@ -664,21 +665,14 @@ async function renderAndSaveGif() {
         render();
 
         let imageData = renderCtx.getImageData(0, 0, cropWidth, cropHeight);
-        let palette = [];
-        let indexedPixels = [];
-        let transparent = gif.createFrame(imageData.data, palette, indexedPixels, keepGifColors);
-
-        writer.addFrame(0, 0, cropWidth, cropHeight, indexedPixels, {
-            palette, delay, transparent, disposal: 2
-        });
-
+        renderer.addFrame(imageData, { delay, keepColors });
         loadingDialog.setProgress((i + 1) / length);
     }
     
-    writer.end();
+    renderer.end();
     loadingDialog.hide();
 
-    var uArray = Uint8Array.from(buf);
+    var uArray = renderer.getUint8Array();
     var blob = new Blob([uArray], {type: "image/gif"});
     var url = URL.createObjectURL(blob);
     saveFile(url, currentName + "_cropped.gif");
