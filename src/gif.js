@@ -77,7 +77,7 @@ function loadFrame(img, frameNum) {
 }
 
 function createFrame(px, palette, indexedPixels, keepGifColors) {
-    palette.push(0); // transparent
+    var transparentIndex = null;
     for (let i = 0; i < px.length; i += 4) {
         let r = px[i];
         let g = px[i+1];
@@ -85,7 +85,16 @@ function createFrame(px, palette, indexedPixels, keepGifColors) {
         let a = px[i+3];
 
         if (a == 0) {
-            indexedPixels.push(0);
+            if (transparentIndex == null) {
+                if (palette.length < 256)
+                    transparentIndex = palette.push(0) - 1;
+                else {
+                    indexedPixels.push(0);
+                    continue;
+                }
+            }
+
+            indexedPixels.push(transparentIndex);
             continue;
         }
 
@@ -123,7 +132,7 @@ function createFrame(px, palette, indexedPixels, keepGifColors) {
         indexedPixels.push(index);
     }
 
-    if (palette.length == 256) return;
+    if (palette.length == 256) return transparentIndex;
     // Palette length needs to be a power of 2
     // We do a *bit* of twiddling
     let v = palette.length; // max is 256 = 8 bits
@@ -141,6 +150,8 @@ function createFrame(px, palette, indexedPixels, keepGifColors) {
     let needed = v - palette.length;
     for (let i = 0; i < needed; ++i)
         palette.push(0);
+    
+    return transparentIndex;
 }
 
 function reset() {

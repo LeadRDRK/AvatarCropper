@@ -666,10 +666,10 @@ async function renderAndSaveGif() {
         let imageData = renderCtx.getImageData(0, 0, cropWidth, cropHeight);
         let palette = [];
         let indexedPixels = [];
-        gif.createFrame(imageData.data, palette, indexedPixels, keepGifColors);
+        let transparent = gif.createFrame(imageData.data, palette, indexedPixels, keepGifColors);
 
         writer.addFrame(0, 0, cropWidth, cropHeight, indexedPixels, {
-            palette, delay, transparent: 0, disposal: 2
+            palette, delay, transparent, disposal: 2
         });
 
         loadingDialog.setProgress((i + 1) / length);
