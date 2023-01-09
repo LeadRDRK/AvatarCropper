@@ -529,9 +529,9 @@ function setCanvasMargins(x, y) {
 var canvasScale = 1;
 function setCanvasScale(scale) {
     var ratio = inputs.scaleDevicePixel.checked ? 1 : devicePixelRatio;
-    scale = Math.max(0.1, Math.min(scale, 8));
+    scale = Math.round(Math.max(0.1, Math.min(scale, 8)) * 1000) / 1000;
     var realScale = scale / ratio;
-    canvas.element.style.transform = "scale(" + realScale + ")";
+    canvas.element.style.transform = "scale(" + realScale.toFixed(2) + ")";
     inputs.zoom.value = Math.round(scale * 100);
 
     var newLineWidth = Math.ceil(Math.max(1, 1 / (realScale * devicePixelRatio)));
@@ -541,7 +541,7 @@ function setCanvasScale(scale) {
     }
 
     canvasScale = scale;
-    showNotification(_("Zoom: ") + (Math.round(scale * 1000)/10) + "%");
+    showNotification(_("Zoom: ") + (+(scale*100).toFixed(1)) + "%");
 }
 
 function drawLine(x1, y1, x2, y2) {
@@ -554,7 +554,6 @@ function drawLine(x1, y1, x2, y2) {
 var cropX = 0, cropY = 0, cropWidth = 0, cropHeight = 0;
 function draw() {
     var canvasEl = canvas.element;
-    ctx.resetTransform();
     ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
     ctx.globalCompositeOperation = "source-over";
 
@@ -563,23 +562,21 @@ function draw() {
     ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
 
     // Draw the crop selector
-    var offset = ctx.lineWidth / 2 + 0.5;
-    var x = cropX - offset,
-        y = cropY - offset,
-        width = cropWidth + offset,
-        height = cropHeight + offset;
+    var lw = ctx.lineWidth;
+    var x = cropX - lw/2,
+        y = cropY - lw/2,
+        width = cropWidth + lw,
+        height = cropHeight + lw;
 
     ctx.strokeStyle = "#ffffff";
-    ctx.translate(0.5, 0.5);
-    let cx, cy;
     if (cropShape == cropShapes.CIRCLE) {
         ctx.strokeRect(x, y, width, height);
-        cx = cropX + cropWidth/2;
-        cy = cropY + cropHeight/2;
+        let cx = cropX + width/2;
+        let cy = cropY + height/2;
 
         ctx.beginPath();
-        var halfOffset = offset/2;
-        ctx.arc(cx - halfOffset, cy - halfOffset, cropWidth/2 - halfOffset + 0.5, 0, 2 * Math.PI);
+        var hlw = lw/2;
+        ctx.arc(cx - hlw, cy - hlw, width/2 - hlw, 0, 2 * Math.PI);
     }
     else {
         ctx.beginPath();
@@ -600,14 +597,11 @@ function draw() {
         ctx.setLineDash([10, 10]);
         ctx.strokeStyle = "#ffff00";
 
-        // Reuse values if possible
-        if (!cx || !cy) {
-            cx = cropX + cropWidth/2;
-            cy = cropY + cropHeight/2;
-        }
-        
-        let right = cropX + cropWidth,
-            bottom = cropY + cropHeight;
+        let cx = cropX + cropWidth/2;
+        let cy = cropY + cropHeight/2;
+        let right = cropX + cropWidth;
+        let bottom = cropY + cropHeight;
+
         drawLine(cx, cy, cx, cropY); // top
         drawLine(cx, cy, cropX, cy); // left
         drawLine(cx, cy, cx, bottom); // bottom
