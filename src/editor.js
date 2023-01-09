@@ -531,7 +531,7 @@ function setCanvasScale(scale) {
     var ratio = inputs.scaleDevicePixel.checked ? 1 : devicePixelRatio;
     scale = Math.round(Math.max(0.1, Math.min(scale, 8)) * 1000) / 1000;
     var realScale = scale / ratio;
-    canvas.element.style.transform = "scale(" + realScale.toFixed(2) + ")";
+    canvas.element.style.transform = "scale(" + realScale.toFixed(3) + ")";
     inputs.zoom.value = Math.round(scale * 100);
 
     var newLineWidth = Math.ceil(Math.max(1, 1 / (realScale * devicePixelRatio)));
