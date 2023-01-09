@@ -111,7 +111,7 @@ function initInnerBox() {
     innerBox.appendChild(canvas);
 
     ctx = canvas.getContext("2d");
-    ctx.translate(0.5, 0.5);
+    ctx.lineWidth = 1;
 
     var fullscreenBtn = new pbfe.Button("⛶");
     fullscreenBtn.element.classList.add("fullscreenBtn");
@@ -530,9 +530,17 @@ var canvasScale = 1;
 function setCanvasScale(scale) {
     var ratio = inputs.scaleDevicePixel.checked ? 1 : devicePixelRatio;
     scale = Math.max(0.1, Math.min(scale, 8));
-    canvasScale = scale;
-    canvas.element.style.transform = "scale(" + (canvasScale / ratio) + ")";
+    var realScale = scale / ratio;
+    canvas.element.style.transform = "scale(" + realScale + ")";
     inputs.zoom.value = Math.round(scale * 100);
+
+    var newLineWidth = Math.ceil(Math.max(1, Math.min(1 / (realScale * devicePixelRatio), 4)));
+    if (newLineWidth != ctx.lineWidth) {
+        ctx.lineWidth = newLineWidth;
+        redrawCanvas();
+    }
+
+    canvasScale = scale;
     showNotification(_("Zoom: ") + (Math.round(scale * 1000)/10) + "%");
 }
 
@@ -555,13 +563,13 @@ function draw() {
     ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
 
     // Draw the crop selector
-    var x = cropX - 1,
-        y = cropY - 1,
-        width = cropWidth + 1,
-        height = cropHeight + 1;
+    var offset = ctx.lineWidth / 2 + 0.5;
+    var x = cropX - offset,
+        y = cropY - offset,
+        width = cropWidth + offset,
+        height = cropHeight + offset;
 
     ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1;
     ctx.translate(0.5, 0.5);
     let cx, cy;
     if (cropShape == cropShapes.CIRCLE) {
@@ -570,7 +578,8 @@ function draw() {
         cy = cropY + cropHeight/2;
 
         ctx.beginPath();
-        ctx.arc(cx - 0.5, cy - 0.5, cropWidth/2 + 0.5, 0, 2 * Math.PI);
+        var halfOffset = offset/2;
+        ctx.arc(cx - halfOffset, cy - halfOffset, cropWidth/2 - halfOffset + 0.5, 0, 2 * Math.PI);
     }
     else {
         ctx.beginPath();
@@ -599,10 +608,10 @@ function draw() {
         
         let right = cropX + cropWidth,
             bottom = cropY + cropHeight;
-        drawLine(cx, cropY, cx, cy); // top
-        drawLine(cropX, cy, cx, cy); // left
-        drawLine(cx, bottom, cx, cy); // bottom
-        drawLine(right, cy, cx, cy); // right
+        drawLine(cx, cy, cx, cropY); // top
+        drawLine(cx, cy, cropX, cy); // left
+        drawLine(cx, cy, cx, bottom); // bottom
+        drawLine(cx, cy, right, cy); // right
 
         ctx.setLineDash([]);
     }

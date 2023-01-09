@@ -31,6 +31,7 @@ function getLang() {
 
 async function appInit() {
     registerServiceWorker();
+    document.body.innerHTML = "";
 
     var container = new pbfe.Container;
     container.element.style.backgroundColor = "#1e1e1e";

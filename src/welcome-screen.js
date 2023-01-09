@@ -79,7 +79,6 @@ function init(_container) {
     langSelector.addEventListener("change", function() {
         localStorage.setItem("lang", langSelector.value);
         // Reinitialize the app
-        document.body.innerHTML = "";
         appInit();
     });
 
