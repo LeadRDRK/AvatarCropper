@@ -540,6 +540,9 @@ function setCanvasScale(scale) {
         redrawCanvas();
     }
 
+    var mScale = scale / canvasScale;
+    setCanvasMargins(canvasX * mScale, canvasY * mScale);
+
     canvasScale = scale;
     showNotification(_("Zoom: ") + (+(scale*100).toFixed(1)) + "%");
 }
