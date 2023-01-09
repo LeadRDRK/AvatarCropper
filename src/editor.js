@@ -708,7 +708,7 @@ function checkMousePos(e) {
 
     var cursor;
     isInSelection = isPointInRect(e.clientX, e.clientY, rect);
-    if (isInSelection) {
+    if (isInSelection && !touchPinching) {
         var cx = rect.x + rect.width/2;
         var cy = rect.y + rect.height/2;
         isResizing = !isPointInCircle(e.clientX, e.clientY, cx, cy, rect.width / 2);
@@ -916,6 +916,7 @@ function touchStartListener(e) {
     if (e.touches.length >= 2) {
         touchPinching = true;
         prevTouchDist = getTouchDist(e.touches[0], e.touches[1]);
+        isInSelection = false;
     }
 }
 
