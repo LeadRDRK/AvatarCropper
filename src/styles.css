@@ -271,6 +271,7 @@ a:hover {
     left: 0;
     padding: 0.75rem;
     pointer-events: none;
+    transition: 0.5s;
 }
 
 #previewBox canvas {
@@ -293,6 +294,10 @@ a:hover {
     width: 32px;
     height: 32px;
     border-radius: 32px;
+}
+
+#previewBox.panelHidden {
+    bottom: 2rem;
 }
 
 #langSelector {
@@ -329,6 +334,10 @@ a:hover {
 
     #hideBtn {
         width: 6rem;
+    }
+
+    #previewBox.panelHidden {
+        bottom: 0;
     }
 }
 

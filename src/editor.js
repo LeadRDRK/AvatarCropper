@@ -213,11 +213,13 @@ function initMenuBox() {
         if (innerStyle.width && innerStyle.height) {
             innerStyle.removeProperty("width");
             innerStyle.removeProperty("height");
+            previewBox.element.classList.remove("panelHidden");
             hideBtn.text = _("Hide panel");
         }
         else {
             innerStyle.width = "100%";
             innerStyle.height = "100%";
+            previewBox.element.classList.add("panelHidden");
             hideBtn.text = _("Show panel");
         }
     });
