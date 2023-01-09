@@ -534,7 +534,7 @@ function setCanvasScale(scale) {
     canvas.element.style.transform = "scale(" + realScale + ")";
     inputs.zoom.value = Math.round(scale * 100);
 
-    var newLineWidth = Math.ceil(Math.max(1, Math.min(1 / (realScale * devicePixelRatio), 4)));
+    var newLineWidth = Math.ceil(Math.max(1, 1 / (realScale * devicePixelRatio)));
     if (newLineWidth != ctx.lineWidth) {
         ctx.lineWidth = newLineWidth;
         redrawCanvas();
