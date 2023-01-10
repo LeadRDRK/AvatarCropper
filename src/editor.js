@@ -56,50 +56,6 @@ function init(_container) {
     renderCtx = renderCanvas.getContext("2d", { willReadFrequently: true });
 }
 
-function createSectionTitle(text) {
-    var title = new pbfe.Label(text);
-    title.element.classList.add("sectionTitle");
-    return title;
-}
-
-function createMenuInput(name, labelText, flex, inputType) {
-    if (!labelText) labelText = name;
-    var label = new pbfe.Label(labelText);
-    label.element.classList.add("menuInputBox");
-    if (!flex) label.element.classList.add("split");
-
-    var input = new pbfe.Input(inputType ? inputType : "text");
-    label.appendChild(input);
-
-    inputs[name] = input.element;
-    return label;
-}
-
-var prevShapeBtn;
-function addShapeBtnHandler(button, value) {
-    button.addEventListener("click", function() {
-        if (cropShape == value) return;
-        cropShape = value;
-        if (value != cropShapes.FREEFORM)
-            setCropSize(cropWidth, cropWidth);
-
-        this.classList.add("chosen");
-        prevShapeBtn.classList.remove("chosen");
-        prevShapeBtn = this;
-        redrawCanvas();
-    });
-}
-
-function parseInputValue(el) {
-    if (el.value == "") return;
-    var value = Number(el.value);
-    if (isNaN(value)) {
-        showNotification(_("Invalid value"));
-        return;
-    }
-    return value;
-}
-
 function initInnerBox() {
     innerBox = new pbfe.Flexbox;
     innerBox.element.id = "editorInnerBox";
@@ -143,6 +99,17 @@ function initMenuBox() {
     menuBox.element.id = "editorMenu";
     box.appendChild(menuBox);
 
+    /* Save */
+    menuBox.appendChild(createSectionTitle(_("Save")));
+
+    var saveBtn = new pbfe.Button(_("Save image..."));
+    saveBtn.element.classList.add("menuBtn");
+    menuBox.appendChild(saveBtn);
+
+    var saveGifBtn = new pbfe.Button(_("Save as GIF..."));
+    saveGifBtn.element.classList.add("menuBtn");
+    menuBox.appendChild(saveGifBtn);
+
     /* Crop Area */
     menuBox.appendChild(createSectionTitle(_("Crop Area")));
     menuBox.appendChild(createMenuInput("width", _("Width")));
@@ -156,19 +123,22 @@ function initMenuBox() {
     /* Crop Shape */
     menuBox.appendChild(createSectionTitle(_("Crop Shape")));
 
-    var circleBtn = new pbfe.Button(_("Circle"));
-    circleBtn.element.classList.add("menuBtn", "split", "chosen");
+    var circleBtn = createMenuButton(_("Circle"), true, true);
     menuBox.appendChild(circleBtn);
 
-    var squareBtn = new pbfe.Button(_("Square"));
-    squareBtn.element.classList.add("menuBtn", "split");
+    var squareBtn = createMenuButton(_("Square"), true);
     menuBox.appendChild(squareBtn);
 
-    var freeformBtn = new pbfe.Button(_("Freeform"));
-    freeformBtn.element.classList.add("menuBtn");
+    var freeformBtn = createMenuButton(_("Freeform"));
     menuBox.appendChild(freeformBtn);
 
     menuBox.appendChild(createMenuInput("showGuidelines", _("Show guidelines"), true, "checkbox"));
+
+    /* Image */
+    menuBox.appendChild(createSectionTitle(_("Image")));
+
+    menuBox.appendChild(createMenuInput("flipH", _("Flip horizontally"), true, "checkbox"));
+    menuBox.appendChild(createMenuInput("flipV", _("Flip vertically"), true, "checkbox"));
 
     /* Viewport */
     menuBox.appendChild(createSectionTitle(_("Viewport")));
@@ -181,17 +151,6 @@ function initMenuBox() {
 
     menuBox.appendChild(createMenuInput("showPreview", _("Show preview"), true, "checkbox"));
     inputs.showPreview.checked = true;
-
-    /* Save */
-    menuBox.appendChild(createSectionTitle(_("Save")));
-
-    var saveBtn = new pbfe.Button(_("Save image..."));
-    saveBtn.element.classList.add("menuBtn");
-    menuBox.appendChild(saveBtn);
-
-    var saveGifBtn = new pbfe.Button(_("Save as GIF..."));
-    saveGifBtn.element.classList.add("menuBtn");
-    menuBox.appendChild(saveGifBtn);
 
     /* Other */
     var returnBtn = new pbfe.Button(_("Open another image"));
@@ -269,24 +228,18 @@ function initMenuBox() {
 
     inputs.showGuidelines.addEventListener("change", redrawCanvas);
 
+    inputs.flipH.addEventListener("change", redrawCanvas);
+    inputs.flipV.addEventListener("change", redrawCanvas);
+
+    var zoomDetents = createRangeDetents("zoomDetents", [50, 100, 200, 400]);
     var zoomInput = inputs.zoom;
     zoomInput.min = 10;
     zoomInput.max = 800;
     zoomInput.value = canvasScale;
-    zoomInput.setAttribute("list", "zoomDetents");
+    zoomInput.setAttribute("list", zoomDetents);
     zoomInput.addEventListener("input", function() {
         setCanvasScale(zoomInput.value / 100);
     });
-
-    var zoomDetents = document.createElement("datalist");
-    zoomDetents.id = "zoomDetents";
-    var values = [50, 100, 200, 400];
-    for (let i = 0; i < values.length; ++i) {
-        let option = document.createElement("option");
-        option.value = values[i];
-        zoomDetents.appendChild(option);
-    }
-    document.body.appendChild(zoomDetents);
 
     inputs.scaleDevicePixel.addEventListener("change", function() {
         setCanvasScale(canvasScale);
@@ -315,6 +268,71 @@ function initMenuBox() {
 
     saveBtn.addEventListener("click", renderAndSaveImage);
     saveGifBtn.addEventListener("click", showGifOptions);
+}
+
+function createSectionTitle(text) {
+    var title = new pbfe.Label(text);
+    title.element.classList.add("sectionTitle");
+    return title;
+}
+
+function createMenuInput(name, labelText, flex, inputType) {
+    if (!labelText) labelText = name;
+    var label = new pbfe.Label(labelText);
+    label.element.classList.add("menuInputBox");
+    if (!flex) label.element.classList.add("split");
+
+    var input = new pbfe.Input(inputType ? inputType : "text");
+    label.appendChild(input);
+
+    inputs[name] = input.element;
+    return label;
+}
+
+var prevShapeBtn;
+function addShapeBtnHandler(button, value) {
+    button.addEventListener("click", function() {
+        if (cropShape == value) return;
+        cropShape = value;
+        if (value != cropShapes.FREEFORM)
+            setCropSize(cropWidth, cropWidth);
+
+        this.classList.add("chosen");
+        prevShapeBtn.classList.remove("chosen");
+        prevShapeBtn = this;
+        redrawCanvas();
+    });
+}
+
+function parseInputValue(el) {
+    if (el.value == "") return;
+    var value = Number(el.value);
+    if (isNaN(value)) {
+        showNotification(_("Invalid value"));
+        return;
+    }
+    return value;
+}
+
+function createMenuButton(label, split, chosen) {
+    var btn = new pbfe.Button(label);
+    var classes = ["menuBtn"];
+    if (split) classes.push("split");
+    if (chosen) classes.push("chosen");
+    btn.element.classList.add(...classes);
+    return btn;
+}
+
+function createRangeDetents(id, values) {
+    var detents = document.createElement("datalist");
+    detents.id = id;
+    for (let i = 0; i < values.length; ++i) {
+        let option = document.createElement("option");
+        option.value = values[i];
+        detents.appendChild(option);
+    }
+    document.body.appendChild(detents);
+    return id;
 }
 
 function initNotifBox() {
@@ -470,6 +488,8 @@ function hide() {
 function reset() {
     fitImageToViewport();
     resetCropArea();
+
+    inputs.flipH.checked = inputs.flipV.checked = false;
     redrawCanvas();
 }
 
@@ -554,6 +574,21 @@ function drawLine(x1, y1, x2, y2) {
     ctx.stroke();
 }
 
+function applyFlipTransform(canvas, ctx) {
+    var flipH = inputs.flipH.checked;
+    var flipV = inputs.flipV.checked;
+    var sx = 1, sy = 1;
+    if (flipH) {
+        ctx.translate(canvas.width, 0);
+        sx = -1;
+    }
+    if (flipV) {
+        ctx.translate(0, canvas.height);
+        sy = -1;
+    }
+    ctx.scale(sx, sy);
+}
+
 var cropX = 0, cropY = 0, cropWidth = 0, cropHeight = 0;
 function draw() {
     var canvasEl = canvas.element;
@@ -615,7 +650,9 @@ function draw() {
 
     // Draw image behind crop selector and shadow
     ctx.globalCompositeOperation = "destination-over";
-    ctx.drawImage(img, 0, 0, canvasEl.width, canvasEl.height);
+    applyFlipTransform(canvasEl, ctx);
+    ctx.drawImage(img, 0, 0, img.width, img.height);
+    ctx.resetTransform();
 
     if (inputs.showPreview.checked) {
         for (let i = 0; i < previewCanvases.length; ++i) {
@@ -624,7 +661,11 @@ function draw() {
 
             canvas.width = cropWidth;
             canvas.height = cropHeight;
-            ctx.drawImage(img, -cropX, -cropY, img.width, img.height);
+            applyFlipTransform(canvas, ctx);
+
+            let [x, y] = getRenderPos();
+            ctx.drawImage(img, x, y, img.width, img.height);
+            ctx.resetTransform();
         }
     }
 }
@@ -633,10 +674,23 @@ function redrawCanvas() {
     window.requestAnimationFrame(draw);
 }
 
+function getRenderPos() {
+    var flipH = inputs.flipH.checked;
+    var flipV = inputs.flipV.checked;
+    let x = -cropX, y = -cropY;
+    if (flipH) x = cropX - (img.width - cropWidth);
+    if (flipV) y = cropY - (img.height - cropHeight);
+    return [x, y];
+}
+
 function render() {
     renderCanvas.width = cropWidth;
     renderCanvas.height = cropHeight;
-    renderCtx.drawImage(img, -cropX, -cropY, img.width, img.height);
+    applyFlipTransform(renderCanvas, renderCtx);
+
+    let [x, y] = getRenderPos();
+    renderCtx.drawImage(img, x, y, img.width, img.height);
+    renderCtx.resetTransform();
 }
 
 function saveFile(href, filename) {
