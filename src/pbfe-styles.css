@@ -22,6 +22,7 @@
     cursor: pointer;
     border-radius: 6px;
     transition: 0.25s;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .pbfeButton:hover {
