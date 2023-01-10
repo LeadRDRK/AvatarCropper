@@ -9,6 +9,18 @@
     color-scheme: dark;
 }
 
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #444;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
 body {
     margin: 0;
 }
