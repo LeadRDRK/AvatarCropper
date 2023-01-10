@@ -1,7 +1,7 @@
 {
     "About": "Giới thiệu",
     "Privacy": "Quyền riêng tư",
-    "View changelog": "Xem nhật ký thay đổi",
+    "Changelog": "Nhật ký thay đổi",
     "Open File...": "Mở File...",
     "Open URL...": "Mở URL...",
     "Open URL": "Mở URL",
@@ -50,5 +50,8 @@
     "Start frame": "Khung hình bắt đầu",
     "End frame": "Khung hình kết thúc",
     "Show guidelines": "Hiển thị các đường dẫn",
-    "Speed multiplier": "Số nhân tốc độ"
+    "Speed multiplier": "Số nhân tốc độ",
+    "Image": "Hình Ảnh",
+    "Flip horizontally": "Lật ngang",
+    "Flip vertically": "Lật dọc"
 }
