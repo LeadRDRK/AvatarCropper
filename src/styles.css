@@ -9,18 +9,6 @@
     color-scheme: dark;
 }
 
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #444;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background-color: #555;
-}
-
 body {
     margin: 0;
 }
@@ -327,6 +315,18 @@ a:hover {
 }
 
 @media screen and (min-width: 840px) {
+    ::-webkit-scrollbar {
+        width: 7.2px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background-color: #444;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+
     #editorBox {
         flex-direction: row;
     }
