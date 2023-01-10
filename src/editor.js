@@ -523,8 +523,9 @@ function setCropPosition(x, y) {
 }
 
 function setCropSize(width, height, preferHigher) {
-    width = Math.max(10, Math.min(width, img.width - cropX));
-    height = Math.max(10, Math.min(height, img.height - cropY));
+    var min = (img.width < 50 || img.height < 50) ? 1 : 10;
+    width = Math.max(min, Math.min(width, img.width - cropX));
+    height = Math.max(min, Math.min(height, img.height - cropY));
 
     if (cropShape != cropShapes.FREEFORM) {
         if (preferHigher ? width > height : width < height) height = width;
@@ -899,7 +900,7 @@ function mouseMoveListener(e) {
 
 function mouseUpListener(e) {
     if (e.button != 0) return;
-    innerBox.element.style.cursor = "grab";
+    checkMousePos(e);
     mouseDown = false;
     prevX = prevY = null;
     isInSelection = false;
