@@ -37,7 +37,7 @@ function init(_container) {
 
     versionLabel.element.appendChild(document.createTextNode(" | "));
 
-    var changelogBtn = createHyperlink(_("View changelog"), "https://github.com/LeadRDRK/AvatarCropper/releases", true);
+    var changelogBtn = createHyperlink(_("Changelog"), "https://github.com/LeadRDRK/AvatarCropper/releases", true);
     versionLabel.element.appendChild(changelogBtn);
 
     titleBox.appendChild(versionLabel);
