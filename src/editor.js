@@ -267,7 +267,13 @@ function initMenuBox() {
     });
 
     saveBtn.addEventListener("click", renderAndSaveImage);
-    saveGifBtn.addEventListener("click", showGifOptions);
+    saveGifBtn.addEventListener("click", function() {
+        if (isCanvasTainted()) {
+            toast.show("Sorry, images loaded from an external source can't be exported as GIF. Please open a local file.");
+            return;
+        }
+        gifOptionsDialog.show();
+    });
 }
 
 function createSectionTitle(text) {
@@ -384,10 +390,6 @@ function initGifOptions() {
     cancelBtn.addEventListener("click", hideGifOptions);
 
     container.appendChild(gifOptionsDialog);
-}
-
-function showGifOptions() {
-    gifOptionsDialog.show();
 }
 
 function hideGifOptions() {
@@ -682,6 +684,16 @@ function getRenderPos() {
     if (flipH) x = cropX - (img.width - cropWidth);
     if (flipV) y = cropY - (img.height - cropHeight);
     return [x, y];
+}
+
+function isCanvasTainted() {
+    try {
+        ctx.getImageData(0, 0, 1, 1);
+        return false;
+    }
+    catch (err) {
+        return true;
+    }
 }
 
 function render() {
