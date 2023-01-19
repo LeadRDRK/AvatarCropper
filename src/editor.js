@@ -493,6 +493,8 @@ function reset() {
 function resetCropArea() {
     var s = Math.floor((img.width < img.height ? img.width : img.height) * 0.5);
     s -= s % 10;
+    
+    cropX = cropY = 0;
     setCropSize(s, s);
     setCropPosition(0, 0);
 }
