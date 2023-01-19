@@ -3,10 +3,15 @@
     src: local("IBM Plex Sans"),
          url("IBMPlexSans-Regular.woff2") format("woff2"),
          url("IBMPlexSans-Regular.woff") format("woff");
+    font-display: swap;
 }
 
 :root {
     color-scheme: dark;
+}
+
+html, body {
+    height: 100%;
 }
 
 body {

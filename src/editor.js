@@ -38,16 +38,12 @@ function init(_container) {
     document.addEventListener("mousemove", mouseMoveListener);
     document.addEventListener("mouseup", mouseUpListener);
     document.addEventListener("blur", mouseUpListener);
-    innerBox.addEventListener("wheel", wheelListener);
+    innerBox.addEventListener("wheel", wheelListener, true);
 
     if ("ontouchstart" in document) {
-        innerBox.addEventListener("touchstart", touchToMouseEvent, true);
-        document.addEventListener("touchmove", touchToMouseEvent, true);
-        document.addEventListener("touchend", touchToMouseEvent, true);
-
-        innerBox.addEventListener("touchstart", touchStartListener);
-        document.addEventListener("touchmove", touchMoveListener);
-        document.addEventListener("touchend", touchEndListener);
+        innerBox.addEventListener("touchstart", touchStartListener, true);
+        document.addEventListener("touchmove", touchMoveListener, true);
+        document.addEventListener("touchend", touchEndListener, true);
     }
 
     document.addEventListener("keydown", keyDownListener);
@@ -983,6 +979,7 @@ function getTouchDist(touch1, touch2) {
 
 var touchPinching = false;
 function touchStartListener(e) {
+    touchToMouseEvent.call(this, e);
     if (e.touches.length >= 2) {
         touchPinching = true;
         prevTouchDist = getTouchDist(e.touches[0], e.touches[1]);
@@ -992,6 +989,7 @@ function touchStartListener(e) {
 
 var prevTouchDist;
 function touchMoveListener(e) {
+    touchToMouseEvent.call(this, e);
     if (touchPinching) {
         var dist = getTouchDist(e.touches[0], e.touches[1]);
         var diff = dist - prevTouchDist;
@@ -1001,6 +999,7 @@ function touchMoveListener(e) {
 }
 
 function touchEndListener(e) {
+    touchToMouseEvent.call(this, e);
     if (touchPinching && e.touches.length < 2)
         touchPinching = false;
 }
