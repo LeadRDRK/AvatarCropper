@@ -133,7 +133,7 @@ function Floatbox() {
 Floatbox.prototype = inherit(Widget, "Floatbox");
 
 function Label(text) {
-    var element = document.createElement("div");
+    var element = document.createElement("span");
     element.innerText = text;
     this.element = element;
     Widget.call(this);
@@ -211,6 +211,12 @@ Dialog.prototype.appendButton = function(widget) {
 
 Dialog.prototype.removeButton = function(widget) {
     this.buttons.removeChild(widget.element);
+}
+
+Dialog.prototype.appendHideButton = function(btnText) {
+    var btn = new Button(btnText);
+    btn.addEventListener("click", this.hide.bind(this));
+    this.appendButton(btn);
 }
 
 Object.defineProperty(Dialog.prototype, "titleText", {

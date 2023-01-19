@@ -76,6 +76,10 @@
     width: 100%;
 }
 
+.pbfeDialogBody {
+    line-height: 1.5rem;
+}
+
 .pbfeDialogButtons {
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;
@@ -85,7 +89,7 @@
 
 .pbfeDialogButtons .pbfeButton {
     font-size: 1.025rem;
-    flex-basis: 25%;
+    flex-basis: 5.5rem;
 }
 
 .pbfeDialogButtons .pbfeButton:hover {

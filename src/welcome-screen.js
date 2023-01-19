@@ -94,7 +94,7 @@ function init(_container) {
 function initURLDialog() {
     urlDialog = new pbfe.Dialog(_("Open URL"));
 
-    var hint = new pbfe.Label(_("You can also paste an image here."));
+    var hint = new pbfe.Label(_("You can also paste an image here. Some features will not be available when loading images from an external URL."));
     hint.element.style.marginBottom = "0.5rem";
     urlDialog.appendChild(hint);
 
@@ -106,8 +106,7 @@ function initURLDialog() {
     var okButton = new pbfe.Button(_("OK"));
     urlDialog.appendButton(okButton);
 
-    var cancelButton = new pbfe.Button(_("Cancel"));
-    urlDialog.appendButton(cancelButton);
+    urlDialog.appendHideButton(_("Cancel"));
 
     input.addEventListener("paste", function(e) {
         var data = e.clipboardData || e.originalEvent.clipboardData;
@@ -133,10 +132,6 @@ function initURLDialog() {
         }
         urlDialog.hide();
         editor.open(input.value, hide);
-    });
-
-    cancelButton.addEventListener("click", function() {
-        urlDialog.hide();
     });
 
     container.appendChild(urlDialog);

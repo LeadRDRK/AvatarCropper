@@ -382,9 +382,7 @@ function initGifOptions() {
         renderAndSaveGif();
     });
 
-    var cancelBtn = new pbfe.Button(_("Cancel"));
-    gifOptionsDialog.appendButton(cancelBtn);
-    cancelBtn.addEventListener("click", hideGifOptions);
+    gifOptionsDialog.appendHideButton(_("Cancel"));
 
     container.appendChild(gifOptionsDialog);
 }
@@ -656,16 +654,7 @@ function draw() {
 
     if (inputs.showPreview.checked) {
         for (let i = 0; i < previewCanvases.length; ++i) {
-            let canvas = previewCanvases[i];
-            let ctx = canvas.getContext("2d");
-
-            canvas.width = cropWidth;
-            canvas.height = cropHeight;
-            applyFlipTransform(canvas, ctx);
-
-            let [x, y] = getRenderPos();
-            ctx.drawImage(img, x, y, img.width, img.height);
-            ctx.resetTransform();
+            render(previewCanvases[i]);
         }
     }
 }
@@ -693,14 +682,16 @@ function isCanvasTainted() {
     }
 }
 
-function render() {
-    renderCanvas.width = cropWidth;
-    renderCanvas.height = cropHeight;
-    applyFlipTransform(renderCanvas, renderCtx);
+function render(canvas) {
+    if (!canvas) canvas = renderCanvas;
+    let ctx = canvas.getContext("2d");
+    canvas.width = cropWidth;
+    canvas.height = cropHeight;
+    applyFlipTransform(canvas, ctx);
 
     let [x, y] = getRenderPos();
-    renderCtx.drawImage(img, x, y, img.width, img.height);
-    renderCtx.resetTransform();
+    ctx.drawImage(img, x, y, img.width, img.height);
+    ctx.resetTransform();
 }
 
 function saveFile(href, filename) {
@@ -711,13 +702,20 @@ function saveFile(href, filename) {
 
 function renderAndSaveImage() {
     render();
-    renderCanvas.toBlob(function(blob) {
-        var url = URL.createObjectURL(blob);
-        saveFile(url, currentName + "_cropped.png");
-        setTimeout(function() {
-            URL.revokeObjectURL(url);
-        }, 0);
-    });
+    
+    try {
+        renderCanvas.toBlob(function(blob) {
+            var url = URL.createObjectURL(blob);
+            saveFile(url, currentName + "_cropped.png");
+            setTimeout(function() {
+                URL.revokeObjectURL(url);
+            }, 0);
+        });
+    }
+    catch {
+        // Canvas tainted, use fallback
+        showFallbackSaveDialog();
+    }
 }
 
 async function renderAndSaveGif() {
@@ -759,6 +757,29 @@ async function renderAndSaveGif() {
 
     // Reload current frame
     if (frames.length) gif.loadFrame(img, inputs.frame.value);
+}
+
+var fbSaveInitialized = false;
+var fbSaveDialog, fbSaveCanvas;
+function showFallbackSaveDialog() {
+    if (!fbSaveInitialized) {
+        fbSaveDialog = new pbfe.Dialog(_("Save image"));
+        fbSaveDialog.element.style.textAlign = "center";
+        fbSaveDialog.appendHideButton(_("OK"));
+        container.appendChild(fbSaveDialog);
+
+        var label = new pbfe.Label(_("Right click on the image and choose Save image as...\n"));
+        fbSaveDialog.appendChild(label);
+
+        fbSaveCanvas = document.createElement("canvas");
+        fbSaveCanvas.id = "fbSaveCanvas";
+        fbSaveDialog.body.appendChild(fbSaveCanvas);
+
+        fbSaveInitialized = true;
+    }
+
+    render(fbSaveCanvas);
+    fbSaveDialog.show();
 }
 
 var isInSelection = false;
