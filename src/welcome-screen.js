@@ -27,18 +27,24 @@ function init(_container) {
 
     var versionLabel = new pbfe.Label("v1.5 - ");
 
-    var aboutBtn = createHyperlink(_("About"), "javascript:void(0);");
-    versionLabel.element.appendChild(aboutBtn);
+    var aboutBtn = new pbfe.Button(_("About"));
+    aboutBtn.enableLinkStyle();
+    versionLabel.appendChild(aboutBtn);
 
     versionLabel.element.appendChild(document.createTextNode(" | "));
 
-    var privacyBtn = createHyperlink(_("Privacy"), "javascript:void(0);");
-    versionLabel.element.appendChild(privacyBtn);
+    var privacyBtn = new pbfe.Button(_("Privacy"));
+    privacyBtn.enableLinkStyle();
+    versionLabel.appendChild(privacyBtn);
 
     versionLabel.element.appendChild(document.createTextNode(" | "));
 
-    var changelogBtn = createHyperlink(_("Changelog"), "https://github.com/LeadRDRK/AvatarCropper/releases", true);
-    versionLabel.element.appendChild(changelogBtn);
+    var changelogLink = document.createElement("a");
+    changelogLink.innerText = _("Changelog");
+    changelogLink.href = "https://github.com/LeadRDRK/AvatarCropper/releases";
+    changelogLink.draggable = false;
+    changelogLink.target = "_blank";
+    versionLabel.element.appendChild(changelogLink);
 
     titleBox.appendChild(versionLabel);
 
@@ -83,15 +89,6 @@ function init(_container) {
     });
 
     welcomeScreen.shown = true;
-}
-
-function createHyperlink(text, href, newTab) {
-    var a = document.createElement("a");
-    a.innerText = text;
-    a.href = href;
-    a.setAttribute("draggable", false);
-    if (newTab) a.target = "_blank";
-    return a;
 }
 
 function initURLDialog() {

@@ -61,7 +61,7 @@ a:hover {
     }
 }
 
-#welcomeScreen .pbfeFlexbox .pbfeButton {
+#openButtonsBox .pbfeButton {
     padding-top: 0.75rem;
     padding-bottom: 0.75rem;
     font-size: 1.25rem;

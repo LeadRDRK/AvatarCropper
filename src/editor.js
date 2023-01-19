@@ -285,6 +285,7 @@ function createMenuInput(name, labelText, flex, inputType) {
     if (!flex) label.element.classList.add("split");
 
     var input = new pbfe.Input(inputType ? inputType : "text");
+    input.element.setAttribute("aria-label", labelText);
     label.appendChild(input);
 
     inputs[name] = input.element;

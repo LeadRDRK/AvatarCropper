@@ -10,9 +10,10 @@ function init(container) {
 
     var banner = document.createElement("img");
     banner.src = new URL('./banner.png', import.meta.url);
+    banner.alt = "Avatar Cropper";
     banner.style.height = "3rem";
     banner.style.marginBottom = "0.5rem";
-    banner.setAttribute("draggable", false);
+    banner.draggable = false;
     dialog.body.appendChild(banner);
     insertBr(dialog.body);
 
@@ -27,7 +28,7 @@ function init(container) {
     srcLink.href = "https://github.com/LeadRDRK/AvatarCropper";
     srcLink.innerText = srcLink.href;
     srcLink.target = "_blank";
-    srcLink.setAttribute("draggable", false);
+    srcLink.draggable = false;
     dialog.body.appendChild(srcLink);
     
     insertHr(dialog.body);

@@ -31,6 +31,21 @@
     transform: scale(1.05, 1.05);
 }
 
+.pbfeButton.isLink {
+    text-decoration: underline;
+    color: #75a5bd;
+    background: none;
+    transition: none;
+    font-size: 1rem;
+    padding: 0;
+    -webkit-tap-highlight-color: initial;
+}
+
+.pbfeButton.isLink:hover {
+    color: #538eac;
+    transform: none;
+}
+
 .pbfeDialog {
     pointer-events: none;
     position: absolute;

@@ -159,6 +159,13 @@ function Button(text) {
 
 Button.prototype = inherit(Label, "Button");
 
+Button.prototype.enableLinkStyle = function(enable) {
+    if (enable || enable === undefined)
+        this.element.classList.add("isLink");
+    else
+        this.element.classList.remove("isLink");
+}
+
 function Dialog(titleText) {
     var element = document.createElement("div");
     element.style.zIndex = 101;
