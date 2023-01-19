@@ -269,7 +269,7 @@ function initMenuBox() {
     saveBtn.addEventListener("click", renderAndSaveImage);
     saveGifBtn.addEventListener("click", function() {
         if (isCanvasTainted()) {
-            toast.show("Sorry, images loaded from an external source can't be exported as GIF. Please open a local file.");
+            toast.show(_("Sorry, images loaded from an external source can't be exported as GIF. Please open a local file."));
             return;
         }
         gifOptionsDialog.show();
