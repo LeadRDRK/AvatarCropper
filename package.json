@@ -2,7 +2,8 @@
   "devDependencies": {
     "@parcel/packager-raw-url": "^2.8.2",
     "@parcel/transformer-webmanifest": "^2.8.2",
-    "parcel": "^2.8.2"
+    "parcel": "^2.8.2",
+    "parcel-reporter-static-files-copy": "^1.5.0"
   },
   "name": "avatarcropper",
   "version": "1.5.0",
@@ -102,5 +103,14 @@
     "build": "parcel build src/index.html --public-url ./"
   },
   "author": "LeadRDRK",
-  "license": "AGPL-3.0-or-later"
+  "license": "AGPL-3.0-or-later",
+  "staticFiles": [
+    {
+      "staticPath": "assets/demo.mp4"
+    },
+    {
+      "staticPath": "i18n",
+      "staticOutPath": "i18n"
+    }
+  ]
 }

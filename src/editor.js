@@ -66,9 +66,16 @@ function initInnerBox() {
     ctx.lineWidth = 1;
 
     var fullscreenBtn = new pbfe.Button("⛶");
-    fullscreenBtn.element.classList.add("fullscreenBtn");
+    fullscreenBtn.element.classList.add("innerBoxBtn");
     fullscreenBtn.element.title = _("Toggle fullscreen");
+    fullscreenBtn.element.style.right = "0";
     innerBox.appendChild(fullscreenBtn);
+
+    var tutorialBtn = new pbfe.Button("?");
+    tutorialBtn.element.classList.add("innerBoxBtn");
+    tutorialBtn.element.title = _("Show tutorial");
+    tutorialBtn.element.style.right = "2.5rem";
+    innerBox.appendChild(tutorialBtn);
 
     fullscreenBtn.addEventListener("click", function() {
         if (document.fullscreenElement)
@@ -76,6 +83,9 @@ function initInnerBox() {
         else
             document.body.requestFullscreen();
     });
+
+    initTutorialDialog();
+    tutorialBtn.addEventListener("click", showTutorialDialog);
 
     previewBox = new pbfe.Widget;
     previewBox.element.id = "previewBox";
@@ -88,6 +98,34 @@ function initInnerBox() {
     }
 
     innerBox.appendChild(previewBox);
+}
+
+var tutorialDialog, demoVideo;
+function initTutorialDialog() {
+    tutorialDialog = new pbfe.Dialog("Tutorial");
+    tutorialDialog.element.style.textAlign = "center";
+    container.appendChild(tutorialDialog);
+
+    var text1 = new pbfe.Label("Drag the crop selector to move or resize it.");
+    tutorialDialog.appendChild(text1);
+
+    demoVideo = document.createElement("video");
+    demoVideo.style.pointerEvents = "none";
+    demoVideo.style.maxWidth = "100%";
+    demoVideo.style.marginTop = "0.5rem";
+    demoVideo.src = "./demo.mp4";
+    demoVideo.loop = true;
+    tutorialDialog.body.appendChild(demoVideo);
+
+    var text2 = new pbfe.Label("Dragging anywhere outside of the crop selector will move the viewport. Use the mouse wheel or pinch the screen with two fingers to zoom in/out.\nOnce you're done, hit the \"Save image...\" button to save your cropped image.\n\nYou may view this tutorial at any time by pressing the ? button at the top right of the screen.");
+    tutorialDialog.appendChild(text2);
+
+    tutorialDialog.appendHideButton(_("OK"));
+}
+
+function showTutorialDialog() {
+    demoVideo.play();
+    tutorialDialog.show();
 }
 
 function initMenuBox() {
@@ -443,10 +481,10 @@ function open(src, successCb) {
     else {
         if (src == "") return;
         if (src == img.src) {
+            loadingDialog.hide();
             show();
             reset();
             successCb();
-            loadingDialog.hide();
             return;
         }
         currentName = src.slice(src.lastIndexOf("/") + 1, src.lastIndexOf("."));
@@ -454,6 +492,7 @@ function open(src, successCb) {
 
     addImgListeners();
     img.addEventListener("finish", function listener(e) {
+        loadingDialog.hide();
         var success = e.detail;
         if (success) {
             loadingDialog.setProgress(1);
@@ -466,7 +505,6 @@ function open(src, successCb) {
             successCb();
         }
         else toast.show(_("Failed to load image."));
-        loadingDialog.hide();
         img.removeEventListener("finish", listener);
     });
     img.src = src;
@@ -475,6 +513,11 @@ function open(src, successCb) {
 function show() {
     setTimeout(function() { box.element.classList.remove("hide"); }, 0);
     container.appendChild(box);
+
+    if (!localStorage.getItem("tutorialShown")) {
+        showTutorialDialog();
+        localStorage.setItem("tutorialShown", "true");
+    }
 }
 
 function hide() {

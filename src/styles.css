@@ -266,15 +266,14 @@ a:hover {
     background-image: linear-gradient(#2f516a, #21394a);
 }
 
-.fullscreenBtn {
+.innerBoxBtn {
     position: absolute;
     top: 0;
-    right: 0;
     background: none;
     font-size: 1.25rem;
 }
 
-.fullscreenBtn:hover {
+.innerBoxBtn:hover {
     transform: none;
     color: white;
 }

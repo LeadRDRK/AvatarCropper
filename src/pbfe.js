@@ -200,9 +200,11 @@ Dialog.prototype.show = function() {
 }
 
 Dialog.prototype.hide = function() {
-    this.element.classList.remove("show");
-    var shadow = document.getElementById("pbfeShadow");
-    if (shadow) shadow.classList.remove("show");
+    if (this.element.classList.contains("show")) {
+        this.element.classList.remove("show");
+        var shadow = document.getElementById("pbfeShadow");
+        if (shadow) shadow.classList.remove("show");
+    }
 }
 
 Dialog.prototype.appendButton = function(widget) {
