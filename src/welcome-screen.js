@@ -25,7 +25,7 @@ function init(_container) {
     title.element.id = "title";
     titleBox.appendChild(title);
 
-    var versionLabel = new pbfe.Label("v1.6 - ");
+    var versionLabel = new pbfe.Label("v1.6a - ");
 
     var aboutBtn = new pbfe.Button(_("About"));
     aboutBtn.enableLinkStyle();
