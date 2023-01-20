@@ -133,57 +133,49 @@ function initMenuBox() {
     menuBox.element.id = "editorMenu";
     box.appendChild(menuBox);
 
-    /* Save */
-    menuBox.appendChild(createSectionTitle(_("Save")));
+    var saveBtn = createMenuButton(_("Save image..."));
+    var saveGifBtn = createMenuButton(_("Save as GIF..."));
+    var fitBtn = createMenuButton(_("Fit image to viewport"));
+    var circleBtn = createMenuButton(_("Circle"), true, true);
+    var squareBtn = createMenuButton(_("Square"), true);
+    var freeformBtn = createMenuButton(_("Freeform"));
 
-    var saveBtn = new pbfe.Button(_("Save image..."));
-    saveBtn.element.classList.add("menuBtn");
-    menuBox.appendChild(saveBtn);
+    menuBox.appendChildren([
+        /* Save */
+        createSectionTitle(_("Save")),
+        saveBtn,
+        saveGifBtn,
 
-    var saveGifBtn = new pbfe.Button(_("Save as GIF..."));
-    saveGifBtn.element.classList.add("menuBtn");
-    menuBox.appendChild(saveGifBtn);
+        /* Crop Area */
+        createSectionTitle(_("Crop Area")),
+        createMenuInput("width", _("Width")),
+        createMenuInput("height", _("Height")),
+        createMenuInput("xPos", _("X Pos")),
+        createMenuInput("yPos", _("Y Pos")),
+        createMenuInput("frame", _("Frame"), true, "range"),
 
-    /* Crop Area */
-    menuBox.appendChild(createSectionTitle(_("Crop Area")));
-    menuBox.appendChild(createMenuInput("width", _("Width")));
-    menuBox.appendChild(createMenuInput("height", _("Height")));
-    menuBox.appendChild(createMenuInput("xPos", _("X Pos")));
-    menuBox.appendChild(createMenuInput("yPos", _("Y Pos")));
-    menuBox.appendChild(createMenuInput("frame", _("Frame"), true, "range"));
+        /* Crop Shape */
+        createSectionTitle(_("Crop Shape")),
+        circleBtn, squareBtn,
+        freeformBtn,
+        createMenuInput("showGuidelines", _("Show guidelines"), true, "checkbox"),
+
+        /* Image */
+        createSectionTitle(_("Image")),
+        createMenuInput("flipH", _("Flip horizontally"), true, "checkbox"),
+        createMenuInput("flipV", _("Flip vertically"), true, "checkbox"),
+
+        /* Viewport */
+        createSectionTitle(_("Viewport")),
+        createMenuInput("zoom", _("Zoom"), true, "range"),
+        createMenuInput("scaleDevicePixel", _("Scale to device pixel"), true, "checkbox"),
+        fitBtn,
+        createMenuInput("showPreview", _("Show preview"), true, "checkbox")
+    ]);
+
+    /* Input defaults */
     inputs.frame.value = 0;
     inputs.frame.disabled = true;
-
-    /* Crop Shape */
-    menuBox.appendChild(createSectionTitle(_("Crop Shape")));
-
-    var circleBtn = createMenuButton(_("Circle"), true, true);
-    menuBox.appendChild(circleBtn);
-
-    var squareBtn = createMenuButton(_("Square"), true);
-    menuBox.appendChild(squareBtn);
-
-    var freeformBtn = createMenuButton(_("Freeform"));
-    menuBox.appendChild(freeformBtn);
-
-    menuBox.appendChild(createMenuInput("showGuidelines", _("Show guidelines"), true, "checkbox"));
-
-    /* Image */
-    menuBox.appendChild(createSectionTitle(_("Image")));
-
-    menuBox.appendChild(createMenuInput("flipH", _("Flip horizontally"), true, "checkbox"));
-    menuBox.appendChild(createMenuInput("flipV", _("Flip vertically"), true, "checkbox"));
-
-    /* Viewport */
-    menuBox.appendChild(createSectionTitle(_("Viewport")));
-    menuBox.appendChild(createMenuInput("zoom", _("Zoom"), true, "range"));
-    menuBox.appendChild(createMenuInput("scaleDevicePixel", _("Scale to device pixel"), true, "checkbox"));
-
-    var fitBtn = new pbfe.Button(_("Fit image to viewport"));
-    fitBtn.element.classList.add("menuBtn");
-    menuBox.appendChild(fitBtn);
-
-    menuBox.appendChild(createMenuInput("showPreview", _("Show preview"), true, "checkbox"));
     inputs.showPreview.checked = true;
 
     /* Other */
@@ -398,11 +390,13 @@ function showNotification(text, time) {
 
 function initGifOptions() {
     gifOptionsDialog = new pbfe.Dialog(_("GIF Options"));
-    gifOptionsDialog.appendChild(createMenuInput("startFrame", _("Start frame"), true, "number"));
-    gifOptionsDialog.appendChild(createMenuInput("endFrame", _("End frame"), true, "number"));
-    gifOptionsDialog.appendChild(createMenuInput("loopCount", _("Loop count"), true, "number"));
-    gifOptionsDialog.appendChild(createMenuInput("speedMult", _("Speed multiplier"), true, "number"));
-    gifOptionsDialog.appendChild(createMenuInput("keepGifColors", _("Keep original colors"), true, "checkbox"));
+    gifOptionsDialog.appendChildren([
+        createMenuInput("startFrame", _("Start frame"), true, "number"),
+        createMenuInput("endFrame", _("End frame"), true, "number"),
+        createMenuInput("loopCount", _("Loop count"), true, "number"),
+        createMenuInput("speedMult", _("Speed multiplier"), true, "number"),
+        createMenuInput("keepGifColors", _("Keep original colors"), true, "checkbox")
+    ]);
 
     inputs.startFrame.value = inputs.startFrame.min = 0;
     inputs.endFrame.value = inputs.endFrame.min = 0;

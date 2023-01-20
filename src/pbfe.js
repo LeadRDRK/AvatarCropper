@@ -38,6 +38,12 @@ Widget.prototype.appendChild = function(widget) {
     this.body.appendChild(widget.element);
 }
 
+Widget.prototype.appendChildren = function(array) {
+    for (var i = 0; i < array.length; ++i) {
+        this.appendChild(array[i]);
+    }
+}
+
 Widget.prototype.removeChild = function(widget) {
     this.body.removeChild(widget.element);
 }
