@@ -38,12 +38,12 @@ function init(_container) {
     document.addEventListener("mousemove", mouseMoveListener);
     document.addEventListener("mouseup", mouseUpListener);
     document.addEventListener("blur", mouseUpListener);
-    innerBox.addEventListener("wheel", wheelListener, true);
+    innerBox.addEventListener("wheel", wheelListener, { passive: true });
 
     if ("ontouchstart" in document) {
-        innerBox.addEventListener("touchstart", touchStartListener, true);
-        document.addEventListener("touchmove", touchMoveListener, true);
-        document.addEventListener("touchend", touchEndListener, true);
+        innerBox.addEventListener("touchstart", touchStartListener, { passive: true });
+        document.addEventListener("touchmove", touchMoveListener, { passive: true });
+        document.addEventListener("touchend", touchEndListener, { passive: true });
     }
 
     document.addEventListener("keydown", keyDownListener);
