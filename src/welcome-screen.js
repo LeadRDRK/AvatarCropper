@@ -94,7 +94,7 @@ function init(_container) {
 function initURLDialog() {
     urlDialog = new pbfe.Dialog(_("Open URL"));
 
-    var hint = new pbfe.Label(_("You can also paste an image here. Some features will not be available when loading images from an external URL."));
+    var hint = new pbfe.Label(_("You can also paste an image here. Some features will not be available when using images from an external URL."));
     hint.element.style.marginBottom = "0.5rem";
     urlDialog.appendChild(hint);
 

@@ -102,11 +102,11 @@ function initInnerBox() {
 
 var tutorialDialog, demoVideo;
 function initTutorialDialog() {
-    tutorialDialog = new pbfe.Dialog("Tutorial");
+    tutorialDialog = new pbfe.Dialog(_("Tutorial"));
     tutorialDialog.element.style.textAlign = "center";
     container.appendChild(tutorialDialog);
 
-    var text1 = new pbfe.Label("Drag the crop selector to move or resize it.");
+    var text1 = new pbfe.Label(_("Drag the crop selector to move or resize it."));
     tutorialDialog.appendChild(text1);
 
     demoVideo = document.createElement("video");
@@ -117,7 +117,7 @@ function initTutorialDialog() {
     demoVideo.loop = true;
     tutorialDialog.body.appendChild(demoVideo);
 
-    var text2 = new pbfe.Label("Dragging anywhere outside of the crop selector will move the viewport. Use the mouse wheel or pinch the screen with two fingers to zoom in/out.\nOnce you're done, hit the \"Save image...\" button to save your cropped image.\n\nYou may view this tutorial at any time by pressing the ? button at the top right of the screen.");
+    var text2 = new pbfe.Label(_("Dragging anywhere outside of the crop selector will move the viewport. Use the mouse wheel or pinch the screen with two fingers to zoom in/out.\nOnce you're done, press the \"Save image...\" button to save your cropped image.\n\nYou may view this tutorial at any time by pressing the \"?\" button at the top right of the screen."));
     tutorialDialog.appendChild(text2);
 
     tutorialDialog.appendHideButton(_("OK"));
