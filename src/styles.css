@@ -125,6 +125,7 @@ a:hover {
 
 #editorCanvas {
     image-rendering: pixelated;
+    pointer-events: none;
 }
 
 #editorMenu {
