@@ -34,7 +34,19 @@ a:hover {
 }
 
 #title {
-    font-size: 3rem;
+    width: auto;
+    height: 3.5rem;
+}
+
+#versionLabel {
+    margin-top: 0.25rem;
+    padding: 0.4rem 0.55rem 0.4rem 0.55rem;
+    background-color: #2e2e2e;
+    border-radius: 6px;
+}
+
+#langSelector {
+    margin-top: 0.25rem;
 }
 
 #welcomeScreen {
@@ -313,10 +325,6 @@ a:hover {
 
 #previewBox.panelHidden {
     bottom: 2rem;
-}
-
-#langSelector {
-    margin-top: 1rem;
 }
 
 #fbSaveCanvas {

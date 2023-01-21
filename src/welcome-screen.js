@@ -21,11 +21,16 @@ function init(_container) {
     var titleBox = new pbfe.Flexbox("column");
     titleBox.gap = "0.25rem";
     
-    var title = new pbfe.Label("Avatar Cropper");
-    title.element.id = "title";
-    titleBox.appendChild(title);
+    var title = document.createElement("img");
+    title.src = new URL('./banner.svg', import.meta.url);
+    title.width = 740;
+    title.height = 128;
+    title.id = "title";
+    title.draggable = false;
+    titleBox.element.appendChild(title);
 
     var versionLabel = new pbfe.Label("v1.6a - ");
+    versionLabel.element.id = "versionLabel";
 
     var aboutBtn = new pbfe.Button(_("About"));
     aboutBtn.enableLinkStyle();

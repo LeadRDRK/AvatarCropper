@@ -8,10 +8,10 @@ function init(container) {
     container.appendChild(dialog);
 
     var banner = document.createElement("img");
-    banner.src = new URL('./banner.png', import.meta.url);
+    banner.src = new URL('./banner.svg', import.meta.url);
     banner.alt = "Avatar Cropper";
-    banner.width = 554;
-    banner.height = 96;
+    banner.width = 740;
+    banner.height = 128;
     banner.style.width = "auto";
     banner.style.height = "3rem";
     banner.style.marginBottom = "0.5rem";

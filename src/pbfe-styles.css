@@ -190,8 +190,9 @@
     color: #eee;
     border: 1px solid #515f66;
     border-radius: 6px;
+    outline: none;
     font-size: 1rem;
-    padding: 0.25rem;
+    padding: 0.4rem 0.3rem 0.4rem 0.3rem;
 }
 
 @media screen and (min-width: 512px) {
