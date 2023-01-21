@@ -112,5 +112,6 @@
       "staticPath": "i18n",
       "staticOutPath": "i18n"
     }
-  ]
+  ],
+  "browserslist": "> 0.2%, supports es6-module"
 }
