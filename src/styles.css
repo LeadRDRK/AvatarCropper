@@ -34,6 +34,7 @@ a:hover {
 }
 
 #title {
+    object-fit: contain;
     width: auto;
     height: 3.5rem;
 }
