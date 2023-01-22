@@ -152,7 +152,6 @@ function initMenuBox() {
         createMenuInput("height", _("Height")),
         createMenuInput("xPos", _("X Pos")),
         createMenuInput("yPos", _("Y Pos")),
-        createMenuInput("frame", _("Frame"), true, "range"),
 
         /* Crop Shape */
         createSectionTitle(_("Crop Shape")),
@@ -164,6 +163,8 @@ function initMenuBox() {
         createSectionTitle(_("Image")),
         createMenuInput("flipH", _("Flip horizontally"), true, "checkbox"),
         createMenuInput("flipV", _("Flip vertically"), true, "checkbox"),
+        createMenuInput("frame", _("Frame"), true, "range"),
+        createMenuInput("playGif", _("Play GIF"), true, "checkbox"),
 
         /* Viewport */
         createSectionTitle(_("Viewport")),
@@ -264,7 +265,7 @@ function initMenuBox() {
     zoomInput.value = canvasScale;
     zoomInput.setAttribute("list", zoomDetents);
     zoomInput.addEventListener("input", function() {
-        setCanvasScale(zoomInput.value / 100);
+        setCanvasScale(this.value / 100);
     });
 
     inputs.scaleDevicePixel.addEventListener("change", function() {
@@ -276,7 +277,7 @@ function initMenuBox() {
     });
 
     inputs.showPreview.addEventListener("change", function(e) {
-        if (e.currentTarget.checked) {
+        if (this.checked) {
             previewBox.element.style.display = "block";
             redrawPreview();
         }
@@ -286,7 +287,7 @@ function initMenuBox() {
 
     inputs.frame.addEventListener("input", function() {
         if (gif.hasFrames()) {
-            var value = inputs.frame.value;
+            var value = this.value;
             gif.loadFrame(img, value).then(redrawCanvas);
             showNotification(_("Frame: ") + value);
         }
@@ -300,6 +301,23 @@ function initMenuBox() {
         }
         gifOptionsDialog.show();
     });
+
+    inputs.playGif.addEventListener("change", function() {
+        if (gif.frames.length < 2) return;
+        if (this.checked)
+            playNextGifFrame();
+    });
+}
+
+function playNextGifFrame() {
+    if (!inputs.playGif.checked) return;
+    var nextFrame = ++inputs.frame.value;
+    if (nextFrame == gif.frames.length) {
+        inputs.frame.value = nextFrame = 0;
+    }
+    gif.loadFrame(img, nextFrame).then(redrawCanvas);
+    var frameInfo = gif.frames[nextFrame].info;
+    setTimeout(playNextGifFrame, frameInfo.delay * 10);
 }
 
 function createSectionTitle(text) {
@@ -461,6 +479,7 @@ function open(src, successCb) {
         inputs.endFrame.value = 0;
         inputs.loopCount.value = 0;
         inputs.keepGifColors.checked = false;
+        inputs.playGif.checked = false;
     }
 
     loadingDialog.setProgress(-1);
