@@ -26,7 +26,7 @@ function init(_container, callback) {
     title.width = 740;
     title.height = 128;
     title.id = "title";
-    title.alt = "Avatar Cropper";
+    title.alt = "Banner";
     title.draggable = false;
     title.onload = callback;
     titleBox.element.appendChild(title);

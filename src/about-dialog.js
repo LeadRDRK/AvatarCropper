@@ -9,7 +9,7 @@ function init(container) {
 
     var banner = document.createElement("img");
     banner.src = new URL('./banner.svg', import.meta.url);
-    banner.alt = "Avatar Cropper";
+    banner.alt = "Banner";
     banner.width = 740;
     banner.height = 128;
     banner.style.width = "auto";
