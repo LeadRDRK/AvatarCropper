@@ -113,5 +113,5 @@
       "staticOutPath": "i18n"
     }
   ],
-  "browserslist": "> 0.2%, supports es6-module"
+  "browserslist": "supports es6-module and not UCAndroid > 0 and not dead"
 }
