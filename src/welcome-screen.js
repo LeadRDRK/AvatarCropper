@@ -8,7 +8,7 @@ import appInit from "./index.js";
 
 var container, box, urlDialog;
 
-function init(_container) {
+function init(_container, callback) {
     container = _container;
     aboutDialog.init(container);
     privacyDialog.init(container);
@@ -28,6 +28,7 @@ function init(_container) {
     title.id = "title";
     title.alt = "Avatar Cropper";
     title.draggable = false;
+    title.onload = callback;
     titleBox.element.appendChild(title);
 
     var versionLabel = new pbfe.Label("v1.6a - ");

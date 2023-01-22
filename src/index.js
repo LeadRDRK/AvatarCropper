@@ -55,8 +55,14 @@ async function appInit() {
 
     editor.init(container);
     loadingDialog.init(container);
-    welcomeScreen.init(container);
-    welcomeScreen.show();
+
+    loadingDialog.setProgress(-1);
+    loadingDialog.show();
+
+    welcomeScreen.init(container, function() {
+        welcomeScreen.show();
+        loadingDialog.hide();
+    });
 
     var dnd = new DndHandler(container, document.body);
     dnd.addListener(e => {
