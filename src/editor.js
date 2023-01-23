@@ -9,7 +9,6 @@ var container, box;
 var innerBox, canvas, ctx;
 var menuBox, inputs = {};
 var notifBox;
-var img = new Image;
 var renderCanvas, renderCtx;
 var previewBox, previewCanvases = [];
 var saveAnchor = document.createElement("a");
@@ -288,7 +287,8 @@ function initMenuBox() {
     inputs.frame.addEventListener("input", function() {
         if (gif.hasFrames()) {
             var value = this.value;
-            gif.loadFrame(img, value).then(redrawCanvas);
+            img = gif.frames[value].bitmap;
+            redrawCanvas();
             showNotification(_("Frame: ") + value);
         }
     });
@@ -315,9 +315,10 @@ function playNextGifFrame() {
     if (nextFrame == gif.frames.length) {
         inputs.frame.value = nextFrame = 0;
     }
-    gif.loadFrame(img, nextFrame).then(redrawCanvas);
-    var frameInfo = gif.frames[nextFrame].info;
-    setTimeout(playNextGifFrame, frameInfo.delay * 10);
+    var frame = gif.frames[nextFrame];
+    img = frame.bitmap;
+    redrawCanvas();
+    setTimeout(playNextGifFrame, frame.info.delay * 10);
 }
 
 function createSectionTitle(text) {
@@ -441,30 +442,7 @@ function hideGifOptions() {
     gifOptionsDialog.hide();
 }
 
-function dispatchFinishEvent(success) {
-    var finishEv = new CustomEvent("finish", {detail: success});
-    img.dispatchEvent(finishEv);
-    removeImgListeners();
-}
-
-function imgLoadListener() {
-    dispatchFinishEvent(true);
-}
-
-function imgErrorListener() {
-    dispatchFinishEvent(false);
-}
-
-function addImgListeners() {
-    img.addEventListener("load", imgLoadListener);
-    img.addEventListener("error", imgErrorListener);
-}
-
-function removeImgListeners() {
-    img.removeEventListener("load", imgLoadListener);
-    img.removeEventListener("error", imgErrorListener);
-}
-
+var img;
 var usingObjectUrl = false;
 var currentName;
 function open(src, successCb) {
@@ -493,7 +471,7 @@ function open(src, successCb) {
     }
     else {
         if (src == "") return;
-        if (src == img.src) {
+        if (img && src == img.src) {
             loadingDialog.hide();
             show();
             reset();
@@ -503,22 +481,28 @@ function open(src, successCb) {
         currentName = src.slice(src.lastIndexOf("/") + 1, src.lastIndexOf("."));
     }
 
-    addImgListeners();
-    img.addEventListener("finish", function listener(e) {
+    img = new Image;
+    var loadCb, errorCb
+    img.addEventListener("load", loadCb = function() {
+        loadingDialog.setProgress(1);
         loadingDialog.hide();
-        var success = e.detail;
-        if (success) {
-            loadingDialog.setProgress(1);
 
-            canvas.element.width = img.width;
-            canvas.element.height = img.height;
+        canvas.element.width = img.width;
+        canvas.element.height = img.height;
 
-            show();
-            reset();
-            successCb();
-        }
-        else toast.show(_("Failed to load image."));
-        img.removeEventListener("finish", listener);
+        show();
+        reset();
+        successCb();
+
+        img.removeEventListener("load", loadCb);
+        img.removeEventListener("error", errorCb);
+    });
+    img.addEventListener("error", errorCb = function() {
+        loadingDialog.hide();
+        toast.show(_("Failed to load image."));
+
+        img.removeEventListener("load", loadCb);
+        img.removeEventListener("error", errorCb);
     });
     img.src = src;
 }
@@ -536,6 +520,10 @@ function show() {
 function hide() {
     box.element.classList.add("hide");
     container.removeChildAfterTransition(box);
+}
+
+function isHidden() {
+    return box.element.classList.contains("hide");
 }
 
 function reset() {
@@ -792,8 +780,9 @@ async function renderAndSaveGif() {
         // Allow rendering static image
         let delay = 0;
         if (frames.length) {
-            await gif.loadFrame(img, i);
-            delay = speedMult ? frames[i].info.delay / speedMult : 0;
+            var frame = frames[i];
+            img = frame.bitmap;
+            delay = speedMult ? frame.info.delay / speedMult : 0;
         }
         render();
 
@@ -814,7 +803,7 @@ async function renderAndSaveGif() {
     }, 0);
 
     // Reload current frame
-    if (frames.length) gif.loadFrame(img, inputs.frame.value);
+    if (frames.length) img = frames[inputs.frame.value].bitmap;
 }
 
 var fbSaveInitialized = false;
@@ -879,7 +868,7 @@ function checkMousePos(e) {
 
 var mouseDown = false;
 function mouseDownListener(e) {
-    if (e.button != 0) return;
+    if (isHidden() || e.button != 0) return;
 
     checkMousePos(e);
     if (!isInSelection)
@@ -890,6 +879,7 @@ function mouseDownListener(e) {
 
 var prevX = null, prevY = null;
 function mouseMoveListener(e) {
+    if (isHidden()) return;
     if (!mouseDown) {
         checkMousePos(e);
         return;
@@ -987,7 +977,7 @@ function mouseMoveListener(e) {
 }
 
 function mouseUpListener(e) {
-    if (e.button != 0) return;
+    if (isHidden() || e.button != 0) return;
     checkMousePos(e);
     mouseDown = false;
     prevX = prevY = null;
@@ -995,6 +985,7 @@ function mouseUpListener(e) {
 }
 
 function wheelListener(e) {
+    if (isHidden()) return;
     var incr = 0.1;
     if (e.deltaY > 0)
         incr = -incr;

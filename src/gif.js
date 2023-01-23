@@ -1,12 +1,9 @@
 import { GifReader, GifWriter } from "./omggif.js";
-
-var canvas = document.createElement("canvas");
-var ctx = canvas.getContext("2d");
 var frames = [];
 
 function load(file, inputs) {
     var reader = new FileReader;
-    reader.onloadend = function() {
+    reader.onloadend = async function() {
         if (reader.error) {
             toast.show(_("Failed to load GIF frames."));
             return;
@@ -23,37 +20,37 @@ function load(file, inputs) {
         }
 
         var { width, height } = gifReader;
-        canvas.width = width;
-        canvas.height = height;
         inputs.loopCount.value = gifReader.loopCount();
 
-        var lastNoDisposeFrame;
+        var ndFrameData, lastFrameData;
         var clearBg;
         for (let i = 0; i < gifReader.numFrames(); ++i) {
             const info = gifReader.frameInfo(i);
             let inheritFrame;
             if (!clearBg) {
                 if (info.disposal == 3)
-                    inheritFrame = lastNoDisposeFrame;
+                    inheritFrame = ndFrameData;
                 else if (info.disposal != 0 && i > 0)
-                    inheritFrame = frames[i - 1].imageData;
+                    inheritFrame = lastFrameData;
             }
             else clearBg = false;
             
             let imageData;
             if (inheritFrame)
-                imageData = new ImageData(new Uint8ClampedArray(inheritFrame.data), width, height);
+                imageData = new ImageData(new Uint8ClampedArray(inheritFrame), width, height);
             else
-                imageData = ctx.createImageData(width, height);
+                imageData = new ImageData(width, height);
 
             gifReader.decodeAndBlitFrameRGBA(i, imageData.data);
+            lastFrameData = imageData.data;
             
             if (info.disposal == 0)
-                lastNoDisposeFrame = imageData;
+                ndFrameData = imageData.data;
             else if (info.disposal == 2)
                 clearBg = true;
 
-            frames[i] = { info, imageData };
+            let bitmap = await createImageBitmap(imageData);
+            frames[i] = { info, bitmap };
         }
 
         var lastFrame = gifReader.numFrames() - 1;
@@ -65,15 +62,6 @@ function load(file, inputs) {
         inputs.keepGifColors.checked = true;
     }
     reader.readAsArrayBuffer(file);
-}
-
-function loadFrame(img, frameNum) {
-    return new Promise(resolve => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.putImageData(frames[frameNum].imageData, 0, 0);
-        img.src = canvas.toDataURL();
-        img.addEventListener("load", resolve, { once: true });
-    });
 }
 
 function Renderer(width, height, gopts) {
@@ -200,7 +188,6 @@ function hasFrames() {
 var gif = {
     Renderer,
     load,
-    loadFrame,
     reset,
     hasFrames,
     frames
