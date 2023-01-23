@@ -481,7 +481,7 @@ function open(src, successCb) {
         currentName = src.slice(src.lastIndexOf("/") + 1, src.lastIndexOf("."));
     }
 
-    img = new Image;
+    if (!(img instanceof Image)) img = new Image;
     var loadCb, errorCb
     img.addEventListener("load", loadCb = function() {
         loadingDialog.setProgress(1);
@@ -633,6 +633,7 @@ function applyFlipTransform(canvas, ctx) {
     ctx.scale(sx, sy);
 }
 
+var frameRequested;
 var cropX = 0, cropY = 0, cropWidth = 0, cropHeight = 0;
 function draw() {
     var canvasEl = canvas.element;
@@ -698,15 +699,32 @@ function draw() {
     ctx.drawImage(img, 0, 0, img.width, img.height);
     ctx.resetTransform();
 
-    if (inputs.showPreview.checked) {
-        for (let i = 0; i < previewCanvases.length; ++i) {
-            render(previewCanvases[i]);
-        }
+    if (inputs.showPreview.checked)
+        drawPreview();
+
+    frameRequested = false;
+}
+
+function drawPreview() {
+    var firstCanvas = previewCanvases[0];
+    render(firstCanvas);
+    for (let i = 1; i < previewCanvases.length; ++i) {
+        let canvas = previewCanvases[i];
+        let ctx = canvas.getContext("2d");
+        canvas.width = cropWidth;
+        canvas.height = cropHeight;
+        ctx.drawImage(firstCanvas, 0, 0);
     }
 }
 
 function redrawCanvas() {
+    if (frameRequested) return;
     window.requestAnimationFrame(draw);
+    frameRequested = true;
+}
+
+function redrawPreview() {
+    window.requestAnimationFrame(drawPreview);
 }
 
 function getRenderPos() {
