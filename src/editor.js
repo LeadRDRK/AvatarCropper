@@ -680,6 +680,9 @@ function draw() {
         ctx.setLineDash([10, 10]);
         ctx.strokeStyle = "#ffff00";
 
+        var prevLw = ctx.lineWidth;
+        ctx.lineWidth += 1 + Math.floor((cropWidth * cropHeight) / 1000000);
+
         let cx = cropX + cropWidth/2;
         let cy = cropY + cropHeight/2;
         let right = cropX + cropWidth;
@@ -691,6 +694,7 @@ function draw() {
         drawLine(cx, cy, right, cy); // right
 
         ctx.setLineDash([]);
+        ctx.lineWidth = prevLw;
     }
 
     // Draw image behind crop selector and shadow
