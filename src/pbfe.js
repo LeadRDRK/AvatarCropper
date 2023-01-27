@@ -161,7 +161,7 @@ Object.defineProperty(Label.prototype, "text", {
 
 function Button(text) {
     var element = document.createElement("button");
-    element.innerText = text;
+    if (text) element.innerText = text;
     this.element = element;
     Widget.call(this);
 }

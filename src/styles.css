@@ -438,6 +438,21 @@ a:hover {
     -webkit-tap-highlight-color: transparent;
 }
 
+.edButton {
+    margin-left: auto;
+    padding: 0.4rem 0.5rem 0.2rem;
+    background: none;
+}
+
+.edButton img {
+    height: 1rem;
+}
+
+.edButton.active {
+    background-color: #555;
+    background-image: none;
+}
+
 @media screen and (min-width: 1024px) {
     #welcomeScreen {
         flex-direction: row;

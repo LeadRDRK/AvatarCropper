@@ -2,11 +2,11 @@ import pbfe from "./pbfe.js";
 import touchToMouseEvent from "./touch-to-mouse-event.js";
 
 var container, box;
-var hslModeBtn, rgbModeBtn;
-var hexInput;
+var hslModeBtn, rgbModeBtn, hexInput, edButton;
 var pickers = [];
 
-var currentElement;
+var currentElement, currentEdElement;
+var edActive = false;
 
 var modeInfo = {
     hsl: {
@@ -56,6 +56,7 @@ function init(_container) {
 
     var hexFlex = new pbfe.Flexbox;
     hexFlex.justifyContent = "center";
+    hexFlex.alignItems = "center";
     hexFlex.gap = "0.5rem";
     rootFlex.appendChild(hexFlex);
 
@@ -66,6 +67,14 @@ function init(_container) {
     hexInput.placeholder = "ffffff";
     hexInput.element.style.fontFamily = "monospace";
     hexFlex.appendChild(hexInput);
+
+    edButton = new pbfe.Button;
+    edButton.element.classList.add("edButton");
+    var edIcon = document.createElement("img");
+    edIcon.src = new URL("./eye-dropper.svg", import.meta.url);
+    edIcon.width = edIcon.height = 16;
+    edButton.element.appendChild(edIcon);
+    hexFlex.appendChild(edButton);
 
     var closeBtn = new pbfe.Button("Close");
     closeBtn.element.style.marginTop = "0.5rem";
@@ -98,6 +107,10 @@ function init(_container) {
         var [r, g, b] = hexToRgb(value);
         setMode("rgb");
         setColor(r, g, b, getInputValue(pickers[3].input)); // keep alpha value
+    });
+
+    edButton.addEventListener("click", function() {
+        setEyeDropperActive(!edActive);
     });
 
     closeBtn.addEventListener("click", hide);
@@ -250,7 +263,7 @@ function mouseUpListener(e) {
     currentPicker = null;
 }
 
-function show(colorEl) {
+function show(colorEl, eyeDropEl) {
     if (!container.contains(box)) {
         container.appendChild(box);
         setTimeout(function() { box.element.classList.remove("hide"); }, 0);
@@ -283,6 +296,8 @@ function show(colorEl) {
 
         boxEl.style.top = top + "px";
         boxEl.style.left = left + "px";
+
+        if (eyeDropEl) currentEdElement = eyeDropEl;
     }
     else {
         currentElement = null;
@@ -297,7 +312,36 @@ function hide() {
     hiding = true;
     container.removeChildAfterTransition(box, function() { hiding = false; });
     currentElement = null;
+    if (currentEdElement) {
+        setEyeDropperActive(false);
+        currentEdElement = null;
+    }
 }
+
+function setEyeDropperActive(active) {
+    if (!currentEdElement) return;
+    edActive = active;
+    if (edActive) {
+        edButton.element.classList.add("active");
+        currentEdElement.addEventListener("eyedrop", eyeDropListener);
+    }
+    else {
+        edButton.element.classList.remove("active");
+        currentEdElement.removeEventListener("eyedrop", eyeDropListener);
+    }
+    currentEdElement.dispatchEvent(new CustomEvent("edstatechange", { detail: edActive }));
+}
+
+function isEyeDropperActive() {
+    return edActive;
+}
+
+function eyeDropListener(e) {
+    if (!edActive) return;
+    setMode(e.detail.mode);
+    setColor(...e.detail.color);
+    setEyeDropperActive(false);
+};
 
 function rgbToHsl(r, g, b) {
     r /= 255;
@@ -357,6 +401,6 @@ function cssHsla(h, s, l, a) {
 }
 
 var colorPicker = {
-    init, show, hide
+    init, show, hide, isEyeDropperActive
 }
 export default colorPicker;

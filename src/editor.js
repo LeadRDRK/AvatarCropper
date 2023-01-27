@@ -317,11 +317,12 @@ function initMenuBox() {
             playNextGifFrame();
     });
 
-    inputs.bgColor.addEventListener("click", function() { colorPicker.show(this); });
-    inputs.guideColor.addEventListener("click", function() { colorPicker.show(this); });
+    inputs.bgColor.addEventListener("click", function() { colorPicker.show(this, canvas.element); });
+    inputs.guideColor.addEventListener("click", function() { colorPicker.show(this, canvas.element); });
     inputs.bgColor.addEventListener("colorchange", redrawCanvas);
     inputs.guideColor.addEventListener("colorchange", redrawCanvas);
     menuBox.addEventListener("scroll", colorPicker.hide, { passive: true });
+    canvas.element.addEventListener("edstatechange", redrawCanvas);
 }
 
 function playNextGifFrame() {
@@ -666,63 +667,65 @@ var cropX = 0, cropY = 0, cropWidth = 0, cropHeight = 0;
 function draw() {
     var canvasEl = canvas.element;
     ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-    ctx.globalCompositeOperation = "source-over";
 
-    // Draw the shadow
-    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-    ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
-
-    // Draw the crop selector
-    var lw = ctx.lineWidth;
-    var x = cropX - lw/2,
-        y = cropY - lw/2,
-        width = cropWidth + lw,
-        height = cropHeight + lw;
-
-    ctx.strokeStyle = "#ffffff";
-    if (cropShape == cropShapes.CIRCLE) {
-        ctx.strokeRect(x, y, width, height);
-        let cx = cropX + width/2;
-        let cy = cropY + height/2;
-
-        ctx.beginPath();
-        var hlw = lw/2;
-        ctx.arc(cx - hlw, cy - hlw, width/2 - hlw, 0, 2 * Math.PI);
-    }
-    else {
-        ctx.beginPath();
-        ctx.rect(x, y, width, height);
-    }
-
-    // Save the path, draw the outline, then poke the hole
-    ctx.save();
-    ctx.stroke();
-    ctx.restore();
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.fillStyle = "#000000";
-    ctx.fill();
-
-    // Draw guidelines
-    if (inputs.showGuidelines.checked) {
+    if (!colorPicker.isEyeDropperActive()) {
         ctx.globalCompositeOperation = "source-over";
-        ctx.setLineDash([10, 10]);
-        ctx.strokeStyle = inputs.guideColor.style.backgroundColor;
+        // Draw the shadow
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
 
-        var prevLw = ctx.lineWidth;
-        ctx.lineWidth += 1 + Math.floor((cropWidth * cropHeight) / 1000000);
+        // Draw the crop selector
+        var lw = ctx.lineWidth;
+        var x = cropX - lw/2,
+            y = cropY - lw/2,
+            width = cropWidth + lw,
+            height = cropHeight + lw;
 
-        let cx = cropX + cropWidth/2;
-        let cy = cropY + cropHeight/2;
-        let right = cropX + cropWidth;
-        let bottom = cropY + cropHeight;
+        ctx.strokeStyle = "#ffffff";
+        if (cropShape == cropShapes.CIRCLE) {
+            ctx.strokeRect(x, y, width, height);
+            let cx = cropX + width/2;
+            let cy = cropY + height/2;
 
-        drawLine(cx, cy, cx, cropY); // top
-        drawLine(cx, cy, cropX, cy); // left
-        drawLine(cx, cy, cx, bottom); // bottom
-        drawLine(cx, cy, right, cy); // right
+            ctx.beginPath();
+            var hlw = lw/2;
+            ctx.arc(cx - hlw, cy - hlw, width/2 - hlw, 0, 2 * Math.PI);
+        }
+        else {
+            ctx.beginPath();
+            ctx.rect(x, y, width, height);
+        }
 
-        ctx.setLineDash([]);
-        ctx.lineWidth = prevLw;
+        // Save the path, draw the outline, then poke the hole
+        ctx.save();
+        ctx.stroke();
+        ctx.restore();
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.fillStyle = "#000000";
+        ctx.fill();
+
+        // Draw guidelines
+        if (inputs.showGuidelines.checked) {
+            ctx.globalCompositeOperation = "source-over";
+            ctx.setLineDash([10, 10]);
+            ctx.strokeStyle = inputs.guideColor.style.backgroundColor;
+
+            var prevLw = ctx.lineWidth;
+            ctx.lineWidth += 1 + Math.floor((cropWidth * cropHeight) / 1000000);
+
+            let cx = cropX + cropWidth/2;
+            let cy = cropY + cropHeight/2;
+            let right = cropX + cropWidth;
+            let bottom = cropY + cropHeight;
+
+            drawLine(cx, cy, cx, cropY); // top
+            drawLine(cx, cy, cropX, cy); // left
+            drawLine(cx, cy, cx, bottom); // bottom
+            drawLine(cx, cy, right, cy); // right
+
+            ctx.setLineDash([]);
+            ctx.lineWidth = prevLw;
+        }
     }
 
     // Draw image behind crop selector and shadow
@@ -890,6 +893,11 @@ var isResizing = false;
 var resizeFromLeft = false;
 var resizeFromTop = false;
 function checkMousePos(e) {
+    if (colorPicker.isEyeDropperActive()) {
+        innerBox.element.style.cursor = "default";
+        return;
+    }
+
     var rect = canvas.element.getBoundingClientRect();
     // canvas rect -> selection rect
     rect.x += rect.width * (cropX / img.width);
@@ -925,6 +933,23 @@ function checkMousePos(e) {
 var mouseDown = false;
 function mouseDownListener(e) {
     if (isHidden() || e.button != 0) return;
+    if (colorPicker.isEyeDropperActive()) {
+        var canvasEl = canvas.element;
+        var rect = canvasEl.getBoundingClientRect();
+        var detail = { mode: "rgb" };
+        if (!isPointInRect(e.clientX, e.clientY, rect)) {
+            // color of the outer area...lol
+            detail.color = [30, 30, 30, 255];
+        }
+        else {
+            var x = ((e.clientX - rect.x) / rect.width) * canvasEl.width;
+            var y = ((e.clientY - rect.y) / rect.height) * canvasEl.height;
+            var imageData = ctx.getImageData(x, y, 1, 1);
+            detail.color = imageData.data;
+        }
+
+        canvasEl.dispatchEvent(new CustomEvent("eyedrop", { detail }));
+    }
 
     checkMousePos(e);
     if (!isInSelection)
