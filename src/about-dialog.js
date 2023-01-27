@@ -50,10 +50,6 @@ function init(container) {
     okBtn.addEventListener("click", hide);
 }
 
-function insertHr(element) {
-    element.appendChild(document.createElement("hr"));
-}
-
 function show() { dialog.show(); }
 function hide() { dialog.hide(); }
 

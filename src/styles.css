@@ -57,6 +57,7 @@ a:hover {
     opacity: 1;
     transition: 0.25s;
     z-index: 2;
+    user-select: none;
 }
 
 #welcomeScreen.hide {
@@ -332,6 +333,109 @@ a:hover {
     max-width: 100%;
     max-height: 20rem;
     margin-top: 0.5rem;
+}
+
+#colorPicker {
+    background-color: #2e2e2e;
+    box-shadow: 0 0 16px 4px rgba(0, 0, 0, 0.25);
+    width: 16rem;
+    border-radius: 6px;
+    padding: 1rem;
+    z-index: 101;
+    opacity: 1;
+    transition: 0.25s;
+}
+
+#colorPicker.hide {
+    opacity: 0;
+}
+
+#cpClose {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+}
+
+#colorPicker .slider {
+    height: 0.75rem;
+    border: 2px solid #3e3e3e;
+    border-radius: 6px;
+    position: relative;
+    flex-grow: 1;
+}
+
+#colorPicker input {
+    height: 1rem;
+    font-size: 0.9rem;
+}
+
+#colorPicker input[type=number] {
+    width: 3rem;
+}
+
+#colorPicker input[type=text] {
+    width: 5rem;
+}
+
+#colorPicker input[type=number]::-webkit-inner-spin-button, 
+#colorPicker input[type=number]::-webkit-outer-spin-button {  
+    opacity: 1;
+}
+
+#colorPicker .valueFlex {
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#colorPicker .valueFlex .pbfeLabel {
+    width: 0.75rem;
+}
+
+#colorPicker .modeBtn {
+    flex-basis: 50%;
+    background-image: none;
+    background-color: #232627;
+    border-radius: 0;
+    border: 1px solid #515f66;
+    font-weight: bold;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+#colorPicker .modeBtn:hover {
+    border-color: #2e789c;
+}
+
+#colorPicker .modeBtn:first-child {
+    border-radius: 6px 0 0 6px;
+}
+
+#colorPicker .modeBtn:last-child {
+    border-radius: 0 6px 6px 0;
+}
+
+#colorPicker .modeBtn.chosen {
+    border-color: #2e789c;
+    background-color: #353a3b;
+}
+
+.sliderPoint {
+    position: absolute;
+    margin-left: -5px;
+    margin-top: -5px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid white;
+}
+
+.cpButton {
+    cursor: pointer;
+    height: 1.05rem;
+    width: 2.5rem;
+    border: 1px solid #515f66;
+    border-radius: 4px;
+    margin-left: auto;
+    -webkit-tap-highlight-color: transparent;
 }
 
 @media screen and (min-width: 1024px) {

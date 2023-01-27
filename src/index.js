@@ -5,6 +5,7 @@ import loadingDialog from "./loading-dialog.js";
 import editor from "./editor.js";
 import toast from "./toast.js";
 import i18n from "./i18n.js";
+import touchToMouseEvent from "./touch-to-mouse-event.js";
 
 function registerServiceWorker() {
     if ("serviceWorker" in navigator) {
@@ -71,6 +72,11 @@ async function appInit() {
                 welcomeScreen.hide();
         });
     });
+
+    if ("ontouchmove" in document) {
+        document.addEventListener("touchmove", touchToMouseEvent, { passive: true });
+        document.addEventListener("touchend", touchToMouseEvent, { passive: true });
+    }
 
     window.scrollTo(0, 1);
 }

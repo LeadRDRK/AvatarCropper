@@ -1,5 +1,3 @@
-import transitionend from "./transition-end.js";
-
 function inherit(cls, className) {
     var proto = Object.create(cls.prototype);
     proto.className = className;
@@ -50,10 +48,10 @@ Widget.prototype.removeChild = function(widget) {
 
 Widget.prototype.removeChildAfterTransition = function(widget, callback) {
     var body = this.body;
-    this.element.addEventListener(transitionend, function listener() {
+    this.element.addEventListener("transitionend", function listener() {
         body.removeChild(widget.element);
         if (callback) callback();
-        this.removeEventListener(transitionend, listener);
+        this.removeEventListener("transitionend", listener);
     });
 }
 
@@ -102,9 +100,9 @@ Container.prototype.showToast = function(text, timeout, waitHideTransition) {
     var self = this;
     setTimeout(function() {
         if (waitHideTransition) {
-            toast.element.addEventListener(transitionend, function listener() {
+            toast.element.addEventListener("transitionend", function listener() {
                 self.removeChild(toast);
-                toast.element.removeEventListener(transitionend, listener);
+                toast.element.removeEventListener("transitionend", listener);
             });
             toast.hide();
         }
@@ -137,6 +135,11 @@ function Floatbox() {
 }
 
 Floatbox.prototype = inherit(Widget, "Floatbox");
+addStyleGetterSetter(Floatbox, "zIndex");
+addStyleGetterSetter(Floatbox, "top");
+addStyleGetterSetter(Floatbox, "left");
+addStyleGetterSetter(Floatbox, "bottom");
+addStyleGetterSetter(Floatbox, "right");
 
 function Label(text) {
     var element = document.createElement("span");
