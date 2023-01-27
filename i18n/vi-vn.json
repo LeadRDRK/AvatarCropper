@@ -60,5 +60,10 @@
     "Dragging anywhere outside of the crop selector will move the viewport. Use the mouse wheel or pinch the screen with two fingers to zoom in/out.\nOnce you're done, press the \"Save image...\" button to save your cropped image.\n\nYou may view this tutorial at any time by pressing the \"?\" button at the top right of the screen.": "Kéo khu vực bên ngoài bộ chọn để di chuyển khung nhìn. Sử dụng con lăn chuột hoặc chụm màn hình bằng hai ngón tay để phóng to/nhỏ.\nKhi bạn đã xong, bấm vào nút \"Lưu hình ảnh...\" để lưu hình ảnh đã được cắt.\n\nBạn có thể xem hướng dẫn này bất cứ lúc nào bằng cách bấm vào nút \"?\" trên góc phải màn hình.",
     "Save image": "Lưu hình ảnh",
     "Right click on the image and choose Save image as...\n": "Bấm chuột phải vào hình ảnh và chọn \"Lưu hình ảnh thành...\"\n",
-    "Sorry, images loaded from an external source can't be exported as GIF. Please open a local file.": "Xin lỗi, các hình ảnh được tải từ liên kết ngoài không thể được xuất ra dưới dạng GIF. Xin hãy mở file trên máy của bạn."
+    "Sorry, images loaded from an external source can't be exported as GIF. Please open a local file.": "Xin lỗi, các hình ảnh được tải từ liên kết ngoài không thể được xuất ra dưới dạng GIF. Xin hãy mở file trên máy của bạn.",
+    "Close": "Đóng",
+    "Allow offscreen": "Cho phép ra ngoài ảnh",
+    "Guidelines color": "Màu đường dẫn",
+    "Play GIF": "Phát ảnh động",
+    "Background color": "Màu nền"
 }

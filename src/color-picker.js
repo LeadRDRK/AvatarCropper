@@ -1,5 +1,6 @@
 import pbfe from "./pbfe.js";
 import touchToMouseEvent from "./touch-to-mouse-event.js";
+import { _ } from "./i18n.js";
 
 var container, box;
 var hslModeBtn, rgbModeBtn, hexInput, edButton;
@@ -76,7 +77,7 @@ function init(_container) {
     edButton.element.appendChild(edIcon);
     hexFlex.appendChild(edButton);
 
-    var closeBtn = new pbfe.Button("Close");
+    var closeBtn = new pbfe.Button(_("Close"));
     closeBtn.element.style.marginTop = "0.5rem";
     rootFlex.appendChild(closeBtn);
 
