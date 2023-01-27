@@ -56,11 +56,11 @@ function DndHandler(container, element) {
                     if (dispatchFile(file, element)) return;
                 }
                 else if (item.kind == "string") {
-                    if (!item.type.match("^text/uri-list") && !item.type.match("^text/plain")) continue;
+                    if (item.type != "text/uri-list" && item.type != "text/plain") continue;
                     item.getAsString(function(str) {
                         const i = str.indexOf("\r\n");
                         const url = str.slice(0, (i != -1) ? i : str.length);
-                        if (!url.length) return;
+                        if (!url.length || !url.startsWith("http")) return;
                         dispatchImageDrop(url, element);
                     });
                     return;

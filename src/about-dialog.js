@@ -1,5 +1,6 @@
 import pbfe from "./pbfe.js"
 import i18n, { _ } from "./i18n.js";
+import toast from "./toast.js";
 
 var dialog;
 function init(container) {
@@ -15,7 +16,7 @@ function init(container) {
     banner.style.width = "auto";
     banner.style.height = "3rem";
     banner.style.marginBottom = "0.5rem";
-    banner.draggable = false;
+    banner.draggable = true;
     dialog.body.appendChild(banner);
     dialog.body.appendChild(document.createElement("br"));
 
@@ -48,6 +49,15 @@ function init(container) {
     var okBtn = new pbfe.Button(_("OK"));
     dialog.appendButton(okBtn);
     okBtn.addEventListener("click", hide);
+
+    var guyUrl = new URL("./generic.png", import.meta.url).href;
+    banner.addEventListener("dragstart", function(e) {
+        e.dataTransfer.setData("text/plain", guyUrl);
+    });
+    banner.addEventListener("dragend", function(e) {
+        toast.show("it's him! (drawn by @ReikoRobo)");
+        hide();
+    });
 }
 
 function show() { dialog.show(); }
