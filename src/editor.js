@@ -765,15 +765,6 @@ function redrawPreview() {
     window.requestAnimationFrame(drawPreview);
 }
 
-function getRenderPos() {
-    var flipH = inputs.flipH.checked;
-    var flipV = inputs.flipV.checked;
-    let x = -cropX, y = -cropY;
-    if (flipH) x = cropX - (img.width - cropWidth);
-    if (flipV) y = cropY - (img.height - cropHeight);
-    return [x, y];
-}
-
 function isCanvasTainted() {
     try {
         ctx.getImageData(0, 0, 1, 1);
@@ -782,6 +773,15 @@ function isCanvasTainted() {
     catch (err) {
         return true;
     }
+}
+
+function getRenderPos() {
+    var flipH = inputs.flipH.checked;
+    var flipV = inputs.flipV.checked;
+    let x = cropX, y = cropY;
+    if (flipH) x = (img.width - cropWidth) - x;
+    if (flipV) y = (img.height - cropHeight) - y;
+    return [x, y];
 }
 
 function render(canvas) {
@@ -795,7 +795,10 @@ function render(canvas) {
 
     applyFlipTransform(canvas, ctx);
     let [x, y] = getRenderPos();
-    ctx.drawImage(img, x, y, img.width, img.height);
+    ctx.drawImage(img,
+        x, y, cropWidth, cropHeight, // Crop
+        0, 0, cropWidth, cropHeight  // Placement
+    );
     ctx.resetTransform();
 }
 
