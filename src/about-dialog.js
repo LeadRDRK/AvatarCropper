@@ -50,9 +50,11 @@ function init(container) {
     dialog.appendButton(okBtn);
     okBtn.addEventListener("click", hide);
 
-    var guyUrl = new URL("./generic.png", import.meta.url).href;
+    var guyUrl = "https://leadrdrk.eu.org/static/generic.png";
     banner.addEventListener("dragstart", function(e) {
-        e.dataTransfer.setData("text/plain", guyUrl);
+        var dt = e.dataTransfer;
+        dt.setData("text/plain", guyUrl);
+        dt.setData("text/uri-list", guyUrl);
     });
     banner.addEventListener("dragend", function(e) {
         toast.show("it's him! (drawn by @ReikoRobo)");
