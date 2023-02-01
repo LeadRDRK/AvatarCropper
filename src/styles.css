@@ -154,6 +154,8 @@ a:hover {
     overflow-x: hidden;
     overflow-y: auto;
     transition: 0.5s;
+    scrollbar-color: #444 #1a1a1a;
+    scrollbar-width: auto;
 }
 
 #editorMenu *:nth-last-child(3) {
@@ -485,6 +487,7 @@ a:hover {
         width: 16rem;
         height: calc(100% - 2rem);
         bottom: 0;
+        scrollbar-width: thin;
     }
 
     #returnBtn {
