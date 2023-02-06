@@ -259,8 +259,8 @@ function initMenuBox() {
 
     inputs.showGuidelines.addEventListener("change", redrawEditor);
 
-    inputs.flipH.addEventListener("change", redrawImgCanvas);
-    inputs.flipV.addEventListener("change", redrawImgCanvas);
+    inputs.flipH.addEventListener("change", updateImgRenders);
+    inputs.flipV.addEventListener("change", updateImgRenders);
 
     var zoomDetents = createRangeDetents("zoomDetents", [50, 100, 200, 400]);
     var zoomInput = inputs.zoom;
@@ -283,7 +283,7 @@ function initMenuBox() {
     inputs.showPreview.addEventListener("change", function(e) {
         if (this.checked) {
             previewBox.element.style.display = "flex";
-            updatePreview();
+            initPreview();
         }
         else
             previewBox.element.style.display = "none";
@@ -293,7 +293,7 @@ function initMenuBox() {
         if (gif.isAnimated()) {
             var value = this.value;
             img = gif.frames[value].bitmap;
-            redrawImgCanvas();
+            updateImgRenders();
             showNotification(_("Frame: ") + value);
         }
     });
@@ -315,9 +315,19 @@ function initMenuBox() {
 
     inputs.bgColor.addEventListener("click", function() { colorPicker.show(this, imgCanvas); });
     inputs.guideColor.addEventListener("click", function() { colorPicker.show(this, imgCanvas); });
-    inputs.bgColor.addEventListener("colorchange", redrawImgCanvas);
+
+    inputs.bgColor.addEventListener("colorchange", function() {
+        redrawImgCanvas();
+        var color = inputs.bgColor.style.backgroundColor;
+        for (let i = 0; i < previewImages.length; ++i) {
+            var parentStyle = previewImages[i].parentNode.style;
+            parentStyle.backgroundColor = color;
+        }
+    });
+
     inputs.guideColor.addEventListener("colorchange", redrawEditor);
     menuBox.addEventListener("scroll", colorPicker.hide, { passive: true });
+
     imgCanvas.addEventListener("edstatechange", function(e) {
         if (e.detail) editorCanvas.style.display = "none";
         else editorCanvas.style.removeProperty("display");
@@ -357,7 +367,7 @@ function playNextGifFrame() {
     }
     var frame = gif.frames[nextFrame];
     img = frame.bitmap;
-    redrawImgCanvas();
+    updateImgRenders();
     setTimeout(playNextGifFrame, frame.info.delay * 10);
 }
 
@@ -398,7 +408,9 @@ function addShapeBtnHandler(button, value) {
         this.classList.add("chosen");
         prevShapeBtn.classList.remove("chosen");
         prevShapeBtn = this;
+
         redrawEditor();
+        if (inputs.showPreview.checked) updatePreview();
     });
 }
 
@@ -533,12 +545,9 @@ function open(src, successCb) {
         loadingDialog.setProgress(1);
         loadingDialog.hide();
 
-        imgCanvas.width = editorCanvas.width = img.width;
-        imgCanvas.height = editorCanvas.height = img.height;
-
+        imgCanvas.width  = editorCanvas.width  = previewCanvas.width  = img.width;
+        imgCanvas.height = editorCanvas.height = previewCanvas.height = img.height;
         editorCanvasInit = true;
-        redrawEditor();
-        redrawImgCanvas();
 
         show();
         reset();
@@ -571,6 +580,7 @@ function hide() {
     box.element.classList.add("hide");
     container.removeChildAfterTransition(box);
     colorPicker.hide();
+    inputs.playGif.checked = false;
 }
 
 function isHidden() {
@@ -581,6 +591,9 @@ function reset() {
     fitImageToViewport();
     resetCropArea();
     inputs.flipH.checked = inputs.flipV.checked = false;
+
+    redrawEditor();
+    updateImgRenders();
 }
 
 function resetCropArea() {
@@ -777,8 +790,6 @@ function drawImgCanvas() {
     applyFlipTransform(imgCanvas, ctx);
     ctx.drawImage(img, 0, 0, img.width, img.height);
     ctx.resetTransform();
-
-    if (inputs.showPreview.checked) initPreview();
 }
 
 function redrawFunc(draw) {
@@ -798,7 +809,6 @@ var redrawImgCanvas = redrawFunc(drawImgCanvas);
 
 var pvRedrawing = false;
 var pvRedrawNext = false;
-var alphaColorRegexp = /^(rgba?|hsla?)\((\d+, ?){3}0\)/;
 async function redrawPreview() {
     if (pvRedrawing) {
         pvRedrawNext = true;
@@ -807,19 +817,19 @@ async function redrawPreview() {
 
     pvRedrawing = true;
 
-    var bgColor = inputs.bgColor.style.backgroundColor;
     var flipH = inputs.flipH.checked;
     var flipV = inputs.flipV.checked;
     var src, isBlob;
-    if (!flipH && !flipV && !gif.isAnimated() && alphaColorRegexp.test(bgColor)) {
-        // Load the image directly if it's not an ANIMATED gif and there are no image modifications
-        src = img.src;
-    }
-    else {
+    if (gif.isAnimated() || flipH || flipV) {
         // Use the image data of the rendered ImageBitmap
-        var blob = await new Promise(resolve => imgCanvas.toBlob(resolve));
+        var blob = await renderPreviewImg();
         src = URL.createObjectURL(blob);
         isBlob = true;
+    }
+    else {
+        // Load the image directly if it's not an ANIMATED gif and there are no image modifications
+        // (except for background color)
+        src = img.src;
     }
 
     let count = 0;
@@ -840,6 +850,19 @@ async function redrawPreview() {
     }
 }
 
+var previewCanvas = document.createElement("canvas");
+var previewCtx = previewCanvas.getContext("2d");
+function renderPreviewImg() {
+    let ctx = previewCtx;
+    ctx.clearRect(0, 0, img.width, img.height);
+
+    applyFlipTransform(previewCanvas, ctx);
+    ctx.drawImage(img, 0, 0, img.width, img.height);
+    ctx.resetTransform();
+
+    return new Promise(resolve => previewCanvas.toBlob(resolve));
+}
+
 function updatePreview() {
     for (let i = 0; i < previewImages.length; ++i) {
         let pImage = previewImages[i];
@@ -857,6 +880,11 @@ function initPreview() {
     updatePreview();
 }
 
+function updateImgRenders() {
+    redrawImgCanvas();
+    if (inputs.showPreview.checked) initPreview();
+}
+
 function isCanvasTainted() {
     try {
         imgCtx.getImageData(0, 0, 1, 1);
@@ -867,17 +895,35 @@ function isCanvasTainted() {
     }
 }
 
+function getRenderPos() {
+    var flipH = inputs.flipH.checked;
+    var flipV = inputs.flipV.checked;
+    let x = crop.x, y = crop.y;
+    if (flipH) x = (img.width - crop.width) - x;
+    if (flipV) y = (img.height - crop.height) - y;
+    return [x, y];
+}
+
+function drawCroppedImage(canvas, ctx) {
+    applyFlipTransform(canvas, ctx);
+    let [x, y] = getRenderPos();
+    ctx.drawImage(img,
+        x, y, crop.width, crop.height, // Crop
+        0, 0, crop.width, crop.height  // Placement
+    );
+    ctx.resetTransform();
+}
+
 function render(canvas) {
     if (!canvas) canvas = renderCanvas;
-
     let ctx = canvas.getContext("2d");
     canvas.width = crop.width;
     canvas.height = crop.height;
 
-    ctx.drawImage(imgCanvas,
-        crop.x, crop.y, crop.width, crop.height, // Crop
-        0, 0, crop.width, crop.height  // Placement
-    );
+    ctx.fillStyle = inputs.bgColor.style.backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    drawCroppedImage(canvas, ctx);
 }
 
 function saveFile(href, filename) {
@@ -923,7 +969,6 @@ async function renderAndSaveGif() {
             var frame = frames[i];
             img = frame.bitmap;
             delay = speedMult ? frame.info.delay / speedMult : 0;
-            drawImgCanvas();
         }
         render();
 
@@ -944,10 +989,7 @@ async function renderAndSaveGif() {
     }, 0);
 
     // Reload current frame
-    if (frames.length) {
-        img = frames[inputs.frame.value].bitmap;
-        drawImgCanvas();
-    }
+    if (frames.length) img = frames[inputs.frame.value].bitmap;
 }
 
 var fbSaveInitialized = false;
