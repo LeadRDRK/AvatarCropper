@@ -8,11 +8,11 @@ import colorPicker from "./color-picker.js";
 import touchToMouseEvent from "./touch-to-mouse-event.js";
 
 var container, box;
-var innerBox, canvas, ctx;
+var innerBox, canvasBox, editorCanvas, editorCtx, imgCanvas, imgCtx;
 var menuBox, inputs = {};
 var notifBox;
 var renderCanvas, renderCtx;
-var previewBox, previewCanvases = [];
+var previewBox, previewImages = [];
 var saveAnchor = document.createElement("a");
 var gifOptionsDialog;
 
@@ -22,6 +22,7 @@ var cropShapes = {
     FREEFORM: 3
 };
 var cropShape = cropShapes.CIRCLE;
+var previewSizes = [128, 64, 32];
 
 function init(_container) {
     container = _container;
@@ -59,12 +60,22 @@ function initInnerBox() {
     innerBox.element.style.cursor = "grab";
     box.appendChild(innerBox);
 
-    canvas = new pbfe.Canvas;
-    canvas.element.id = "editorCanvas";
-    innerBox.appendChild(canvas);
+    canvasBox = new pbfe.Widget;
+    canvasBox.element.id = "canvasBox";
+    innerBox.appendChild(canvasBox);
 
-    ctx = canvas.getContext("2d");
-    ctx.lineWidth = 1;
+    imgCanvas = document.createElement("canvas");
+    imgCanvas.id = "imgCanvas";
+    canvasBox.body.appendChild(imgCanvas);
+
+    imgCtx = imgCanvas.getContext("2d");
+
+    editorCanvas = document.createElement("canvas");
+    editorCanvas.id = "editorCanvas";
+    canvasBox.body.appendChild(editorCanvas);
+
+    editorCtx = editorCanvas.getContext("2d");
+    editorCtx.lineWidth = 1;
 
     var fullscreenBtn = new pbfe.Button("⛶");
     fullscreenBtn.element.classList.add("innerBoxBtn");
@@ -88,14 +99,21 @@ function initInnerBox() {
     initTutorialDialog();
     tutorialBtn.addEventListener("click", showTutorialDialog);
 
-    previewBox = new pbfe.Widget;
+    previewBox = new pbfe.Flexbox;
     previewBox.element.id = "previewBox";
 
     for (let i = 0; i < 3; ++i) {
-        let c = document.createElement("canvas");
-        c.classList.add("image" + i);
-        previewBox.element.appendChild(c);
-        previewCanvases.push(c);
+        var size = previewSizes[i];
+
+        let container = new pbfe.Widget;
+        let style = container.element.style;
+        style.width = style.height = size + "px";
+        style.borderRadius = size/2 + "px";
+        previewBox.appendChild(container);
+
+        let img = new Image;
+        container.element.appendChild(img);
+        previewImages.push(img);
     }
 
     innerBox.appendChild(previewBox);
@@ -219,41 +237,19 @@ function initMenuBox() {
     });
 
     inputs.width.addEventListener("input", function() {
-        var value = parseInputValue(this);
-        if (!value || value < 10) return;
-        cropWidth = value;
-        if (cropShape != cropShapes.FREEFORM) {
-            inputs.height.value = value;
-            cropHeight = value;
-        }
-        setCropSize(cropWidth, cropHeight);
-        redrawCanvas();
+        updateSizeInputValue(this, "width");
     });
 
     inputs.height.addEventListener("input", function() {
-        var value = parseInputValue(this);
-        if (!value || value < 10) return;
-        cropHeight = value;
-        if (cropShape != cropShapes.FREEFORM) {
-            inputs.width.value = value;
-            cropWidth = value;
-        }
-        setCropSize(cropWidth, cropHeight);
-        redrawCanvas();
+        updateSizeInputValue(this, "height");
     });
 
     inputs.xPos.addEventListener("input", function() {
-        var value = parseInputValue(this);
-        if (value === undefined) return;
-        setCropPosition(value, cropY);
-        redrawCanvas();
+        updatePosInputValue(this, "x");
     });
 
     inputs.yPos.addEventListener("input", function() {
-        var value = parseInputValue(this);
-        if (value === undefined) return;
-        setCropPosition(cropX, value);
-        redrawCanvas();
+        updatePosInputValue(this, "y");
     });
 
     prevShapeBtn = circleBtn.element;
@@ -261,10 +257,10 @@ function initMenuBox() {
     addShapeBtnHandler(squareBtn, cropShapes.SQUARE);
     addShapeBtnHandler(freeformBtn, cropShapes.FREEFORM);
 
-    inputs.showGuidelines.addEventListener("change", redrawCanvas);
+    inputs.showGuidelines.addEventListener("change", redrawEditor);
 
-    inputs.flipH.addEventListener("change", redrawCanvas);
-    inputs.flipV.addEventListener("change", redrawCanvas);
+    inputs.flipH.addEventListener("change", redrawImgCanvas);
+    inputs.flipV.addEventListener("change", redrawImgCanvas);
 
     var zoomDetents = createRangeDetents("zoomDetents", [50, 100, 200, 400]);
     var zoomInput = inputs.zoom;
@@ -286,18 +282,18 @@ function initMenuBox() {
 
     inputs.showPreview.addEventListener("change", function(e) {
         if (this.checked) {
-            previewBox.element.style.display = "block";
-            redrawPreview();
+            previewBox.element.style.display = "flex";
+            updatePreview();
         }
         else
             previewBox.element.style.display = "none";
     });
 
     inputs.frame.addEventListener("input", function() {
-        if (gif.hasFrames()) {
+        if (gif.isAnimated()) {
             var value = this.value;
             img = gif.frames[value].bitmap;
-            redrawCanvas();
+            redrawImgCanvas();
             showNotification(_("Frame: ") + value);
         }
     });
@@ -317,12 +313,40 @@ function initMenuBox() {
             playNextGifFrame();
     });
 
-    inputs.bgColor.addEventListener("click", function() { colorPicker.show(this, canvas.element); });
-    inputs.guideColor.addEventListener("click", function() { colorPicker.show(this, canvas.element); });
-    inputs.bgColor.addEventListener("colorchange", redrawCanvas);
-    inputs.guideColor.addEventListener("colorchange", redrawCanvas);
+    inputs.bgColor.addEventListener("click", function() { colorPicker.show(this, imgCanvas); });
+    inputs.guideColor.addEventListener("click", function() { colorPicker.show(this, imgCanvas); });
+    inputs.bgColor.addEventListener("colorchange", redrawImgCanvas);
+    inputs.guideColor.addEventListener("colorchange", redrawEditor);
     menuBox.addEventListener("scroll", colorPicker.hide, { passive: true });
-    canvas.element.addEventListener("edstatechange", redrawCanvas);
+    imgCanvas.addEventListener("edstatechange", function(e) {
+        if (e.detail) editorCanvas.style.display = "none";
+        else editorCanvas.style.removeProperty("display");
+    });
+}
+
+function updateSizeInputValue(input, type) {
+    var value = parseInputValue(input);
+    if (!value || value < 10) return;
+    
+    if (cropShape != cropShapes.FREEFORM) {
+        inputs.width.value = inputs.height.value = value;
+        crop.width = crop.height = value;
+    }
+    else crop[type] = value;
+
+    setCropSize(crop.width, crop.height);
+    redrawEditor();
+    if (inputs.showPreview.checked) updatePreview();
+}
+
+function updatePosInputValue(input, type) {
+    var value = parseInputValue(input);
+    if (value === undefined) return;
+    crop[type] = value;
+
+    setCropPosition(crop.x, crop.y);
+    redrawEditor();
+    if (inputs.showPreview.checked) updatePreview();
 }
 
 function playNextGifFrame() {
@@ -333,7 +357,7 @@ function playNextGifFrame() {
     }
     var frame = gif.frames[nextFrame];
     img = frame.bitmap;
-    redrawCanvas();
+    redrawImgCanvas();
     setTimeout(playNextGifFrame, frame.info.delay * 10);
 }
 
@@ -369,12 +393,12 @@ function addShapeBtnHandler(button, value) {
         if (cropShape == value) return;
         cropShape = value;
         if (value != cropShapes.FREEFORM)
-            setCropSize(cropWidth, cropWidth);
+            setCropSize(crop.width, crop.width);
 
         this.classList.add("chosen");
         prevShapeBtn.classList.remove("chosen");
         prevShapeBtn = this;
-        redrawCanvas();
+        redrawEditor();
     });
 }
 
@@ -509,8 +533,12 @@ function open(src, successCb) {
         loadingDialog.setProgress(1);
         loadingDialog.hide();
 
-        canvas.element.width = img.width;
-        canvas.element.height = img.height;
+        imgCanvas.width = editorCanvas.width = img.width;
+        imgCanvas.height = editorCanvas.height = img.height;
+
+        editorCanvasInit = true;
+        redrawEditor();
+        redrawImgCanvas();
 
         show();
         reset();
@@ -552,16 +580,14 @@ function isHidden() {
 function reset() {
     fitImageToViewport();
     resetCropArea();
-
     inputs.flipH.checked = inputs.flipV.checked = false;
-    redrawCanvas();
 }
 
 function resetCropArea() {
     var s = Math.floor((img.width < img.height ? img.width : img.height) * 0.5);
     s -= s % 10;
     
-    cropX = cropY = 0;
+    crop.x = crop.y = 0;
     setCropSize(s, s);
     setCropPosition(0, 0);
 }
@@ -580,20 +606,20 @@ function fitImageToViewport() {
 
 function setCropPosition(x, y) {
     if (!inputs.allowOffscreen.checked) {
-        x = Math.max(0, Math.min(x, img.width - cropWidth));
-        y = Math.max(0, Math.min(y, img.height - cropHeight));
+        x = Math.max(0, Math.min(x, img.width - crop.width));
+        y = Math.max(0, Math.min(y, img.height - crop.height));
     }
 
-    cropX = x;
-    cropY = y;
+    crop.x = x;
+    crop.y = y;
     inputs.xPos.value = x;
     inputs.yPos.value = y;
 }
 
 function setCropSize(width, height, preferHigher) {
     if (!inputs.allowOffscreen.checked) {
-        width = Math.min(width, img.width - cropX);
-        height = Math.min(height, img.height - cropY);
+        width = Math.min(width, img.width - crop.x);
+        height = Math.min(height, img.height - crop.y);
     }
     var min = (img.width < 50 || img.height < 50) ? 1 : 10;
     width = Math.max(min, width);
@@ -603,8 +629,8 @@ function setCropSize(width, height, preferHigher) {
         if (preferHigher ? width > height : width < height) height = width;
         else width = height;
     }
-    cropWidth = width;
-    cropHeight = height;
+    crop.width = width;
+    crop.height = height;
     inputs.width.value = width;
     inputs.height.value = height;
 }
@@ -614,9 +640,9 @@ function setCanvasMargins(x, y) {
     canvasX = x;
     canvasY = y;
 
-    var canvasEl = canvas.element;
-    canvasEl.style.marginLeft = canvasX + "px";
-    canvasEl.style.marginTop  = canvasY + "px";
+    var element = canvasBox.element;
+    element.style.marginLeft = canvasX + "px";
+    element.style.marginTop  = canvasY + "px";
 }
 
 var canvasScale = 1;
@@ -624,13 +650,13 @@ function setCanvasScale(scale) {
     var ratio = inputs.scaleDevicePixel.checked ? 1 : devicePixelRatio;
     scale = Math.round(Math.max(0.1, Math.min(scale, 8)) * 1000) / 1000;
     var realScale = scale / ratio;
-    canvas.element.style.transform = "scale(" + realScale.toFixed(3) + ")";
+    canvasBox.element.style.transform = "scale(" + realScale.toFixed(3) + ")";
     inputs.zoom.value = Math.round(scale * 100);
 
     var newLineWidth = Math.ceil(Math.max(1, 1 / (realScale * devicePixelRatio)));
-    if (newLineWidth != ctx.lineWidth) {
-        ctx.lineWidth = newLineWidth;
-        redrawCanvas();
+    if (newLineWidth != editorCtx.lineWidth) {
+        editorCtx.lineWidth = newLineWidth;
+        redrawEditor();
     }
 
     var mScale = scale / canvasScale;
@@ -640,11 +666,9 @@ function setCanvasScale(scale) {
     showNotification(_("Zoom: ") + (+(scale*100).toFixed(1)) + "%");
 }
 
-function drawLine(x1, y1, x2, y2) {
-    ctx.beginPath();
+function createLine(ctx, x1, y1, x2, y2) {
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
-    ctx.stroke();
 }
 
 function applyFlipTransform(canvas, ctx) {
@@ -662,112 +686,180 @@ function applyFlipTransform(canvas, ctx) {
     ctx.scale(sx, sy);
 }
 
-var frameRequested;
-var cropX = 0, cropY = 0, cropWidth = 0, cropHeight = 0;
-function draw() {
-    var canvasEl = canvas.element;
-    ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+var crop = { x: 0, y: 0, width: 0, height: 0 };
+var prevRect;
+var editorCanvasInit = false;
+function drawEditor() {
+    var ctx = editorCtx;
+    ctx.globalCompositeOperation = "source-over";
 
-    if (!colorPicker.isEyeDropperActive()) {
-        ctx.globalCompositeOperation = "source-over";
-        // Draw the shadow
-        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-        ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+    // Draw the mask
+    var maskRect;
+    if (editorCanvasInit) {
+        maskRect = [0, 0, editorCanvas.width, editorCanvas.height];
+        editorCanvasInit = false;
+    }
+    else {
+        maskRect = prevRect;
+        ctx.clearRect(...maskRect);
+    }
+    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    ctx.fillRect(...maskRect);
 
-        // Draw the crop selector
-        var lw = ctx.lineWidth;
-        var x = cropX - lw/2,
-            y = cropY - lw/2,
-            width = cropWidth + lw,
-            height = cropHeight + lw;
+    // Draw the crop selector
+    var lw = ctx.lineWidth;
+    var x = crop.x - lw/2,
+        y = crop.y - lw/2,
+        width = crop.width + lw,
+        height = crop.height + lw;
+    var cx, cy;
 
-        ctx.strokeStyle = "#ffffff";
-        if (cropShape == cropShapes.CIRCLE) {
-            ctx.strokeRect(x, y, width, height);
-            let cx = cropX + width/2;
-            let cy = cropY + height/2;
+    ctx.strokeStyle = "#ffffff";
+    if (cropShape == cropShapes.CIRCLE) {
+        ctx.strokeRect(x, y, width, height);
+        cx = crop.x + crop.width/2;
+        cy = crop.y + crop.height/2;
 
-            ctx.beginPath();
-            var hlw = lw/2;
-            ctx.arc(cx - hlw, cy - hlw, width/2 - hlw, 0, 2 * Math.PI);
-        }
-        else {
-            ctx.beginPath();
-            ctx.rect(x, y, width, height);
-        }
-
-        // Save the path, draw the outline, then poke the hole
-        ctx.save();
-        ctx.stroke();
-        ctx.restore();
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.fillStyle = "#000000";
-        ctx.fill();
-
-        // Draw guidelines
-        if (inputs.showGuidelines.checked) {
-            ctx.globalCompositeOperation = "source-over";
-            ctx.setLineDash([10, 10]);
-            ctx.strokeStyle = inputs.guideColor.style.backgroundColor;
-
-            var prevLw = ctx.lineWidth;
-            ctx.lineWidth += 1 + Math.floor((cropWidth * cropHeight) / 1000000);
-
-            let cx = cropX + cropWidth/2;
-            let cy = cropY + cropHeight/2;
-            let right = cropX + cropWidth;
-            let bottom = cropY + cropHeight;
-
-            drawLine(cx, cy, cx, cropY); // top
-            drawLine(cx, cy, cropX, cy); // left
-            drawLine(cx, cy, cx, bottom); // bottom
-            drawLine(cx, cy, right, cy); // right
-
-            ctx.setLineDash([]);
-            ctx.lineWidth = prevLw;
-        }
+        ctx.beginPath();
+        ctx.arc(cx, cy, width/2 - lw/2, 0, 2 * Math.PI);
+    }
+    else {
+        ctx.beginPath();
+        ctx.rect(x, y, width, height);
     }
 
-    // Draw image behind crop selector and shadow
-    ctx.globalCompositeOperation = "destination-over";
-    applyFlipTransform(canvasEl, ctx);
+    // Save the path, draw the outline, then poke the hole
+    ctx.save();
+    ctx.stroke();
+    ctx.restore();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.fillStyle = "#000000";
+    ctx.fill();
+
+    // Draw guidelines
+    if (inputs.showGuidelines.checked) {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.setLineDash([10, 10]);
+        ctx.strokeStyle = inputs.guideColor.style.backgroundColor;
+
+        ctx.lineWidth += 1 + Math.floor((crop.width * crop.height) / 1000000);
+
+        if (cx === undefined) {
+            cx = crop.x + crop.width/2;
+            cy = crop.y + crop.height/2;
+        }
+        var right = crop.x + crop.width;
+        var bottom = crop.y + crop.height;
+
+        ctx.beginPath();
+        createLine(ctx, cx, cy, cx, crop.y); // top
+        createLine(ctx, cx, cy, crop.x, cy); // left
+        createLine(ctx, cx, cy, cx, bottom); // bottom
+        createLine(ctx, cx, cy, right, cy);  // right
+        ctx.stroke();
+
+        ctx.setLineDash([]);
+        ctx.lineWidth = lw;
+    }
+
+    prevRect = [
+        crop.x - lw,       crop.y - lw,
+        crop.width + lw*2, crop.height + lw*2
+    ];
+}
+
+function drawImgCanvas() {
+    var ctx = imgCtx;
+    ctx.clearRect(0, 0, img.width, img.height);
+    ctx.fillStyle = inputs.bgColor.style.backgroundColor;
+    ctx.fillRect(0, 0, img.width, img.height);
+
+    applyFlipTransform(imgCanvas, ctx);
     ctx.drawImage(img, 0, 0, img.width, img.height);
     ctx.resetTransform();
 
-    ctx.fillStyle = inputs.bgColor.style.backgroundColor;
-    ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
-
-    if (inputs.showPreview.checked)
-        drawPreview();
-
-    frameRequested = false;
+    if (inputs.showPreview.checked) initPreview();
 }
 
-function drawPreview() {
-    var firstCanvas = previewCanvases[0];
-    render(firstCanvas);
-    for (let i = 1; i < previewCanvases.length; ++i) {
-        let canvas = previewCanvases[i];
-        let ctx = canvas.getContext("2d");
-        canvas.width = cropWidth;
-        canvas.height = cropHeight;
-        ctx.drawImage(firstCanvas, 0, 0);
+function redrawFunc(draw) {
+    let frameRequested = false;
+    return function() {
+        if (frameRequested) return;
+        frameRequested = true;
+        window.requestAnimationFrame(function() {
+            draw();
+            frameRequested = false;
+        });
     }
 }
 
-function redrawCanvas() {
-    if (frameRequested) return;
-    window.requestAnimationFrame(draw);
-    frameRequested = true;
+var redrawEditor = redrawFunc(drawEditor);
+var redrawImgCanvas = redrawFunc(drawImgCanvas);
+
+var pvRedrawing = false;
+var pvRedrawNext = false;
+var alphaColorRegexp = /^(rgba?|hsla?)\((\d+, ?){3}0\)/;
+async function redrawPreview() {
+    if (pvRedrawing) {
+        pvRedrawNext = true;
+        return;
+    }
+
+    pvRedrawing = true;
+
+    var bgColor = inputs.bgColor.style.backgroundColor;
+    var flipH = inputs.flipH.checked;
+    var flipV = inputs.flipV.checked;
+    var src, isBlob;
+    if (!flipH && !flipV && !gif.isAnimated() && alphaColorRegexp.test(bgColor)) {
+        // Load the image directly if it's not an ANIMATED gif and there are no image modifications
+        src = img.src;
+    }
+    else {
+        // Use the image data of the rendered ImageBitmap
+        var blob = await new Promise(resolve => imgCanvas.toBlob(resolve));
+        src = URL.createObjectURL(blob);
+        isBlob = true;
+    }
+
+    let count = 0;
+    for (let i = 0; i < previewImages.length; ++i) {
+        var pImage = previewImages[i];
+        pImage.addEventListener("load", function() {
+            if (++count == previewImages.length) {
+                pvRedrawing = false;
+                if (isBlob) URL.revokeObjectURL(src);
+                if (pvRedrawNext) {
+                    pvRedrawNext = false;
+                    redrawPreview();
+                }
+            }
+        }, { once: true });
+
+        pImage.src = src;
+    }
 }
 
-function redrawPreview() {
-    window.requestAnimationFrame(drawPreview);
+function updatePreview() {
+    for (let i = 0; i < previewImages.length; ++i) {
+        let pImage = previewImages[i];
+        var size = previewSizes[i];
+        var sx = size/crop.width, sy = size/crop.height;
+        pImage.style.left = -crop.x * sx + "px";
+        pImage.style.top = -crop.y * sy + "px";
+        pImage.style.width = img.width * sx + "px";
+        pImage.style.height = img.height * sy + "px";
+    }
+}
+
+function initPreview() {
+    redrawPreview();
+    updatePreview();
 }
 
 function isCanvasTainted() {
     try {
-        ctx.getImageData(0, 0, 1, 1);
+        imgCtx.getImageData(0, 0, 1, 1);
         return false;
     }
     catch (err) {
@@ -775,31 +867,17 @@ function isCanvasTainted() {
     }
 }
 
-function getRenderPos() {
-    var flipH = inputs.flipH.checked;
-    var flipV = inputs.flipV.checked;
-    let x = cropX, y = cropY;
-    if (flipH) x = (img.width - cropWidth) - x;
-    if (flipV) y = (img.height - cropHeight) - y;
-    return [x, y];
-}
-
 function render(canvas) {
     if (!canvas) canvas = renderCanvas;
+
     let ctx = canvas.getContext("2d");
-    canvas.width = cropWidth;
-    canvas.height = cropHeight;
+    canvas.width = crop.width;
+    canvas.height = crop.height;
 
-    ctx.fillStyle = inputs.bgColor.style.backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    applyFlipTransform(canvas, ctx);
-    let [x, y] = getRenderPos();
-    ctx.drawImage(img,
-        x, y, cropWidth, cropHeight, // Crop
-        0, 0, cropWidth, cropHeight  // Placement
+    ctx.drawImage(imgCanvas,
+        crop.x, crop.y, crop.width, crop.height, // Crop
+        0, 0, crop.width, crop.height  // Placement
     );
-    ctx.resetTransform();
 }
 
 function saveFile(href, filename) {
@@ -827,7 +905,7 @@ function renderAndSaveImage() {
 }
 
 async function renderAndSaveGif() {
-    var renderer = new gif.Renderer(cropWidth, cropHeight, { loop: Math.floor(inputs.loopCount.value) });
+    var renderer = new gif.Renderer(crop.width, crop.height, { loop: Math.floor(inputs.loopCount.value) });
 
     var frames = gif.frames;
     var lastFrame = frames.length ? frames.length - 1 : 0;
@@ -845,10 +923,11 @@ async function renderAndSaveGif() {
             var frame = frames[i];
             img = frame.bitmap;
             delay = speedMult ? frame.info.delay / speedMult : 0;
+            drawImgCanvas();
         }
         render();
 
-        let imageData = renderCtx.getImageData(0, 0, cropWidth, cropHeight);
+        let imageData = renderCtx.getImageData(0, 0, crop.width, crop.height);
         renderer.addFrame(imageData, { delay, keepColors });
         loadingDialog.setProgress((i + 1) / length);
     }
@@ -865,7 +944,10 @@ async function renderAndSaveGif() {
     }, 0);
 
     // Reload current frame
-    if (frames.length) img = frames[inputs.frame.value].bitmap;
+    if (frames.length) {
+        img = frames[inputs.frame.value].bitmap;
+        drawImgCanvas();
+    }
 }
 
 var fbSaveInitialized = false;
@@ -901,12 +983,12 @@ function checkMousePos(e) {
         return;
     }
 
-    var rect = canvas.element.getBoundingClientRect();
+    var rect = canvasBox.element.getBoundingClientRect();
     // canvas rect -> selection rect
-    rect.x += rect.width * (cropX / img.width);
-    rect.y += rect.height * (cropY / img.height);
-    rect.width *= cropWidth / img.width;
-    rect.height *= cropHeight / img.height;
+    rect.x += rect.width * (crop.x / img.width);
+    rect.y += rect.height * (crop.y / img.height);
+    rect.width *= crop.width / img.width;
+    rect.height *= crop.height / img.height;
 
     var cursor;
     isInSelection = isPointInRect(e.clientX, e.clientY, rect);
@@ -937,21 +1019,20 @@ var mouseDown = false;
 function mouseDownListener(e) {
     if (isHidden() || e.button != 0) return;
     if (colorPicker.isEyeDropperActive()) {
-        var canvasEl = canvas.element;
-        var rect = canvasEl.getBoundingClientRect();
+        var rect = imgCanvas.getBoundingClientRect();
         var detail = { mode: "rgb" };
         if (!isPointInRect(e.clientX, e.clientY, rect)) {
             // color of the outer area...lol
             detail.color = [30, 30, 30, 255];
         }
         else {
-            var x = ((e.clientX - rect.x) / rect.width) * canvasEl.width;
-            var y = ((e.clientY - rect.y) / rect.height) * canvasEl.height;
-            var imageData = ctx.getImageData(x, y, 1, 1);
+            var x = ((e.clientX - rect.x) / rect.width) * imgCanvas.width;
+            var y = ((e.clientY - rect.y) / rect.height) * imgCanvas.height;
+            var imageData = imgCtx.getImageData(x, y, 1, 1);
             detail.color = imageData.data;
         }
 
-        canvasEl.dispatchEvent(new CustomEvent("eyedrop", { detail }));
+        imgCanvas.dispatchEvent(new CustomEvent("eyedrop", { detail }));
     }
 
     checkMousePos(e);
@@ -986,11 +1067,11 @@ function mouseMoveListener(e) {
             dx = Math.round(dx / scale);
             dy = Math.round(dy / scale);
 
-            var px = cropX, py = cropY;
+            var px = crop.x, py = crop.y;
             var xSign = (resizeFromLeft ? -1 : 1);
             var ySign = (resizeFromTop ? -1 : 1);
             if (isResizing) {
-                var width = cropWidth, height = cropHeight;
+                var width = crop.width, height = crop.height;
                 if (cropShape == cropShapes.FREEFORM) {
                     width += dx * xSign;
                     height += dy * ySign;
@@ -1042,7 +1123,7 @@ function mouseMoveListener(e) {
                     py -= 10 - height;
 
                 // Set the crop positions first so setCropSize could clamp the values correctly
-                cropX = px; cropY = py;
+                crop.x = px; crop.y = py;
                 setCropSize(width, height);
                 setCropPosition(px, py);
             }
@@ -1052,7 +1133,8 @@ function mouseMoveListener(e) {
                 setCropPosition(px, py);
             }
             
-            redrawCanvas();
+            redrawEditor();
+            if (inputs.showPreview.checked) updatePreview();
         }
         else {
             setCanvasMargins(canvasX + dx, canvasY + dy);
@@ -1122,24 +1204,25 @@ function keyDownListener(e) {
     }
     switch (code) {
         case "ArrowUp": 
-            e.shiftKey ? setCropSize(cropWidth, cropHeight - 1) : setCropPosition(cropX, cropY - 1);
+            e.shiftKey ? setCropSize(crop.width, crop.height - 1) : setCropPosition(crop.x, crop.y - 1);
             break;
 
         case "ArrowDown":
-            e.shiftKey ? setCropSize(cropWidth, cropHeight + 1, true) : setCropPosition(cropX, cropY + 1);
+            e.shiftKey ? setCropSize(crop.width, crop.height + 1, true) : setCropPosition(crop.x, crop.y + 1);
             break;
 
         case "ArrowLeft":
-            e.shiftKey ? setCropSize(cropWidth - 1, cropHeight) : setCropPosition(cropX - 1, cropY);
+            e.shiftKey ? setCropSize(crop.width - 1, crop.height) : setCropPosition(crop.x - 1, crop.y);
             break;
 
         case "ArrowRight":
-            e.shiftKey ? setCropSize(cropWidth + 1, cropHeight, true) : setCropPosition(cropX + 1, cropY);
+            e.shiftKey ? setCropSize(crop.width + 1, crop.height, true) : setCropPosition(crop.x + 1, crop.y);
             break;
 
         default: return;
     }
-    redrawCanvas();
+    redrawEditor();
+    if (inputs.showPreview.checked) updatePreview();
 }
 
 function isPointInRect(x, y, rect) {

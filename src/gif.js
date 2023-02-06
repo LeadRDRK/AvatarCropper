@@ -181,15 +181,15 @@ function reset() {
     return false;
 }
 
-function hasFrames() {
-    return frames.length > 0;
+function isAnimated() {
+    return frames.length > 1;
 }
 
 var gif = {
     Renderer,
     load,
     reset,
-    hasFrames,
+    isAnimated,
     frames
 }
 export default gif;

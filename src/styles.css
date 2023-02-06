@@ -137,9 +137,19 @@ a:hover {
     transition: 0.5s;
 }
 
-#editorCanvas {
+#canvasBox {
+    position: relative;
+}
+
+#editorCanvas, #imgCanvas {
     image-rendering: pixelated;
     pointer-events: none;
+}
+
+#editorCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 #editorMenu {
@@ -303,28 +313,16 @@ a:hover {
     padding: 0.75rem;
     pointer-events: none;
     transition: 0.5s;
+    align-items: flex-end;
 }
 
-#previewBox canvas {
+#previewBox div {
     margin-right: 0.5rem;
+    overflow: hidden;
 }
 
-#previewBox .image0 {
-    width: 128px;
-    height: 128px;
-    border-radius: 128px;
-}
-
-#previewBox .image1 {
-    width: 64px;
-    height: 64px;
-    border-radius: 64px;
-}
-
-#previewBox .image2 {
-    width: 32px;
-    height: 32px;
-    border-radius: 32px;
+#previewBox img {
+    position: relative;
 }
 
 #previewBox.panelHidden {
