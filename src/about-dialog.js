@@ -52,9 +52,7 @@ function init(container) {
 
     var guyUrl = "https://leadrdrk.eu.org/static/generic.png";
     banner.addEventListener("dragstart", function(e) {
-        var dt = e.dataTransfer;
-        dt.setData("text/plain", guyUrl);
-        dt.setData("text/uri-list", guyUrl);
+        e.dataTransfer.setData("text/pain", guyUrl);
     });
     banner.addEventListener("dragend", function(e) {
         toast.show("it's him! (drawn by @ReikoRobo)");

@@ -49,22 +49,17 @@ function DndHandler(container, element) {
         container.removeChild(overlay);
         counter = 0;
 
+        var value = e.dataTransfer.getData("text/pain");
+        if (value) {
+            dispatchImageDrop(value, element);
+            return;
+        }
+
         if (e.dataTransfer.items) {
             for (const item of e.dataTransfer.items) {
-                if (item.kind == "file") {
-                    const file = item.getAsFile();
-                    if (dispatchFile(file, element)) return;
-                }
-                else if (item.kind == "string") {
-                    if (item.type != "text/uri-list" && item.type != "text/plain") continue;
-                    item.getAsString(function(str) {
-                        const i = str.indexOf("\r\n");
-                        const url = str.slice(0, (i != -1) ? i : str.length);
-                        if (!url.length || !url.startsWith("http")) return;
-                        dispatchImageDrop(url, element);
-                    });
-                    return;
-                }
+                if (item.kind != "file") continue;
+                const file = item.getAsFile();
+                if (dispatchFile(file, element)) return;
             }
         }
         else {

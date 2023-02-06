@@ -72,7 +72,7 @@ function init(_container, callback) {
     var openButton = new pbfe.Button(_("Open File..."));
     buttonsBox.appendChild(openButton);
 
-    var urlButton = new pbfe.Button(_("Open URL..."));
+    var urlButton = new pbfe.Button(_("Paste Image..."));
     buttonsBox.appendChild(urlButton);
 
     var hint = new pbfe.Label(_("You can also drag and drop an image here."));
@@ -99,19 +99,15 @@ function init(_container, callback) {
 }
 
 function initURLDialog() {
-    urlDialog = new pbfe.Dialog(_("Open URL"));
+    urlDialog = new pbfe.Dialog(_("Paste Image"));
 
-    var hint = new pbfe.Label(_("You can also paste an image here. Some features will not be available when using images from an external URL."));
+    var hint = new pbfe.Label(_("Paste your image into the input box."));
     hint.element.style.marginBottom = "0.5rem";
     urlDialog.appendChild(hint);
 
     var input = new pbfe.Input("text");
     input.element.id = "urlInput";
-    input.placeholder = "https://example.com/image.png";
     urlDialog.appendChild(input);
-
-    var okButton = new pbfe.Button(_("OK"));
-    urlDialog.appendButton(okButton);
 
     urlDialog.appendHideButton(_("Cancel"));
 
@@ -132,13 +128,8 @@ function initURLDialog() {
         }
     });
 
-    okButton.addEventListener("click", function() {
-        if (input.value === "") {
-            toast.show(_("URL cannot be empty."));
-            return;
-        }
-        urlDialog.hide();
-        editor.open(input.value, hide);
+    input.addEventListener("input", function() {
+        input.value = "";
     });
 
     container.appendChild(urlDialog);

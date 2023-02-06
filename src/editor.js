@@ -300,10 +300,6 @@ function initMenuBox() {
 
     saveBtn.addEventListener("click", renderAndSaveImage);
     saveGifBtn.addEventListener("click", function() {
-        if (isCanvasTainted()) {
-            toast.show(_("Sorry, images loaded from an external source can't be exported as GIF. Please open a local file."));
-            return;
-        }
         gifOptionsDialog.show();
     });
 
@@ -885,16 +881,6 @@ function updateImgRenders() {
     if (inputs.showPreview.checked) initPreview();
 }
 
-function isCanvasTainted() {
-    try {
-        imgCtx.getImageData(0, 0, 1, 1);
-        return false;
-    }
-    catch (err) {
-        return true;
-    }
-}
-
 function getRenderPos() {
     var flipH = inputs.flipH.checked;
     var flipV = inputs.flipV.checked;
@@ -935,19 +921,13 @@ function saveFile(href, filename) {
 function renderAndSaveImage() {
     render();
     
-    try {
-        renderCanvas.toBlob(function(blob) {
-            var url = URL.createObjectURL(blob);
-            saveFile(url, currentName + "_cropped.png");
-            setTimeout(function() {
-                URL.revokeObjectURL(url);
-            }, 0);
-        });
-    }
-    catch {
-        // Canvas tainted, use fallback
-        showFallbackSaveDialog();
-    }
+    renderCanvas.toBlob(function(blob) {
+        var url = URL.createObjectURL(blob);
+        saveFile(url, currentName + "_cropped.png");
+        setTimeout(function() {
+            URL.revokeObjectURL(url);
+        }, 0);
+    });
 }
 
 async function renderAndSaveGif() {
@@ -990,29 +970,6 @@ async function renderAndSaveGif() {
 
     // Reload current frame
     if (frames.length) img = frames[inputs.frame.value].bitmap;
-}
-
-var fbSaveInitialized = false;
-var fbSaveDialog, fbSaveCanvas;
-function showFallbackSaveDialog() {
-    if (!fbSaveInitialized) {
-        fbSaveDialog = new pbfe.Dialog(_("Save image"));
-        fbSaveDialog.element.style.textAlign = "center";
-        fbSaveDialog.appendHideButton(_("OK"));
-        container.appendChild(fbSaveDialog);
-
-        var label = new pbfe.Label(_("Right click on the image and choose Save image as...\n"));
-        fbSaveDialog.appendChild(label);
-
-        fbSaveCanvas = document.createElement("canvas");
-        fbSaveCanvas.id = "fbSaveCanvas";
-        fbSaveDialog.body.appendChild(fbSaveCanvas);
-
-        fbSaveInitialized = true;
-    }
-
-    render(fbSaveCanvas);
-    fbSaveDialog.show();
 }
 
 var isInSelection = false;
