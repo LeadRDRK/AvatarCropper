@@ -8,7 +8,7 @@ import i18n from "./i18n.js";
 import { touchToMouseEvent } from "./utils.js";
 
 function registerServiceWorker() {
-    if ("serviceWorker" in navigator) {
+    if ("serviceWorker" in navigator && process.env.NODE_ENV == "production") {
         navigator.serviceWorker.register(new URL('./sw.js', import.meta.url));
     }
 }
