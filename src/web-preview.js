@@ -1,5 +1,6 @@
 import pbfe from "./pbfe.js";
 import { _ } from "./i18n.js";
+import toast from "./toast.js";
 
 var dialog, selector, iframe, loadNotif;
 var imgSrc, callback;
@@ -60,7 +61,8 @@ function loadPreview(site) {
     loadNotifEl.classList.add("show");
     iframe.src = templates[site];
     iframe.addEventListener("load", async function() {
-        await injectImages();
+        if (iframe.contentDocument) await injectImages();
+        else toast.show(_("Failed to load preview page."));
         loadNotifEl.classList.remove("show");
     }, { once: true });
 }
