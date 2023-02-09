@@ -31,7 +31,7 @@ function init(_container, callback) {
     title.onload = callback;
     titleBox.element.appendChild(title);
 
-    var versionLabel = new pbfe.Label("v1.7 - ");
+    var versionLabel = new pbfe.Label("v2.0 - ");
     versionLabel.element.id = "versionLabel";
 
     var aboutBtn = new pbfe.Button(_("About"));

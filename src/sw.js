@@ -1,4 +1,4 @@
-var VERSION = "v1.7";
+var VERSION = "v2.0";
 
 self.addEventListener("activate", function(e) {
     e.waitUntil(clearCaches());
