@@ -5,11 +5,13 @@ import welcomeScreen from "./welcome-screen.js";
 import { _ } from "./i18n.js";
 import gif from "./gif.js";
 import colorPicker from "./color-picker.js";
-import touchToMouseEvent from "./touch-to-mouse-event.js";
+import { redrawFunc, touchToMouseEvent, MenuInputs, createRangeDetents } from "./utils.js";
+import imageFilters from "./image-filters.js";
+import webPreview from "./web-preview.js";
 
 var container, box;
 var innerBox, canvasBox, editorCanvas, editorCtx, imgCanvas, imgCtx;
-var menuBox, inputs = {};
+var menuBox, inputs = new MenuInputs;
 var notifBox;
 var renderCanvas, renderCtx;
 var previewBox, previewImages = [];
@@ -34,9 +36,11 @@ function init(_container) {
     initInnerBox();
     initMenuBox();
     initNotifBox();
+    initSaveDialog();
     initGifOptions();
 
     innerBox.addEventListener("mousedown", mouseDownListener);
+    menuBox.addEventListener("mousedown", unfocusInnerBox);
     document.addEventListener("mousemove", mouseMoveListener);
     document.addEventListener("mouseup", mouseUpListener);
     document.addEventListener("blur", mouseUpListener);
@@ -49,9 +53,6 @@ function init(_container) {
     }
 
     document.addEventListener("keydown", keyDownListener);
-
-    renderCanvas = document.createElement("canvas");
-    renderCtx = renderCanvas.getContext("2d", { willReadFrequently: true });
 }
 
 function initInnerBox() {
@@ -169,33 +170,33 @@ function initMenuBox() {
 
         /* Crop Area */
         createSectionTitle(_("Crop Area")),
-        createMenuInput("width", _("Width"), "text", true),
-        createMenuInput("height", _("Height"), "text", true),
-        createMenuInput("xPos", _("X Pos"), "text", true),
-        createMenuInput("yPos", _("Y Pos"), "text", true),
-        createMenuInput("allowOffscreen", _("Allow offscreen"), "checkbox"),
+        inputs.create("width", _("Width"), "text", true),
+        inputs.create("height", _("Height"), "text", true),
+        inputs.create("xPos", _("X Pos"), "text", true),
+        inputs.create("yPos", _("Y Pos"), "text", true),
+        inputs.create("allowOffscreen", _("Allow offscreen"), "checkbox"),
 
         /* Crop Shape */
         createSectionTitle(_("Crop Shape")),
         circleBtn, squareBtn,
         freeformBtn,
-        createMenuInput("showGuidelines", _("Show guidelines"), "checkbox"),
-        createMenuInput("guideColor", _("Guidelines color"), "color"),
+        inputs.create("showGuidelines", _("Show guidelines"), "checkbox"),
+        inputs.create("guideColor", _("Guidelines color"), "color"),
 
         /* Image */
         createSectionTitle(_("Image")),
-        createMenuInput("flipH", _("Flip horizontally"), "checkbox"),
-        createMenuInput("flipV", _("Flip vertically"), "checkbox"),
-        createMenuInput("frame", _("Frame"), "range"),
-        createMenuInput("playGif", _("Play GIF"), "checkbox"),
-        createMenuInput("bgColor", _("Background color"), "color"),
+        inputs.create("flipH", _("Flip horizontally"), "checkbox"),
+        inputs.create("flipV", _("Flip vertically"), "checkbox"),
+        inputs.create("frame", _("Frame"), "range"),
+        inputs.create("playGif", _("Play GIF"), "checkbox"),
+        inputs.create("bgColor", _("Background color"), "color"),
 
         /* Viewport */
         createSectionTitle(_("Viewport")),
-        createMenuInput("zoom", _("Zoom"), "range"),
-        createMenuInput("scaleDevicePixel", _("Scale to device pixel"), "checkbox"),
+        inputs.create("zoom", _("Zoom"), "range"),
+        inputs.create("scaleDevicePixel", _("Scale to device pixel"), "checkbox"),
         fitBtn,
-        createMenuInput("showPreview", _("Show preview"), "checkbox")
+        inputs.create("showPreview", _("Show preview"), "checkbox")
     ]);
 
     /* Input defaults */
@@ -298,10 +299,8 @@ function initMenuBox() {
         }
     });
 
-    saveBtn.addEventListener("click", renderAndSaveImage);
-    saveGifBtn.addEventListener("click", function() {
-        gifOptionsDialog.show();
-    });
+    saveBtn.addEventListener("click", showSaveDialog);
+    saveGifBtn.addEventListener("click", showGifOptions);
 
     inputs.playGif.addEventListener("change", function() {
         if (gif.frames.length < 2) return;
@@ -373,26 +372,6 @@ function createSectionTitle(text) {
     return title;
 }
 
-function createMenuInput(name, labelText, inputType, split) {
-    if (!labelText) labelText = name;
-    var label = new pbfe.Label(labelText);
-    label.element.classList.add("menuInputBox");
-    if (split) label.element.classList.add("split");
-
-    var input;
-    if (inputType == "color") {
-        input = new pbfe.Widget;
-        input.element.classList.add("cpButton");
-    }
-    else {
-        input = new pbfe.Input(inputType);
-        input.element.setAttribute("aria-label", labelText);
-    }
-    label.appendChild(input);
-    inputs[name] = input.element;
-    return label;
-}
-
 var prevShapeBtn;
 function addShapeBtnHandler(button, value) {
     button.addEventListener("click", function() {
@@ -429,18 +408,6 @@ function createMenuButton(label, split, chosen) {
     return btn;
 }
 
-function createRangeDetents(id, values) {
-    var detents = document.createElement("datalist");
-    detents.id = id;
-    for (let i = 0; i < values.length; ++i) {
-        let option = document.createElement("option");
-        option.value = values[i];
-        detents.appendChild(option);
-    }
-    document.body.appendChild(detents);
-    return id;
-}
-
 function initNotifBox() {
     notifBox = new pbfe.Floatbox;
     notifBox.element.id = "notifBox";
@@ -464,12 +431,21 @@ function showNotification(text, time) {
 function initGifOptions() {
     gifOptionsDialog = new pbfe.Dialog(_("GIF Options"));
     gifOptionsDialog.appendChildren([
-        createMenuInput("startFrame", _("Start frame"), "number"),
-        createMenuInput("endFrame", _("End frame"), "number"),
-        createMenuInput("loopCount", _("Loop count"), "number"),
-        createMenuInput("speedMult", _("Speed multiplier"), "number"),
-        createMenuInput("keepGifColors", _("Keep original colors"), "checkbox")
+        inputs.create("startFrame", _("Start frame"), "number"),
+        inputs.create("endFrame", _("End frame"), "number"),
+        inputs.create("loopCount", _("Loop count"), "number"),
+        inputs.create("speedMult", _("Speed multiplier"), "number"),
+        inputs.create("keepGifColors", _("Keep original colors"), "checkbox")
     ]);
+
+    // Special thing for the filter options
+    var filtersLabel = new pbfe.Label("Filters");
+    filtersLabel.element.classList.add("menuInputBox");
+    gifOptionsDialog.appendChild(filtersLabel);
+
+    var filtersBtn = new pbfe.Button("Options...");
+    filtersBtn.element.style.marginLeft = "auto";
+    filtersLabel.appendChild(filtersBtn);
 
     inputs.startFrame.value = inputs.startFrame.min = 0;
     inputs.endFrame.value = inputs.endFrame.min = 0;
@@ -483,17 +459,89 @@ function initGifOptions() {
     var saveBtn = new pbfe.Button(_("Save"));
     gifOptionsDialog.appendButton(saveBtn);
     saveBtn.addEventListener("click", function() {
-        hideGifOptions();
+        gifOptionsDialog.hide();
         renderAndSaveGif();
     });
 
-    gifOptionsDialog.appendHideButton(_("Cancel"));
+    filtersBtn.addEventListener("click", function() {
+        gifOptionsDialog.hide();
 
+        // Render a static image for the image filters canvas
+        render();
+        imageFilters.showOptions(gifFilters, renderCanvas, function() {
+            gifOptionsDialog.show();
+        });
+    });
+
+    gifOptionsDialog.appendHideButton(_("Cancel"));
     container.appendChild(gifOptionsDialog);
 }
 
-function hideGifOptions() {
-    gifOptionsDialog.hide();
+var gifFilters;
+function showGifOptions() {
+    gifFilters = {}
+    gifOptionsDialog.show();
+}
+
+var saveDialog;
+function initSaveDialog() {
+    imageFilters.init(container);
+    webPreview.init(container);
+
+    saveDialog = new pbfe.Dialog(_("Save Image"));
+    saveDialog.element.id = "saveDialog";
+    container.appendChild(saveDialog);
+
+    var label = new pbfe.Label(_("You can save the image now, or apply some filters and check how your avatar would look on some websites."));
+    saveDialog.appendChild(label);
+
+    saveDialog.body.appendChild(document.createElement("br"));
+
+    renderCanvas = document.createElement("canvas");
+    renderCtx = renderCanvas.getContext("2d", { willReadFrequently: true });
+    saveDialog.body.appendChild(renderCanvas);
+
+    saveDialog.body.appendChild(document.createElement("br"));
+
+    var filtersBtn = new pbfe.Button(_("Filters..."));
+    saveDialog.appendChild(filtersBtn);
+
+    saveDialog.body.appendChild(document.createElement("br"));
+
+    var previewBtn = new pbfe.Button(_("Preview..."));
+    saveDialog.appendChild(previewBtn);
+
+    var saveBtn = new pbfe.Button(_("Save"));
+    saveDialog.appendButton(saveBtn);
+
+    var closeBtn = new pbfe.Button(_("Close"));
+    saveDialog.appendButton(closeBtn);
+
+    saveBtn.addEventListener("click", saveImage);
+    closeBtn.addEventListener("click", function() {
+        saveDialog.hide();
+    });
+
+    filtersBtn.addEventListener("click", function() {
+        saveDialog.hide();
+        imageFilters.showOptions(null, renderCanvas, function() {
+            renderCtx.clearRect(0, 0, crop.width, crop.height);
+            renderCtx.drawImage(imageFilters.canvas, 0, 0);
+            saveDialog.show();
+        });
+    });
+
+    previewBtn.addEventListener("click", function() {
+        saveDialog.hide();
+        webPreview.show(renderCanvas, function() {
+            saveDialog.show();
+        });
+    });
+}
+
+function showSaveDialog() {
+    render();
+    saveDialog.show();
 }
 
 var img;
@@ -788,18 +836,6 @@ function drawImgCanvas() {
     ctx.resetTransform();
 }
 
-function redrawFunc(draw) {
-    let frameRequested = false;
-    return function() {
-        if (frameRequested) return;
-        frameRequested = true;
-        window.requestAnimationFrame(function() {
-            draw();
-            frameRequested = false;
-        });
-    }
-}
-
 var redrawEditor = redrawFunc(drawEditor);
 var redrawImgCanvas = redrawFunc(drawImgCanvas);
 
@@ -900,7 +936,7 @@ function drawCroppedImage(canvas, ctx) {
     ctx.resetTransform();
 }
 
-function render(canvas) {
+function render(canvas, filter) {
     if (!canvas) canvas = renderCanvas;
     let ctx = canvas.getContext("2d");
     canvas.width = crop.width;
@@ -909,6 +945,7 @@ function render(canvas) {
     ctx.fillStyle = inputs.bgColor.style.backgroundColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    if (filter) ctx.filter = filter;
     drawCroppedImage(canvas, ctx);
 }
 
@@ -918,9 +955,7 @@ function saveFile(href, filename) {
     saveAnchor.click();
 }
 
-function renderAndSaveImage() {
-    render();
-    
+function saveImage() {
     renderCanvas.toBlob(function(blob) {
         var url = URL.createObjectURL(blob);
         saveFile(url, currentName + "_cropped.png");
@@ -937,6 +972,7 @@ async function renderAndSaveGif() {
     var lastFrame = frames.length ? frames.length - 1 : 0;
     var start = Math.max(0, Math.min(Math.floor(inputs.startFrame.value), lastFrame));
     var length = Math.max(0, Math.min(Math.floor(inputs.endFrame.value), lastFrame)) + 1;
+    var filter = imageFilters.optionsToFilter(gifFilters);
 
     loadingDialog.setProgress(0);
     loadingDialog.show();
@@ -950,7 +986,7 @@ async function renderAndSaveGif() {
             img = frame.bitmap;
             delay = speedMult ? frame.info.delay / speedMult : 0;
         }
-        render();
+        render(renderCanvas, filter);
 
         let imageData = renderCtx.getImageData(0, 0, crop.width, crop.height);
         renderer.addFrame(imageData, { delay, keepColors });
@@ -959,6 +995,7 @@ async function renderAndSaveGif() {
     
     renderer.end();
     loadingDialog.hide();
+    renderCtx.filter = "none";
 
     var uArray = renderer.getUint8Array();
     var blob = new Blob([uArray], {type: "image/gif"});
@@ -1015,8 +1052,11 @@ function checkMousePos(e) {
 }
 
 var mouseDown = false;
+var innerBoxFocused = true;
 function mouseDownListener(e) {
     if (isHidden() || e.button != 0) return;
+    innerBoxFocused = true;
+
     if (colorPicker.isEyeDropperActive()) {
         var rect = imgCanvas.getBoundingClientRect();
         var detail = { mode: "rgb" };
@@ -1039,6 +1079,10 @@ function mouseDownListener(e) {
         innerBox.element.style.cursor = "grabbing";
 
     mouseDown = true;
+}
+
+function unfocusInnerBox() {
+    innerBoxFocused = false;
 }
 
 var prevX = null, prevY = null;
@@ -1190,6 +1234,7 @@ function touchEndListener(e) {
 }
 
 function keyDownListener(e) {
+    if (!innerBoxFocused) return;
     var code;
     if (e.code) code = e.code;
     else {
@@ -1201,21 +1246,23 @@ function keyDownListener(e) {
             default: return;
         }
     }
-    switch (code) {
-        case "ArrowUp": 
-            e.shiftKey ? setCropSize(crop.width, crop.height - 1) : setCropPosition(crop.x, crop.y - 1);
-            break;
 
-        case "ArrowDown":
-            e.shiftKey ? setCropSize(crop.width, crop.height + 1, true) : setCropPosition(crop.x, crop.y + 1);
+    var incr = e.shiftKey ? 2 : 1;
+    switch (code) {
+        case "ArrowUp":
+            incr = -incr;
+            /* fallthrough */
+
+        case "ArrowDown": 
+            e.ctrlKey ? setCropSize(crop.width, crop.height + incr, incr > 0) : setCropPosition(crop.x, crop.y + incr);
             break;
 
         case "ArrowLeft":
-            e.shiftKey ? setCropSize(crop.width - 1, crop.height) : setCropPosition(crop.x - 1, crop.y);
-            break;
+            incr = -incr;
+            /* fallthrough */
 
         case "ArrowRight":
-            e.shiftKey ? setCropSize(crop.width + 1, crop.height, true) : setCropPosition(crop.x + 1, crop.y);
+            e.ctrlKey ? setCropSize(crop.width + incr, crop.height, incr > 0) : setCropPosition(crop.x + incr, crop.y);
             break;
 
         default: return;

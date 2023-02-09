@@ -321,10 +321,13 @@ function Selector() {
 
 Selector.prototype = inherit(Widget, "Selector");
 
-Selector.prototype.addOption = function(text, value) {
+Selector.prototype.addOption = function(text, value, isPlaceholder) {
     var option = document.createElement("option");
     option.text = text;
     if (value) option.value = value;
+    if (isPlaceholder) {
+        option.hidden = option.disabled = option.selected = true;
+    }
     this.element.appendChild(option);
 }
 

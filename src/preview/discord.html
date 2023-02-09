@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Preview - Discord</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        @font-face {
+            font-family: "Noto Sans";
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: local("Noto Sans Regular"), local("Noto Sans"), url(https://fonts.gstatic.com/s/notosans/v27/o-0IIpQlx3QUlC5A4PNr5TRA.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        @font-face {
+            font-family: 'Noto Sans';
+            font-style: normal;
+            font-weight: 500;
+            font-display: swap;
+            src: local("Noto Sans Medium"), local("Noto Sans"), url(https://fonts.gstatic.com/s/notosans/v27/o-0NIpQlx3QUlC5A4PNjFhdVZNyB.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        @font-face {
+            font-family: 'Noto Sans';
+            font-style: normal;
+            font-weight: 600;
+            font-display: swap;
+            src: local("Noto Sans SemiBold"), local("Noto Sans"), url(https://fonts.gstatic.com/s/notosans/v27/o-0NIpQlx3QUlC5A4PNjOhBVZNyB.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        @font-face {
+            font-family: 'Noto Sans';
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: local("Noto Sans Bold"), local("Noto Sans"), url(https://fonts.gstatic.com/s/notosans/v27/o-0NIpQlx3QUlC5A4PNjXhFVZNyB.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        :root {
+            color-scheme: dark;
+        }
+        body, h2, ol {
+            margin: 0;
+        }
+        body {
+            background-color: #36393f;
+            color: #fff;
+            font-family: "gg sans",Whitney,"Noto Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+            text-rendering: optimizeLegibility;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 1rem;
+            scrollbar-width: thin;
+        }
+        .userArea {
+            background-color: #292b2f;
+            width: 224px;
+            height: 52px;
+            padding: 0 8px;
+            display: flex;
+            align-items: center;
+            vertical-align: baseline;
+        }
+        .userArea .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+        }
+        .userArea .status {
+            position: absolute;
+            bottom: 1px;
+            right: -4px;
+            width: 9.5px;
+            height: 9.5px;
+            border: 3.5px solid #292b2f;
+            border-radius: 9.5px;
+            background-color: #3ba55c;
+        }
+        .flex {
+            display: flex;
+        }
+        .flex.column {
+            flex-direction: column;
+        }
+        .flex.row {
+            flex-direction: row;
+        }
+        .text-sm {
+            font-size: 14px;
+        }
+        .text-xs {
+            font-size: 12px;
+        }
+        .masterTitle {
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.24px;
+            margin-top: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        .text-bold {
+            font-weight: 600;
+        }
+        .text-tag-color {
+            color: #b9bbbe;
+        }
+        .userPopout {
+            position: relative;
+            background-color: #292b2f;
+            border-radius: 8px;
+            width: 340px;
+        }
+        .popoutBanner {
+            height: 60px;
+            border-radius: 8px 8px 0 0;
+            background-color: #ccc;
+        }
+        .popoutContent {
+            border-radius: 8px;
+            background-color: #18191c;
+            margin: 58.5px 16px 16px 16px;
+            padding: 12px;
+            width: 284px;
+        }
+        .userPopout .avatarWrapper {
+            position: absolute;
+            left: 16px;
+            top: 10px;
+        }
+        .userPopout .avatar {
+            width: 80px;
+            height: 80px;
+            border: 6.5px solid #292b2f;
+            border-radius: 80px;
+        }
+        .userPopout .status {
+            position: absolute;
+            top: 60px;
+            left: 60px;
+            width: 16px;
+            height: 16px;
+            border: 6.5px solid #292b2f;
+            border-radius: 15.5px;
+            background-color: #3ba55c;
+        }
+        .popoutContent .usernameSection {
+            font-size: 20px;
+            line-height: 24px;
+        }
+        .popoutContent .divider {
+            background-color: rgba(79, 84, 92, 0.48);
+            width: 100%;
+            height: 1px;
+            margin-top: 12px;
+        }
+        .popoutContent .section {
+            padding-top: 12px;
+            font-size: 13px;
+            line-height: 18px;
+            color: #dcddde;
+            font-weight: 400;
+        }
+        .popoutContent .section h2 {
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.24px;
+            line-height: 16px;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+        #noteInput {
+            background: none;
+            border: none;
+            font-size: 11px;
+            padding: 2px 0 16px 2px;
+            color: #dcddde;
+            width: 100%;
+        }
+        #noteInput::placeholder {
+            color: #abadaf;
+        }
+        #noteInput:focus {
+            outline: none;
+        }
+        ol {
+            list-style: none;
+        }
+        .messageList {
+            padding-left: 72px;
+            padding-right: 48px;
+            margin-bottom: 0.5rem;
+        }
+        .message {
+            position: relative;
+            padding-top: 2px;
+            padding-bottom: 2px;
+        }
+        .message .name {
+            font-weight: 500;
+            font-size: 16px;
+            margin-right: 4px;
+            line-height: 21.5px;
+        }
+        .message .name:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .message .timestamp {
+            color: #a3a6aa;
+            font-weight: 500;
+            font-size: 12px;
+            margin-left: 4px;
+            line-height: 21.5px;
+        }
+        .message .avatar {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            position: absolute;
+            left: -56px;
+            top: 5px;
+        }
+        .message .content {
+            color: #dcddde;
+            font-size: 15.5px;
+            line-height: 22px;
+        }
+        .message.groupStart {
+            margin-top: 1.0625rem;
+        }
+        .magicBox {
+            position: fixed;
+            background-color: rgba(0, 0, 0, 0.5);
+            top: 30px;
+            left: 30px;
+            font-weight: 700;
+            font-size: 18px;
+            padding: 4px;
+            width: 250px;
+            color: #bbb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="masterTitle">User profile</div>
+    <div class="userPopout">
+        <div class="popoutBanner"></div>
+        <div class="avatarWrapper">
+            <img class="avatar" data-size="100">
+            <div class="status"></div>
+        </div>
+        <div class="popoutContent">
+            <div class="usernameSection">
+                <span class="text-bold">Username</span><span class="text-bold text-tag-color">#1234</span>
+            </div>
+            <div class="divider"></div>
+            <div class="section">
+                <h2>About Me</h2>
+                i got a new roach
+            </div>
+            <div class="section">
+                <h2>Discord Member Since</h2>
+                <span id="released">October 09, 2022</span>
+            </div>
+            <div class="section">
+                <h2>Note</h2>
+                <input type="text" id="noteInput" placeholder="Click to add a note">
+            </div>
+        </div>
+    </div>
+
+    <div class="masterTitle">Chat message</div>
+    <ol class="messageList">
+        <li class="message">
+            <img class="avatar" data-size="100">
+            <span class="name">Username</span><span class="timestamp">Today at 11:30 PM</span>
+            <div class="content">Let's fly high like a butterfly</div>
+        </li>
+        <li class="message">
+            <div class="content">Fly like a beautiful butterfly</div>
+        </li>
+        <li class="message groupStart">
+            <img class="avatar" data-size="100">
+            <span class="name">Username</span><span class="timestamp">Today at 11:30 PM</span>
+            <div class="content">Waiting for the day when</div>
+        </li>
+        <li class="message">
+            <div class="content">Someone actually uses the preview feature</div>
+        </li>
+        <li class="message groupStart">
+            <img class="avatar" data-size="100">
+            <span class="name">Username</span><span class="timestamp">Today at 11:30 PM</span>
+            <div class="content">Oh here they are!</div>
+        </li>
+    </ol>
+
+    <div class="masterTitle">User area</div>
+    <div class="userArea text-sm">
+        <div style="position: relative; margin-bottom: -4px;">
+            <img class="avatar" data-size="40">
+            <div class="status"></div>
+        </div>
+        <div class="flex column" style="padding: 4px 8px;">
+            <div class="text-sm text-bold" style="line-height: 18px;">Username</div>
+            <div class="text-xs text-tag-color" style="line-height: 13px;">#1234</div>
+        </div>
+    </div>
+
+    <script>
+        // Was this worth it? Totally.
+        var n = document.getElementById("noteInput");
+        n.onchange = function() {
+            if (this.value.toLowerCase() == "cool tool")
+                alert("Thank you for using Avatar Cropper!");
+        }
+        var q = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE0MCAxMzAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxyYWRpYWxHcmFkaWVudCBpZD0iYiIgY3g9Ijg5Ljk4MSIgY3k9Ijg1LjM2NCIgcj0iOS4xNTciIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMi4zNzk0IDAgMCAxLjY4ODcgLTIxNy4zOSAtMTcuMDg5KSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiNmM2ZhY2QiIG9mZnNldD0iMCIvPjxzdG9wIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIgb2Zmc2V0PSIxIi8+PC9yYWRpYWxHcmFkaWVudD48cmFkaWFsR3JhZGllbnQgaWQ9ImEiIGN4PSI4OS45ODEiIGN5PSI4NS4zNjQiIHI9IjkuMTU3IiBncmFkaWVudFRyYW5zZm9ybT0ibWF0cml4KDIuMzc5NCAwIDAgMS42ODg3IC0xNDYuNzQgLTI2LjE5MikiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjY2RlMmZhIiBvZmZzZXQ9IjAiLz48c3RvcCBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9IjAiIG9mZnNldD0iMSIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDYuMTQ2IC0xLjkyOTMpIiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxwYXRoIHRyYW5zZm9ybT0icm90YXRlKDE1KSIgeD0iODMuNDAyOTc3IiB5PSItMTEuNDY5ODMxIiB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGQ9Im04Ny40MDMtMTEuNDdoNDJhNCA0IDQ1IDAgMSA0IDR2NDJhNCA0IDEzNSAwIDEtNCA0aC00MmE0IDQgNDUgMCAxLTQtNHYtNDJhNCA0IDEzNSAwIDEgNC00eiIgZmlsbD0iIzc3OTRmZiIgc3Ryb2tlLWRhc2hhcnJheT0iMTI5LjYsIDEyOS42IiBzdHJva2Utd2lkdGg9IjY0LjgiLz48cGF0aCB4PSI2Ny4yNTAyNjciIHk9IjcyLjczNjU4OCIgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBkPSJtNzEuMjUgNzIuNzM3aDQyYTQgNCA0NSAwIDEgNCA0djQyYTQgNCAxMzUgMCAxLTQgNGgtNDJhNCA0IDQ1IDAgMS00LTR2LTQyYTQgNCAxMzUgMCAxIDQtNHoiIGZpbGw9IiNmZmY3NjgiIHN0cm9rZS1kYXNoYXJyYXk9IjEyOS42LCAxMjkuNiIgc3Ryb2tlLXdpZHRoPSI2NC44Ii8+PHBhdGggZD0ibTExNi42OSA3Mi4xOTNzLTMzLjAwOS03LjUzNzYtNTkuMDczLTkuODgyNGMtOC42Nzg3LTAuNzgwNzUtMTYuNjg3IDAuMDY5MzItMjIuMzE4IDAuNTU5MTktMTUuODY2IDEuMzgwMy0zOC41MjIgMTMuNDI3LTM4LjUyMiAxMy40MjdzNDQuMzAyLTE4Ljc3OCAxMTkuOTEtNC4xMDQiIGZpbGw9IiNmNWEzYmEiIHN0cm9rZS1kYXNoYXJyYXk9IjE0NCwgMTQ0IiBzdHJva2Utd2lkdGg9IjcyIi8+PHBhdGggZD0ibTg0LjgxMiAxNy45NjZzMS4zNjMzLTMuMTExNSA0LjkwMTYtMi4zNzg4YzMuNTM4MyAwLjczMjcxIDMyLjkxNyA4Ljg5MTYgMzQuMDUzIDkuNTc2NSAxLjEzNjMgMC42ODQ4NiAxLjUxNTIgOC43Nzg4LTAuNzk1MzggMTIuNTQ3LTIuMzEwNiAzLjc2ODItMTEuMTQ3IDE1LjI2Ni0xMi41MzggMTYuMjIzLTEuMzkxIDAuOTU3OTYgNy4zNTQ4IDUuNzI0NiA2LjM5OTggMTAuMzk3LTAuNTY5NjQgMi43ODctMzUuNTIyLTQuNDUyMS00MS40NjktOS4xNzkxLTEuOTQzMS0xLjU0NDUgOS40NDg1LTM3LjE4NiA5LjQ0ODUtMzcuMTg2eiIgZmlsbD0iIzczN2NkMyIgc3Ryb2tlLWRhc2hhcnJheT0iMTQ0LCAxNDQiIHN0cm9rZS13aWR0aD0iNzIiLz48cGF0aCBkPSJtODguNjU1IDE1LjQ3NXMzNC4yNzUgOC43NTg5IDM0LjkxNyA5LjU5OTdjMC42NDI5MiAwLjg0MDg4LTI2LjE2Mi00LjA1NzYtMjYuNjM5LTIuNTk1cy0xMS4zNDQgMzEuODEtMTAuMTQ1IDM0LjcxM2MxLjE5OTEgMi45MDM1IDExLjYxNCA1LjQzODggMTEuNjE0IDUuNDM4OHMtMTEuMjI0LTIuMDUwNy0xOS43ODktNS42OTg2Yy0xLjA2NjctMC40NTQyOCA1LjI5MjkgMC43NTc0NyA1LjU3NjctMC4yOTA3NiAwLjQ1MDQ3LTEuNjYzNCAxMC4yNjQtMzUuMDI4IDEwLjAyMS0zNS4zODctMC4yNDMzNi0wLjM1ODQyLTYuOTM4Ni01LjA0NzctNS41NTYtNS43ODA2eiIgZmlsbD0iI2ZmZiIgc3Ryb2tlLWRhc2hhcnJheT0iMTQ0LCAxNDQiIHN0cm9rZS13aWR0aD0iNzIiLz48cGF0aCBkPSJtNzMuMjExIDc3Ljc3czEwLjgzMS0yLjQzNzQgMTkuNzc0LTIuNTE3N2MxMS4zMTEtMC4xMDE2MSAxNy43NzcgMC4zMjk4NiAxOC43NTQgMi40ODA3IDAuNTczNjggMS4yNjI2IDEuNjQ3NCAxMi43MjEgMS4zMzk0IDE1LjI1NS0wLjI5ODUxIDIuNDU1LTQuNjYzNSAxMi4xNjktNS4wNDE0IDEyLjk0Mi0wLjQ2MjgxIDAuOTQ3MTEgNS4zOTkgMi44NTIyIDUuODM4NCA0LjQ0ODggMS4wMDU5IDMuNjU1NC0yLjg4MTEgNi41MDItMy44NTUxIDYuOTQ3LTMuODM4OCAxLjc1NC0zNi4yMjEgMy4zNDEyLTM3LjQyMSAwLjM0OTE4LTEuMjAwNi0yLjk5MjEtMy41MzMzLTM4LjEzMiAwLjYxMTgtMzkuOTA1eiIgZmlsbD0iI2Y5Y2U1YyIgc3Ryb2tlLWRhc2hhcnJheT0iMTQ0LCAxNDQiIHN0cm9rZS13aWR0aD0iNzIiLz48cmVjdCB0cmFuc2Zvcm09Im1hdHJpeCguMjQxMjYgLS45NzA0NiAuNjg0MTMgLjcyOTM2IDAgMCkiIHg9Ii0yNS4wNzciIHk9IjExMS42IiB3aWR0aD0iNDMuNTc3IiBoZWlnaHQ9IjMwLjkyOCIgZmlsbD0idXJsKCNiKSIgb3BhY2l0eT0iLjM4MzEzIiBzdHJva2UtZGFzaGFycmF5PSIxNTcuMTI4LCAxNTcuMTI4IiBzdHJva2Utd2lkdGg9Ijc4LjU2NCIvPjxyZWN0IHRyYW5zZm9ybT0ibWF0cml4KC40MTgyNiAtLjkwODMzIC41MzU4NyAuODQ0MyAwIDApIiB4PSI0NS41NzEiIHk9IjEwMi41IiB3aWR0aD0iNDMuNTc3IiBoZWlnaHQ9IjMwLjkyOCIgZmlsbD0idXJsKCNhKSIgb3BhY2l0eT0iLjIwMDIyIiBzdHJva2UtZGFzaGFycmF5PSIxNTcuMTI4LCAxNTcuMTI4IiBzdHJva2Utd2lkdGg9Ijc4LjU2NCIvPjxwYXRoIGQ9Im03Mi4yNDkgNzguODMyczE1Ljc1NC0xLjAxODcgMTkuNDU0LTEuMDI5YzQuOTczOC0wLjAxMzg2IDE4Ljc0NS0xLjA1MzkgMTguNzQ1LTEuMDUzOSAyLjkxNzggMC42MjE0LTQuMjAyOCAxLjUyNTUtNi4wMDc1IDIuMDc3Ny0yLjQ3NzEgMC43NTc5Ni0xOC43NDMgNC42MTMtMTkuMzk5IDguNDUwNi0wLjM3NDA4IDIuMTg2NyAwLjg4MTIgMjEuNzgzIDAuOTAzMzEgMjkuMTY3IDAuMDA0OSAxLjYzMjMgNy4yMzc1IDIuOTI1MSAwLjcwMTk1IDMuMTAzOS02LjU2NDUgMC4xNzk2LTEuMjkyNi0xLjUyODItMS40NDU0LTMuMTExLTAuNDMyMjUtNC40NzQ1LTAuNTg5NDktMTMuMDY5LTAuNTg5NDktMTMuMDY5czAuOTYzMTMtMTYuNjctMS45OTE3LTE5LjAwNWMtMS4yOTk4LTEuMDI2OS0xMS42NDktMy4yMzE4LTEwLjM3Mi01LjUzMjF6IiBmaWxsPSIjZmZmIiBzdHJva2UtZGFzaGFycmF5PSIxNDQsIDE0NCIgc3Ryb2tlLXdpZHRoPSI3MiIvPjwvZz48L3N2Zz4=";
+        var c = [], s;
+        var rocksoft = function(r){for(var a,o=[],c=0;c<256;++c){a=c;for(var f=0;f<8;++f)a=1&a?0xEDB88320^a>>>1:a>>>1;o[c]=a}for(var n=-1,t=r.length-1;t>=0;--t)n=n>>>8^o[255&(n^r.charCodeAt(t))];return n>>>0};
+        document.getElementById("released").onclick = function() {
+            var h = rocksoft(n.value);
+            if (h == 0xEA5F66CA) {
+                var i = document.createElement("img");
+                i.width = i.height = 32;
+                i.style.position = "absolute";
+                var x, y;
+                if (c.length) {
+                    x = Math.random() * 300;
+                    y = Math.random() * 300;
+                }
+                else {
+                    x = -6;
+                    y = 32;
+                }
+                i.style.left = x + "px";
+                i.style.top = y + "px";
+                i.src = q;
+                var p = document.getElementsByClassName("userPopout")[0];
+                p.appendChild(i);
+                c.push(i);
+            }
+            else if (h == 0xE1B33EB9 && !s) {
+                for (var i of c) i.parentNode.removeChild(i);
+                c = [];
+                var b = document.createElement("div");
+                b.classList.add("magicBox");
+                b.innerText = "\u0043\u0068\u0065\u0061\u0074\u0020\u0061\u0063\u0074\u0069\u0076\u0061\u0074\u0065\u0064";
+                document.body.appendChild(b);
+                s = true;
+                setTimeout(() => { document.body.removeChild(b); s = false }, 3000);
+            }
+        }
+    </script>
+</body>
+
+</html>

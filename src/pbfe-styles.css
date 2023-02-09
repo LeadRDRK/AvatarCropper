@@ -58,10 +58,13 @@
     opacity: 0;
     transition: 0.25s;
     min-height: 2rem;
+    max-height: 100vh;
     max-width: 30rem;
     background-color: #252729;
     background-image: linear-gradient(hsl(210, 6%, 19%) 0%, #252729 20%, #1f2123 100%);
     box-shadow: 0 0 16px 4px rgba(0, 0, 0, 0.25);
+    overflow: hidden auto;
+    scrollbar-width: thin;
 }
 
 .pbfeDialog.show {

@@ -1,5 +1,5 @@
 import pbfe from "./pbfe.js";
-import touchToMouseEvent from "./touch-to-mouse-event.js";
+import { touchToMouseEvent } from "./utils.js";
 import { _ } from "./i18n.js";
 
 var container, box;

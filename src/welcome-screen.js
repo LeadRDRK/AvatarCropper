@@ -90,7 +90,7 @@ function init(_container, callback) {
     privacyBtn.addEventListener("click", privacyDialog.show.bind(privacyDialog));
 
     langSelector.addEventListener("change", function() {
-        localStorage.setItem("lang", langSelector.value);
+        localStorage.setItem("lang", this.value);
         // Reinitialize the app
         appInit();
     });

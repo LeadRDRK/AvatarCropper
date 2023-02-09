@@ -17,6 +17,7 @@ html, body {
 body {
     margin: 0;
     overflow: hidden;
+    scrollbar-color: #444 #1a1a1a;
 }
 
 body, button {
@@ -58,6 +59,7 @@ a:hover {
     transition: 0.25s;
     z-index: 2;
     user-select: none;
+    overflow: auto;
 }
 
 #welcomeScreen.hide {
@@ -164,8 +166,6 @@ a:hover {
     overflow-x: hidden;
     overflow-y: auto;
     transition: 0.5s;
-    scrollbar-color: #444 #1a1a1a;
-    scrollbar-width: auto;
 }
 
 #editorMenu *:nth-last-child(3) {
@@ -269,9 +269,16 @@ a:hover {
     padding-top: 0;
 }
 
+.pbfeDialog .menuInputBox input {
+    margin-left: auto;
+}
+
 .pbfeDialog .menuInputBox input[type="number"] {
     flex-basis: auto;
-    margin-left: auto;
+}
+
+.pbfeDialog .menuInputBox input[type="range"] {
+    flex-basis: 70%;
 }
 
 .menuBtn {
@@ -329,10 +336,28 @@ a:hover {
     bottom: 2rem;
 }
 
-#fbSaveCanvas {
+.pbfeDialog canvas {
     max-width: 100%;
     max-height: 20rem;
     margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+#saveDialog {
+    text-align: center;
+}
+
+#saveDialog .pbfeDialogBody .pbfeButton {
+    width: 30%;
+    margin-bottom: 0.25rem;
+}
+
+#saveDialog .pbfeDialogButtons {
+    justify-content: center;
+}
+
+#saveDialog .pbfeDialogButtons .pbfeButton {
+    flex-basis: 50%;
 }
 
 #colorPicker {
@@ -453,6 +478,79 @@ a:hover {
     background-image: none;
 }
 
+#filtersInputsBox {
+    max-height: 8.5rem;
+    margin-bottom: 1.25rem;
+    overflow: auto;
+}
+
+#webPreviewDialog {
+    max-width: unset;
+    transform: translate(0%, 10%);
+    padding: 12px 16px 0 16px;
+    left: calc(7% - 16px);
+    top: 0;
+}
+
+#webPreviewDialog.show {
+    transform: translate(0%, 0%);
+}
+
+#previewIFrameWrapper {
+    position: relative;
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+#previewIFrame {
+    position: relative;
+    outline: 1px solid #515f66;
+    border: none;
+    border-radius: 6px;
+    width: 100%;
+    height: 400px;
+}
+
+#loadNotif {
+    position: absolute;
+    bottom: 6px;
+    left: 0;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    padding: 0.1rem 0.25rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    pointer-events: none;
+    transition: 0.25s;
+    opacity: 0;
+}
+
+#loadNotif.show {
+    opacity: 1;
+}
+
+#loadNotif .pbfeLabel {
+    margin-left: 6px;
+}
+
+#loadSpinner {
+    animation: 0.5s linear infinite spin;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+@keyframes spin {
+    from { rotate: 0deg; }
+    to { rotate: 360deg; }
+}
+
+input[type=range] {
+    pointer-events: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    pointer-events: auto;
+}
+
 @media screen and (min-width: 1024px) {
     #welcomeScreen {
         flex-direction: row;
@@ -514,5 +612,24 @@ a:hover {
 
     #loadingBar {
         width: 16rem;
+    }
+
+    #webPreviewDialog {
+        left: calc(50% - 241px);
+        transform: scale(1.15);
+    }
+    
+    #webPreviewDialog.show {
+        transform: scale(1);
+    }
+
+    #previewIFrame {
+        width: 450px;
+    }
+}
+
+@media screen and (min-height: 564px) {
+    #webPreviewDialog {
+        top: calc(50% - 282px);
     }
 }
