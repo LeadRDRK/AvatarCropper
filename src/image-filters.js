@@ -8,15 +8,15 @@ var ctx = canvas.getContext("2d");
 var imgSrc, callback;
 
 var inputsInfo = {
-    "brightness": { name: _("Brightness"), min: 0, max: 200, unit: "%" },
-    "contrast":   { name: _("Contrast"),   min: 0, max: 200, unit: "%" },
-    "hue-rotate": { name: _("Hue"),        min: 0, max: 360, unit: "deg" },
-    "saturate":   { name: _("Saturation"), min: 0, max: 200, unit: "%" },
-    "grayscale":  { name: _("Grayscale"),  min: 0, max: 100, unit: "%" },
-    "sepia":      { name: _("Sepia"),      min: 0, max: 100, unit: "%" },
-    "invert":     { name: _("Invert"),     min: 0, max: 100, unit: "%" },
-    "opacity":    { name: _("Opacity"),    min: 0, max: 100, unit: "%" },
-    "blur":       { name: _("Blur"),       min: 0, max: 100, unit: "px" }
+    "brightness": { name: "Brightness", min: 0, max: 200, unit: "%" },
+    "contrast":   { name: "Contrast",   min: 0, max: 200, unit: "%" },
+    "hue-rotate": { name: "Hue",        min: 0, max: 360, unit: "deg" },
+    "saturate":   { name: "Saturation", min: 0, max: 200, unit: "%" },
+    "grayscale":  { name: "Grayscale",  min: 0, max: 100, unit: "%" },
+    "sepia":      { name: "Sepia",      min: 0, max: 100, unit: "%" },
+    "invert":     { name: "Invert",     min: 0, max: 100, unit: "%" },
+    "opacity":    { name: "Opacity",    min: 0, max: 100, unit: "%" },
+    "blur":       { name: "Blur",       min: 0, max: 100, unit: "px" }
 }
 
 var defaultInit = {
@@ -49,7 +49,7 @@ function init(container) {
     var inputWidgets = [];
     for (let func in inputsInfo) {
         var info = inputsInfo[func];
-        var widget = inputs.create(func, info.name, "range");
+        var widget = inputs.create(func, _(info.name), "range");
         var input = inputs[func];
         input.min = info.min;
         input.max = info.max;

@@ -439,11 +439,11 @@ function initGifOptions() {
     ]);
 
     // Special thing for the filter options
-    var filtersLabel = new pbfe.Label("Filters");
+    var filtersLabel = new pbfe.Label(_("Filters"));
     filtersLabel.element.classList.add("menuInputBox");
     gifOptionsDialog.appendChild(filtersLabel);
 
-    var filtersBtn = new pbfe.Button("Options...");
+    var filtersBtn = new pbfe.Button(_("Options..."));
     filtersBtn.element.style.marginLeft = "auto";
     filtersLabel.appendChild(filtersBtn);
 
