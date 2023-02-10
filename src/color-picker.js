@@ -4,7 +4,7 @@ import { _ } from "./i18n.js";
 
 var container, box;
 var hslModeBtn, rgbModeBtn, hexInput, edButton;
-var pickers = [];
+var pickers, mode;
 
 var currentElement, currentEdElement;
 var edActive = false;
@@ -48,6 +48,7 @@ function init(_container) {
     rgbModeBtn.element.classList.add("modeBtn");
     modeFlex.appendChild(rgbModeBtn);
 
+    pickers = [];
     rootFlex.appendChildren([
         createValuePicker("H"),
         createValuePicker("S"),
@@ -118,7 +119,7 @@ function init(_container) {
 
     /* Init */
     setSliderGradient(a.slider, [cssRgba(255, 255, 255, 0), cssRgba(255, 255, 255, 1)]);
-    setMode("hsl");
+    mode = null;
 }
 
 function createValuePicker(text) {
@@ -155,7 +156,6 @@ function getInputValue(input) {
     return +input.element.dataset.value;
 }
 
-var mode;
 function setMode(name) {
     if (mode == name) return;
     var prevMode = mode;
@@ -279,12 +279,12 @@ function show(colorEl, eyeDropEl) {
             setMode("rgb");
             var [r, g, b, a] = colorCss[0] == "#" ?
                 hexToRgb(colorCss.slice(1)) :
-                colorCss.replace(/rgba?\(|\)/g, "").split(",");
+                colorCss.replace(/(rgba?\(|\))| /g, "").split(",");
             setColor(r, g, b, a === undefined ? 255 : a);
         }
         else if (colorCss.startsWith("hsl")) {
             setMode("hsl");
-            var [h, s, l, a] = colorCss.replace(/hsla?\(|\)/g, "").split(",");
+            var [h, s, l, a] = colorCss.replace(/(hsla?\(|\))| /g, "").split(",");
             setColor(h, s, l, a === undefined ? 255 : a);
         }
 
@@ -302,6 +302,7 @@ function show(colorEl, eyeDropEl) {
     }
     else {
         currentElement = null;
+        setMode("hsl");
         setColor(0, 100, 100, 255);
     }
 }
