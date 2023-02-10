@@ -543,12 +543,14 @@ a:hover {
     to { rotate: 360deg; }
 }
 
-input[type=range] {
-    pointer-events: none;
-}
+@supports selector(::-webkit-slider-thumb) {
+    input[type=range] {
+        pointer-events: none;
+    }
 
-input[type=range]::-webkit-slider-thumb {
-    pointer-events: auto;
+    input[type=range]::-webkit-slider-thumb {
+        pointer-events: auto;
+    }
 }
 
 @media screen and (min-width: 1024px) {
