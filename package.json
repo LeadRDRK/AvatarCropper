@@ -113,5 +113,8 @@
       "staticOutPath": "i18n"
     }
   ],
-  "browserslist": "supports es6-module and not UCAndroid > 0 and not dead"
+  "browserslist": "supports es6-module and not UCAndroid > 0 and not dead",
+  "@parcel/transformer-js": {
+    "inlineEnvironment": ["npm_package_version"]
+  }
 }

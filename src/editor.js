@@ -379,6 +379,11 @@ function addShapeBtnHandler(button, value) {
         cropShape = value;
         if (value != cropShapes.FREEFORM)
             setCropSize(crop.width, crop.width);
+        
+        for (let i = 0; i < previewImages.length; ++i) {
+            let parent = previewImages[i].parentNode;
+            parent.style.borderRadius = (value == cropShapes.CIRCLE ? previewSizes[i] : 0) + "px";
+        }
 
         this.classList.add("chosen");
         prevShapeBtn.classList.remove("chosen");
