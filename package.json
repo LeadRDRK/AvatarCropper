@@ -6,7 +6,7 @@
     "parcel-reporter-static-files-copy": "^1.5.0"
   },
   "name": "avatarcropper",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Simple and accurate image cropping tool",
   "dependencies": {
     "abortcontroller-polyfill": "^1.7.5",
@@ -115,6 +115,8 @@
   ],
   "browserslist": "supports es6-module and not UCAndroid > 0 and not dead",
   "@parcel/transformer-js": {
-    "inlineEnvironment": ["npm_package_version"]
+    "inlineEnvironment": [
+      "npm_package_version"
+    ]
   }
 }
