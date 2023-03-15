@@ -116,6 +116,7 @@
   "browserslist": "supports es6-module and not UCAndroid > 0 and not dead",
   "@parcel/transformer-js": {
     "inlineEnvironment": [
+      "NODE_ENV",
       "npm_package_version"
     ]
   }

@@ -1,4 +1,4 @@
-var VERSION = "v" + process.env.npm_package_version;
+var VERSION = "v2.0.2";
 
 self.addEventListener("activate", function(e) {
     e.waitUntil(clearCaches());
