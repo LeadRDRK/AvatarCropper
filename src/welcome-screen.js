@@ -101,12 +101,14 @@ function init(_container, callback) {
 function initURLDialog() {
     urlDialog = new pbfe.Dialog(_("Paste Image"));
 
-    var hint = new pbfe.Label(_("Paste your image into the input box."));
+    var label = _("Paste your image into the input box.");
+    var hint = new pbfe.Label(label);
     hint.element.style.marginBottom = "0.5rem";
     urlDialog.appendChild(hint);
 
     var input = new pbfe.Input("text");
     input.element.id = "urlInput";
+    input.element.setAttribute("aria-label", label);
     urlDialog.appendChild(input);
 
     urlDialog.appendHideButton(_("Cancel"));

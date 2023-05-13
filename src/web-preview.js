@@ -31,6 +31,7 @@ function init(container) {
 
     iframe = document.createElement("iframe");
     iframe.id = "previewIFrame";
+    iframe.title = _("Web Preview");
     wrapper.body.appendChild(iframe);
 
     loadNotif = new pbfe.Widget;
@@ -41,6 +42,7 @@ function init(container) {
     loadSpinner.id = "loadSpinner";
     loadSpinner.src = new URL("./loading.svg", import.meta.url);
     loadSpinner.width = loadSpinner.height = 128;
+    loadSpinner.alt = "Loading";
     loadNotif.body.appendChild(loadSpinner);
 
     var loadLabel = new pbfe.Label(_("Loading..."));
