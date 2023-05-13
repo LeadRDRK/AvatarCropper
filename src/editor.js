@@ -14,7 +14,7 @@ var innerBox, canvasBox, editorCanvas, editorCtx, imgCanvas, imgCtx;
 var menuBox, inputs = new MenuInputs;
 var notifBox;
 var renderCanvas, renderCtx;
-var previewBox, previewImages = [];
+var previewBox, previewImages;
 var saveAnchor = document.createElement("a");
 var gifOptionsDialog;
 
@@ -103,6 +103,7 @@ function initInnerBox() {
     previewBox = new pbfe.Flexbox;
     previewBox.element.id = "previewBox";
 
+    previewImages = [];
     for (let i = 0; i < 3; ++i) {
         var size = previewSizes[i];
 
