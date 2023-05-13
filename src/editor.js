@@ -132,10 +132,10 @@ function initTutorialDialog() {
 
     demoVideo = document.createElement("video");
     demoVideo.style.pointerEvents = "none";
-    demoVideo.style.maxWidth = "100%";
+    demoVideo.style.width = "100%";
     demoVideo.style.marginTop = "0.5rem";
-    demoVideo.src = "./demo.mp4";
     demoVideo.loop = true;
+    demoVideo.poster = new URL("./demo-thumbnail.jpg", import.meta.url);
     tutorialDialog.body.appendChild(demoVideo);
 
     var text2 = new pbfe.Label(_("Dragging anywhere outside of the crop selector will move the viewport. Use the mouse wheel or pinch the screen with two fingers to zoom in/out.\nOnce you're done, press the \"Save image...\" button to save your cropped image.\n\nYou may view this tutorial at any time by pressing the \"?\" button at the top right of the screen."));
@@ -145,7 +145,10 @@ function initTutorialDialog() {
 }
 
 function showTutorialDialog() {
-    demoVideo.play();
+    if (!demoVideo.src) {
+        demoVideo.src = "./demo.mp4";
+        demoVideo.play();
+    }
     tutorialDialog.show();
 }
 
