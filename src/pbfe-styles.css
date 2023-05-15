@@ -13,8 +13,6 @@
 }
 
 .pbfeButton {
-    border: none;
-    outline: none;
     background-color: #457f9c;
     background-image: linear-gradient(#457f9c, #37667b);
     color: #eee;
@@ -125,8 +123,33 @@
     min-width: 0;
 }
 
-.pbfeInput[type="checkbox"] {
+.pbfeInput.pbfeCheckbox {
+    cursor: pointer;
+    display: inline-block;
     height: 1.05rem;
+    background-color: #232627;
+    border: 1px solid #515f66;
+    border-radius: 0.525rem;
+    transition: 0.25s;
+}
+
+.pbfeCheckbox.checked {
+    background-color: #457f9c;
+}
+
+.pbfeCheckbox .pbfeCheckboxInner {
+    height: calc(1.05rem - 1px);
+    width: calc(1.05rem - 1px);
+    background-color: #eee;
+    border-radius: 0.525rem;
+    position: relative;
+    top: 0;
+    left: 0;
+    transition: 0.25s;
+}
+
+.pbfeCheckbox.checked .pbfeCheckboxInner {
+    left: calc(100% - 1.025rem);
 }
 
 .pbfeInput[type="text"]:focus, .pbfeInput[type="text"]:hover,

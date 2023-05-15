@@ -240,9 +240,51 @@ Object.defineProperty(Dialog.prototype, "titleText", {
 })
 
 function Input(type) {
-    var element = document.createElement("input");
-    element.type = type;
+    function createCheckbox() {
+        var element = document.createElement("button");
+        element.classList.add("pbfeCheckbox");
+
+        var inner = document.createElement("div");
+        inner.classList.add("pbfeCheckboxInner");
+        element.appendChild(inner);
+
+        Object.defineProperty(element, "checked", {
+            get: function() {
+                return this._checked;
+            },
+            set: function(value) {
+                if (this._checked == value) return;
+                this._checked = value;
+                if (value) element.classList.add("checked");
+                else element.classList.remove("checked");
+
+                element.dispatchEvent(new Event("change"));
+            }
+        });
+        element._checked = false;
+
+        element.addEventListener("click", function() {
+            this.checked = !this.checked;
+        });
+
+        return element;
+    }
+
+    var element;
+    switch (type) {
+        case "checkbox":
+            element = createCheckbox();
+            break;
+
+        default:
+            // no replacement, fallback to input element
+            element = document.createElement("input");
+            element.type = type;
+            break;
+
+    }
     this.element = element;
+    this.type = type;
     Widget.call(this);
 }
 

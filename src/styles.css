@@ -26,6 +26,12 @@ body, button {
     font-family: "IBM Plex Sans", BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 }
 
+button {
+    border: none;
+    outline: none;
+    padding: 0;
+}
+
 a {
     color: #75a5bd;
 }
@@ -256,8 +262,8 @@ a:hover {
     margin-left: 0.5rem;
 }
 
-.menuInputBox input[type="checkbox"] {
-    flex-basis: 1.05rem;
+.menuInputBox .pbfeCheckbox {
+    flex-basis: 2.25rem;
     margin-left: auto;
 }
 
