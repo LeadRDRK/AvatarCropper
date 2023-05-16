@@ -126,11 +126,12 @@
 .pbfeInput.pbfeCheckbox {
     cursor: pointer;
     display: inline-block;
-    height: 1.05rem;
+    height: 1.2rem;
     background-color: #232627;
     border: 1px solid #515f66;
-    border-radius: 0.525rem;
+    border-radius: 0.6rem;
     transition: 0.25s;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .pbfeCheckbox.checked {
@@ -138,10 +139,10 @@
 }
 
 .pbfeCheckbox .pbfeCheckboxInner {
-    height: calc(1.05rem - 1px);
-    width: calc(1.05rem - 1px);
-    background-color: #eee;
-    border-radius: 0.525rem;
+    height: calc(1.2rem - 1px);
+    width: calc(1.2rem - 1px);
+    background-color: #888;
+    border-radius: 0.6rem;
     position: relative;
     top: 0;
     left: 0;
@@ -149,7 +150,8 @@
 }
 
 .pbfeCheckbox.checked .pbfeCheckboxInner {
-    left: calc(100% - 1.025rem);
+    left: calc(100% - 1.2rem + 1px);
+    background-color: #9ccfe7;
 }
 
 .pbfeInput[type="text"]:focus, .pbfeInput[type="text"]:hover,
