@@ -174,7 +174,7 @@ a:hover {
     transition: 0.5s;
 }
 
-#editorMenu *:nth-last-child(3) {
+#editorMenu > *:nth-last-child(3) {
     margin-bottom: 5rem;
 }
 
@@ -544,6 +544,64 @@ a:hover {
     height: 1.25rem;
 }
 
+#shapeBtnContainer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+#shapeBtnContainer .menuBtn {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+#shapeBtnContainer .menuBtn:first-child {
+    margin-left: 0.75rem;
+}
+
+#shapeBtnContainer .menuBtn:last-child {
+    margin-right: 0.75rem;
+}
+
+#shapeBtnContainer .menuBtn {
+    flex-basis: 4rem;
+    overflow: hidden;
+    background: none;
+    white-space: nowrap;
+}
+
+#shapeBtnContainer .menuBtn .shapeIcon {
+    margin-right: 100%;
+    transition: 0.25s;
+}
+
+#shapeBtnContainer .menuBtn.chosen {
+    flex-basis: 15rem;
+    background-color: #457f9c;
+    background-image: linear-gradient(#457f9c, #37667b);
+}
+
+#shapeBtnContainer .menuBtn.chosen .shapeIcon {
+    margin-right: 8px;
+}
+
+.shapeIcon {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: middle;
+    border: 3px solid #eee;
+}
+
+.shapeIcon.circle {
+    border-radius: 1rem;
+}
+
+.shapeIcon.freeform {
+    height: 0.75rem;
+    width: 1.5rem;
+}
+
 @keyframes spin {
     from { rotate: 0deg; }
     to { rotate: 360deg; }
@@ -608,7 +666,7 @@ a:hover {
         bottom: 0;
     }
 
-    #editorMenu *:nth-last-child(3) {
+    #editorMenu > *:nth-last-child(3) {
         margin-bottom: 1.5rem;
     }
 }

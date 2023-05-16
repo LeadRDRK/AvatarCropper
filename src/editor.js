@@ -162,9 +162,14 @@ function initMenuBox() {
     var saveBtn = createMenuButton(_("Save image..."));
     var saveGifBtn = createMenuButton(_("Save as GIF..."));
     var fitBtn = createMenuButton(_("Fit image to viewport"));
-    var circleBtn = createMenuButton(_("Circle"), true, true);
-    var squareBtn = createMenuButton(_("Square"), true);
-    var freeformBtn = createMenuButton(_("Freeform"));
+
+    var shapeBtnContainer = new pbfe.Widget;
+    shapeBtnContainer.element.id = "shapeBtnContainer";
+    var circleBtn = createShapeButton(_("Circle"), "circle", true);
+    var squareBtn = createShapeButton(_("Square"), "square");
+    var freeformBtn = createShapeButton(_("Freeform"), "freeform");
+    shapeBtnContainer.appendChildren([ circleBtn, squareBtn, freeformBtn ]);
+    prevShapeBtn = circleBtn.element;
 
     menuBox.appendChildren([
         /* Save */
@@ -182,8 +187,7 @@ function initMenuBox() {
 
         /* Crop Shape */
         createSectionTitle(_("Crop Shape")),
-        circleBtn, squareBtn,
-        freeformBtn,
+        shapeBtnContainer,
         inputs.create("showGuidelines", _("Show guidelines"), "checkbox"),
         inputs.create("guideColor", _("Guidelines color"), "color"),
 
@@ -256,11 +260,6 @@ function initMenuBox() {
     inputs.yPos.addEventListener("input", function() {
         updatePosInputValue(this, "y");
     });
-
-    prevShapeBtn = circleBtn.element;
-    addShapeBtnHandler(circleBtn, cropShapes.CIRCLE);
-    addShapeBtnHandler(squareBtn, cropShapes.SQUARE);
-    addShapeBtnHandler(freeformBtn, cropShapes.FREEFORM);
 
     inputs.showGuidelines.addEventListener("change", redrawEditor);
 
@@ -377,8 +376,8 @@ function createSectionTitle(text) {
 }
 
 var prevShapeBtn;
-function addShapeBtnHandler(button, value) {
-    button.addEventListener("click", function() {
+function shapeBtnHandler(value) {
+    return function() {
         if (cropShape == value) return;
         cropShape = value;
         if (value != cropShapes.FREEFORM)
@@ -395,7 +394,7 @@ function addShapeBtnHandler(button, value) {
 
         redrawEditor();
         if (inputs.showPreview.checked) updatePreview();
-    });
+    };
 }
 
 function parseInputValue(el) {
@@ -414,6 +413,21 @@ function createMenuButton(label, split, chosen) {
     if (split) classes.push("split");
     if (chosen) classes.push("chosen");
     btn.element.classList.add(...classes);
+    return btn;
+}
+
+function createShapeIcon(type) {
+    var el = document.createElement("span");
+    el.classList.add("shapeIcon", type);
+    return el;
+}
+
+function createShapeButton(label, type, chosen) {
+    var btn = createMenuButton(label, false, chosen);
+    var icon = createShapeIcon(type);
+    btn.element.prepend(icon);
+
+    btn.addEventListener("click", shapeBtnHandler(cropShapes[type.toUpperCase()]));
     return btn;
 }
 
