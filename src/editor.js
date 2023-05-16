@@ -533,15 +533,15 @@ function initSaveDialog() {
     renderCtx = renderCanvas.getContext("2d", { willReadFrequently: true });
     saveDialog.body.appendChild(renderCanvas);
 
-    saveDialog.body.appendChild(document.createElement("br"));
+    var actionsContainer = new pbfe.Widget;
+    actionsContainer.element.id = "imgActionsContainer";
+    saveDialog.appendChild(actionsContainer);
 
-    var filtersBtn = new pbfe.Button(_("Filters..."));
-    saveDialog.appendChild(filtersBtn);
+    var filtersBtn = new pbfe.Button("✨ " + _("Filters..."));
+    actionsContainer.appendChild(filtersBtn);
 
-    saveDialog.body.appendChild(document.createElement("br"));
-
-    var previewBtn = new pbfe.Button(_("Preview..."));
-    saveDialog.appendChild(previewBtn);
+    var previewBtn = new pbfe.Button("🖼️ " + _("Preview..."));
+    actionsContainer.appendChild(previewBtn);
 
     var saveBtn = new pbfe.Button(_("Save"));
     saveDialog.appendButton(saveBtn);

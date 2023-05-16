@@ -602,6 +602,32 @@ a:hover {
     width: 1.5rem;
 }
 
+#imgActionsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 18rem;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+#imgActionsContainer .pbfeButton {
+    flex-basis: 50%;
+    font-weight: bold;
+    border-radius: 0;
+    background-color: #232627;
+    background-image: none;
+    border: 1px solid #455157;
+}
+
+#imgActionsContainer .pbfeButton:last-child {
+    border-left: none;
+}
+
+#imgActionsContainer .pbfeButton:hover {
+    transform: none;
+    background-color: #313436;
+}
+
 @keyframes spin {
     from { rotate: 0deg; }
     to { rotate: 360deg; }
