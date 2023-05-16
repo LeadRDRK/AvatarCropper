@@ -98,3 +98,21 @@ export function createRangeDetents(id, values) {
     document.body.appendChild(detents);
     return id;
 }
+
+export function isPointInRect(x, y, rect) {
+    return (x >= rect.x && y >= rect.y &&
+            x <= rect.x + rect.width && y <= rect.y + rect.height);
+}
+
+export function isPointInCircle(x, y, cx, cy, radius) {
+    return Math.pow(x - cx, 2) + Math.pow(y - cy, 2) < Math.pow(radius, 2);
+}
+
+export function getTouchDist(touch1, touch2) {
+    return Math.hypot(touch1.pageX - touch2.pageX, touch1.pageY - touch2.pageY);
+}
+
+export function createLine(ctx, x1, y1, x2, y2) {
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+}

@@ -5,9 +5,18 @@ import welcomeScreen from "./welcome-screen.js";
 import { _ } from "./i18n.js";
 import gif from "./gif.js";
 import colorPicker from "./color-picker.js";
-import { redrawFunc, touchToMouseEvent, MenuInputs, createRangeDetents } from "./utils.js";
 import imageFilters from "./image-filters.js";
 import webPreview from "./web-preview.js";
+import {
+    redrawFunc,
+    touchToMouseEvent,
+    MenuInputs,
+    createRangeDetents, 
+    isPointInRect,
+    isPointInCircle,
+    getTouchDist,
+    createLine
+} from "./utils.js";
 
 var container, box;
 var innerBox, canvasBox, editorCanvas, editorCtx, imgCanvas, imgCtx;
@@ -746,11 +755,6 @@ function setCanvasScale(scale) {
     showNotification(_("Zoom: ") + (+(scale*100).toFixed(1)) + "%");
 }
 
-function createLine(ctx, x1, y1, x2, y2) {
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-}
-
 function applyFlipTransform(canvas, ctx) {
     var flipH = inputs.flipH.checked;
     var flipV = inputs.flipV.checked;
@@ -1227,10 +1231,6 @@ function wheelListener(e) {
     setCanvasScale(canvasScale + incr);
 }
 
-function getTouchDist(touch1, touch2) {
-    return Math.hypot(touch1.pageX - touch2.pageX, touch1.pageY - touch2.pageY);
-}
-
 var touchPinching = false;
 function touchStartListener(e) {
     touchToMouseEvent.call(this, e);
@@ -1292,15 +1292,6 @@ function keyDownListener(e) {
     }
     redrawEditor();
     if (inputs.showPreview.checked) updatePreview();
-}
-
-function isPointInRect(x, y, rect) {
-    return (x >= rect.x && y >= rect.y &&
-            x <= rect.x + rect.width && y <= rect.y + rect.height);
-}
-
-function isPointInCircle(x, y, cx, cy, radius) {
-    return Math.pow(x - cx, 2) + Math.pow(y - cy, 2) < Math.pow(radius, 2);
 }
 
 var editor = {
