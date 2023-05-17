@@ -69,7 +69,7 @@
     "Filters...": "Filter...",
     "Preview...": "Xem trước...",
     "Filters": "Filter",
-    "Web Preview": "Xem trước trên trang web",
+    "Web Preview": "Xem trước trên web",
     "Select a website:": "Chọn một trang web:",
     "Reset": "Đặt lại",
     "Brightness": "Độ sáng",
@@ -82,5 +82,8 @@
     "Opacity": "Độ đục",
     "Blur": "Độ mờ",
     "Options...": "Tùy chọn...",
-    "Failed to load preview page.": "Không tải được trang xem trước."
+    "Failed to load preview page.": "Không tải được trang xem trước.",
+    "Rotate...": "Xoay...",
+    "Rotate": "Xoay",
+    "Apply": "Áp dụng"
 }
