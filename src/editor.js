@@ -621,9 +621,10 @@ function initRotateDialog() {
 var origImg, origFrames, rotateCanvasInit;
 function showRotateDialog() {
     if (rotateCanvasInit) {
-        rotateCanvas.width = img.width;
-        rotateCanvas.height = img.height;
-        rotateCtx.drawImage(img, 0, 0);
+        var src = gif.isAnimated() ? gif.frames[0].bitmap : img;
+        rotateCanvas.width = src.width;
+        rotateCanvas.height = src.height;
+        rotateCtx.drawImage(src, 0, 0);
         rotateCanvasInit = false;
     }
 
@@ -652,9 +653,6 @@ async function openRotatedImg(angle) {
     if (angle != 0 && angle != 360) {
         angle = angle * Math.PI / 180;
 
-        if (!origImg) origImg = img;
-        img = await renderRotatedImg(origImg, angle);
-
         if (gif.isAnimated()) {
             if (!origFrames) origFrames = gif.frames;
             var frames = [];
@@ -665,17 +663,26 @@ async function openRotatedImg(angle) {
             }
             gif.frames = frames;
         }
+        else {
+            if (!origImg) origImg = img;
+            img = await renderRotatedImg(origImg, angle);
+        }
     }
     else if (origImg) {
         img = origImg;
         origImg = null;
-        if (origFrames) {
-            gif.frames = origFrames;
-            origFrames = null;
-        }
+    }
+    else if (origFrames) {
+        gif.frames = origFrames;
+        origFrames = null;
     }
     else
         return;
+    
+    if (gif.isAnimated()) {
+        var currentFrame = inputs.frame.value;
+        img = gif.frames[currentFrame].bitmap;
+    }
         
     setMainCanvasesSize(img.width, img.height);
     editorCanvasInit = true;
