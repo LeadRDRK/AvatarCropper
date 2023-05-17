@@ -81,6 +81,19 @@
     line-height: 1.5rem;
 }
 
+.pbfeDialogBody .pbfeButton {
+    font-weight: bold;
+    background-color: #292b2e;
+    background-image: none;
+    border: 1px solid #515f66;
+    border-radius: 6px;
+}
+
+.pbfeDialogBody .pbfeButton:hover {
+    transform: none;
+    background-color: #313436;
+}
+
 .pbfeDialogButtons {
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;

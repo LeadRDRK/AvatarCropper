@@ -475,7 +475,7 @@ function initGifOptions() {
     filtersLabel.element.classList.add("menuInputBox");
     gifOptionsDialog.appendChild(filtersLabel);
 
-    var filtersBtn = new pbfe.Button(_("Options..."));
+    var filtersBtn = new pbfe.Button("✨ " + _("Options..."));
     filtersBtn.element.style.marginLeft = "auto";
     filtersLabel.appendChild(filtersBtn);
 

@@ -378,22 +378,12 @@ a:hover {
 
 #imgActionsContainer .pbfeButton {
     flex-basis: 50%;
-    font-weight: bold;
-    border-radius: 0;
-    background-color: #292b2e;
-    background-image: none;
-    border: 1px solid #455157;
     border-radius: 6px 0 0 6px;
 }
 
 #imgActionsContainer .pbfeButton:last-child {
     border-left: none;
     border-radius: 0 6px 6px 0;
-}
-
-#imgActionsContainer .pbfeButton:hover {
-    transform: none;
-    background-color: #313436;
 }
 
 #colorPicker {
