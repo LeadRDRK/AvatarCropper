@@ -29,7 +29,7 @@
     transform: scale(1.05, 1.05);
 }
 
-.pbfeButton.isLink {
+.pbfeButton.link {
     text-decoration: underline;
     color: #75a5bd;
     background: none;
@@ -39,9 +39,21 @@
     -webkit-tap-highlight-color: initial;
 }
 
-.pbfeButton.isLink:hover {
+.pbfeButton.link:hover {
     color: #538eac;
     transform: none;
+}
+
+.pbfeButton.secondary {
+    background-color: #2e3437;
+    background-image: none;
+    border: 1px solid #457f9c;
+    color: #70b3d4;
+}
+
+.pbfeButton.secondary:hover {
+    background-color: #2a2f32;
+    border-color: #3b6d87;
 }
 
 .pbfeDialog {

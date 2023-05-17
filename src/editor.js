@@ -227,7 +227,7 @@ function initMenuBox() {
     inputs.guideColor.style.backgroundColor = "rgb(255,255,0)";
 
     /* Other */
-    var returnBtn = new pbfe.Button(_("Open another image"));
+    var returnBtn = new pbfe.Button(_("Open another image"), "secondary");
     returnBtn.element.id = "returnBtn";
     menuBox.appendChild(returnBtn);
 
@@ -509,7 +509,7 @@ function initGifOptions() {
         });
     });
 
-    gifOptionsDialog.appendHideButton(_("Cancel"));
+    gifOptionsDialog.appendHideButton(_("Cancel"), "secondary");
     container.appendChild(gifOptionsDialog);
 }
 
@@ -549,7 +549,7 @@ function initSaveDialog() {
     var saveBtn = new pbfe.Button(_("Save"));
     saveDialog.appendButton(saveBtn);
 
-    var closeBtn = new pbfe.Button(_("Close"));
+    var closeBtn = new pbfe.Button(_("Close"), "secondary");
     saveDialog.appendButton(closeBtn);
 
     saveBtn.addEventListener("click", saveImage);

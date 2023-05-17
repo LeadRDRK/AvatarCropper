@@ -193,16 +193,8 @@ a:hover {
 #returnBtn {
     right: 0;
     left: 0;
-    background-color: #dda91a;
-    background-image: linear-gradient(#dda91a, #b28815);
-    color: black;
-    font-weight: bold;
     width: 50%;
-}
-
-#returnBtn:hover {
-    background-color: #be941f;
-    background-image: linear-gradient(#c48b17, #9b6e12);
+    height: calc(2.25rem - 2px);
 }
 
 #hideBtn {
@@ -265,6 +257,11 @@ a:hover {
 .menuInputBox .pbfeCheckbox {
     flex-basis: 2.25rem;
     margin-left: auto;
+}
+
+.pbfeDialog .menuInputBox {
+    padding-left: 0.25rem;
+    padding-right: 0;
 }
 
 .pbfeDialog .menuInputBox:first-child {

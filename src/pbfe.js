@@ -159,21 +159,15 @@ Object.defineProperty(Label.prototype, "text", {
     }
 })
 
-function Button(text) {
+function Button(text, type) {
     var element = document.createElement("button");
     if (text) element.innerText = text;
+    if (type) element.classList.add(type);
     this.element = element;
     Widget.call(this);
 }
 
 Button.prototype = inherit(Label, "Button");
-
-Button.prototype.enableLinkStyle = function(enable) {
-    if (enable || enable === undefined)
-        this.element.classList.add("isLink");
-    else
-        this.element.classList.remove("isLink");
-}
 
 function Dialog(titleText) {
     var element = document.createElement("div");
@@ -224,8 +218,8 @@ Dialog.prototype.removeButton = function(widget) {
     this.buttons.removeChild(widget.element);
 }
 
-Dialog.prototype.appendHideButton = function(btnText) {
-    var btn = new Button(btnText);
+Dialog.prototype.appendHideButton = function(btnText, type) {
+    var btn = new Button(btnText, type);
     btn.addEventListener("click", this.hide.bind(this));
     this.appendButton(btn);
 }

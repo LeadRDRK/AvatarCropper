@@ -70,7 +70,7 @@ function init(container) {
     inputsBox.appendChildren(inputWidgets);
     dialog.appendChild(inputsBox);
 
-    var resetBtn = new pbfe.Button(_("Reset"));
+    var resetBtn = new pbfe.Button(_("Reset"), "secondary");
     resetBtn.element.style.marginRight = "auto";
     dialog.appendButton(resetBtn);
 

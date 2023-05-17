@@ -34,14 +34,12 @@ function init(_container, callback) {
     var versionLabel = new pbfe.Label("v" + process.env.npm_package_version + " - ");
     versionLabel.element.id = "versionLabel";
 
-    var aboutBtn = new pbfe.Button(_("About"));
-    aboutBtn.enableLinkStyle();
+    var aboutBtn = new pbfe.Button(_("About"), "link");
     versionLabel.appendChild(aboutBtn);
 
     versionLabel.element.appendChild(document.createTextNode(" | "));
 
-    var privacyBtn = new pbfe.Button(_("Privacy"));
-    privacyBtn.enableLinkStyle();
+    var privacyBtn = new pbfe.Button(_("Privacy"), "link");
     versionLabel.appendChild(privacyBtn);
 
     versionLabel.element.appendChild(document.createTextNode(" | "));
@@ -72,7 +70,7 @@ function init(_container, callback) {
     var openButton = new pbfe.Button(_("Open File..."));
     buttonsBox.appendChild(openButton);
 
-    var urlButton = new pbfe.Button(_("Paste Image..."));
+    var urlButton = new pbfe.Button(_("Paste Image..."), "secondary");
     buttonsBox.appendChild(urlButton);
 
     var hint = new pbfe.Label(_("You can also drag and drop an image here."));
