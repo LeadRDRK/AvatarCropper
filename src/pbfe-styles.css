@@ -85,12 +85,16 @@
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;
     justify-content: flex-end;
-    column-gap: 0.25rem;
 }
 
 .pbfeDialogButtons .pbfeButton {
     font-size: 1.025rem;
     flex-basis: 5.5rem;
+    margin-right: 0.25rem;
+}
+
+.pbfeDialogButtons .pbfeButton:last-child {
+    margin-right: 0;
 }
 
 .pbfeDialogButtons .pbfeButton:hover {

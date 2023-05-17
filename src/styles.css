@@ -58,9 +58,8 @@ a:hover {
 }
 
 #welcomeScreen {
-    gap: 10%;
     flex-direction: column;
-    animation: 0.5s ease-out 0s 1 wsOpen;
+    animation: 0.5s ease-out 0s 1 wsFade;
     opacity: 1;
     transition: 0.25s;
     z-index: 2;
@@ -73,15 +72,9 @@ a:hover {
     opacity: 0;
 }
 
-@keyframes wsOpen {
-    from {
-        gap: 5%;
-        opacity: 0;
-    }
-    to {
-        gap: 10%;
-        opacity: 1;
-    }
+@keyframes wsFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 #openButtonsBox .pbfeButton {
@@ -96,6 +89,13 @@ a:hover {
     padding: 2rem;
     border-radius: 6px;
     box-shadow: 0 0 16px 6px #1a1a1a;
+    margin-top: 10%;
+    animation: 0.5s ease-out 0s 1 wsOpen;
+}
+
+@keyframes wsOpen {
+    from { margin-top: 5%; }
+    to { margin-top: 10%; }
 }
 
 #dndOverlay {
@@ -267,16 +267,15 @@ a:hover {
     margin-left: auto;
 }
 
-.pbfeDialog .menuInputBox {
-    column-gap: 0.5rem;
-}
-
 .pbfeDialog .menuInputBox:first-child {
     padding-top: 0;
 }
 
 .pbfeDialog .menuInputBox input {
     margin-left: auto;
+    position: relative;
+    left: 0.5rem;
+    margin-right: 0.5rem;
 }
 
 .pbfeDialog .menuInputBox input[type="number"] {
@@ -446,11 +445,18 @@ a:hover {
 
 #colorPicker .valueFlex {
     align-items: center;
-    gap: 0.5rem;
 }
 
 #colorPicker .valueFlex .pbfeLabel {
     width: 0.75rem;
+}
+
+#colorPicker .valueFlex > * {
+    margin-right: 0.5rem;
+}
+
+#colorPicker .valueFlex > *:last-child {
+    margin-right: 0;
 }
 
 #colorPicker .modeBtn {
@@ -651,6 +657,17 @@ a:hover {
 @media screen and (min-width: 1024px) {
     #welcomeScreen {
         flex-direction: row;
+    }
+
+    #openButtonsBox {
+        margin-left: 10%;
+        margin-top: 0;
+        animation: 0.5s ease-out 0s 1 wsOpenRow;
+    }
+    
+    @keyframes wsOpenRow {
+        from { margin-left: 5%; }
+        to { margin-left: 10%; }
     }
 }
 
