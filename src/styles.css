@@ -629,6 +629,12 @@ a:hover {
     width: 1.5rem;
 }
 
+#rotateCanvas {
+    display: block;
+    max-width: 20rem;
+    margin: 5rem auto;
+}
+
 @keyframes spin {
     from { rotate: 0deg; }
     to { rotate: 360deg; }
@@ -729,6 +735,10 @@ a:hover {
 
     #previewIFrame {
         width: 450px;
+    }
+
+    #rotateCanvas {
+        margin: 5rem 5rem;
     }
 }
 

@@ -4,7 +4,7 @@ function inherit(cls, className) {
     return proto;
 }
 
-function addElementGetterSetter(cls, name) {
+function addElementProperty(cls, name) {
     Object.defineProperty(cls.prototype, name, {
         get: function() {
             return this.element[name];
@@ -15,7 +15,7 @@ function addElementGetterSetter(cls, name) {
     })
 }
 
-function addStyleGetterSetter(cls, name) {
+function addStyleProperty(cls, name) {
     Object.defineProperty(cls.prototype, name, {
         get: function() {
             return this.element.style[name];
@@ -63,13 +63,13 @@ Widget.prototype.contains = function(widget) {
     return widget.element.parentNode == this.element;
 }
 
-addStyleGetterSetter(Widget, "width");
-addStyleGetterSetter(Widget, "height");
-addStyleGetterSetter(Widget, "order");
-addStyleGetterSetter(Widget, "flexGrow");
-addStyleGetterSetter(Widget, "flexShrink");
-addStyleGetterSetter(Widget, "flexBasis");
-addStyleGetterSetter(Widget, "alignSelf");
+addStyleProperty(Widget, "width");
+addStyleProperty(Widget, "height");
+addStyleProperty(Widget, "order");
+addStyleProperty(Widget, "flexGrow");
+addStyleProperty(Widget, "flexShrink");
+addStyleProperty(Widget, "flexBasis");
+addStyleProperty(Widget, "alignSelf");
 
 function Container(element) {
     if (!element) {
@@ -119,13 +119,13 @@ function Flexbox(direction) {
 }
 
 Flexbox.prototype = inherit(Widget, "Flexbox");
-addStyleGetterSetter(Flexbox, "flexDirection");
-addStyleGetterSetter(Flexbox, "justifyContent");
-addStyleGetterSetter(Flexbox, "alignItems");
-addStyleGetterSetter(Flexbox, "alignContent");
-addStyleGetterSetter(Flexbox, "gap");
-addStyleGetterSetter(Flexbox, "rowGap");
-addStyleGetterSetter(Flexbox, "columnGap");
+addStyleProperty(Flexbox, "flexDirection");
+addStyleProperty(Flexbox, "justifyContent");
+addStyleProperty(Flexbox, "alignItems");
+addStyleProperty(Flexbox, "alignContent");
+addStyleProperty(Flexbox, "gap");
+addStyleProperty(Flexbox, "rowGap");
+addStyleProperty(Flexbox, "columnGap");
 
 function Floatbox() {
     var element = document.createElement("div");
@@ -135,11 +135,11 @@ function Floatbox() {
 }
 
 Floatbox.prototype = inherit(Widget, "Floatbox");
-addStyleGetterSetter(Floatbox, "zIndex");
-addStyleGetterSetter(Floatbox, "top");
-addStyleGetterSetter(Floatbox, "left");
-addStyleGetterSetter(Floatbox, "bottom");
-addStyleGetterSetter(Floatbox, "right");
+addStyleProperty(Floatbox, "zIndex");
+addStyleProperty(Floatbox, "top");
+addStyleProperty(Floatbox, "left");
+addStyleProperty(Floatbox, "bottom");
+addStyleProperty(Floatbox, "right");
 
 function Label(text) {
     var element = document.createElement("span");
@@ -290,8 +290,11 @@ function Input(type) {
 
 Input.prototype = inherit(Widget, "Input");
 
-addElementGetterSetter(Input, "value");
-addElementGetterSetter(Input, "placeholder");
+addElementProperty(Input, "value");
+addElementProperty(Input, "placeholder");
+addElementProperty(Input, "min");
+addElementProperty(Input, "max");
+addElementProperty(Input, "step");
 
 function ProgressBar() {
     var element = document.createElement("div");
@@ -373,7 +376,7 @@ Selector.prototype.addOption = function(text, value, isPlaceholder) {
     this.element.appendChild(option);
 }
 
-addElementGetterSetter(Selector, "value");
+addElementProperty(Selector, "value");
 
 const pbfe = {
     Container,

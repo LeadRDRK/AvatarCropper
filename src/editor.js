@@ -25,7 +25,7 @@ var notifBox;
 var renderCanvas, renderCtx;
 var previewBox, previewImages;
 var saveAnchor = document.createElement("a");
-var gifOptionsDialog;
+var saveDialog, gifOptionsDialog, rotateDialog;
 
 var cropShapes = {
     CIRCLE: 1,
@@ -47,6 +47,7 @@ function init(_container) {
     initNotifBox();
     initSaveDialog();
     initGifOptions();
+    initRotateDialog();
 
     innerBox.addEventListener("mousedown", mouseDownListener);
     menuBox.addEventListener("mousedown", unfocusInnerBox);
@@ -171,6 +172,7 @@ function initMenuBox() {
     var saveBtn = createMenuButton(_("Save image..."));
     var saveGifBtn = createMenuButton(_("Save as GIF..."));
     var fitBtn = createMenuButton(_("Fit image to viewport"));
+    var rotateBtn = createMenuButton(_("Rotate..."));
 
     var shapeBtnContainer = new pbfe.Widget;
     shapeBtnContainer.element.id = "shapeBtnContainer";
@@ -204,6 +206,7 @@ function initMenuBox() {
         createSectionTitle(_("Image")),
         inputs.create("flipH", _("Flip horizontally"), "checkbox"),
         inputs.create("flipV", _("Flip vertically"), "checkbox"),
+        rotateBtn,
         inputs.create("frame", _("Frame"), "range"),
         inputs.create("playGif", _("Play GIF"), "checkbox"),
         inputs.create("bgColor", _("Background color"), "color"),
@@ -301,6 +304,8 @@ function initMenuBox() {
         else
             previewBox.element.style.display = "none";
     });
+
+    rotateBtn.addEventListener("click", showRotateDialog);
 
     inputs.frame.addEventListener("input", function() {
         if (gif.isAnimated()) {
@@ -470,7 +475,6 @@ function initGifOptions() {
         inputs.create("keepGifColors", _("Keep original colors"), "checkbox")
     ]);
 
-    // Special thing for the filter options
     var filtersLabel = new pbfe.Label(_("Filters"));
     filtersLabel.element.classList.add("menuInputBox");
     gifOptionsDialog.appendChild(filtersLabel);
@@ -515,7 +519,6 @@ function showGifOptions() {
     gifOptionsDialog.show();
 }
 
-var saveDialog;
 function initSaveDialog() {
     imageFilters.init(container);
     webPreview.init(container);
@@ -576,14 +579,126 @@ function showSaveDialog() {
     saveDialog.show();
 }
 
+var rotateCanvas, rotateCtx, rotateSlider, angleLabel;
+function initRotateDialog() {
+    rotateDialog = new pbfe.Dialog(_("Rotate"));
+    rotateDialog.element.style.textAlign = "center";
+    container.appendChild(rotateDialog);
+
+    rotateCanvas = document.createElement("canvas");
+    rotateCanvas.id = "rotateCanvas";
+    rotateCtx = rotateCanvas.getContext("2d");
+    rotateDialog.body.appendChild(rotateCanvas);
+
+    angleLabel = new pbfe.Label("0°");
+    rotateDialog.appendChild(angleLabel);
+
+    var rotateDetents = createRangeDetents("rotateDetents", [90, 180, 270]);
+    rotateSlider = new pbfe.Input("range");
+    rotateSlider.element.style.width = "100%";
+    rotateSlider.min = 0;
+    rotateSlider.max = 360;
+    rotateSlider.step = 0.1;
+    rotateSlider.value = 0;
+    rotateSlider.element.setAttribute("list", rotateDetents);
+    rotateDialog.appendChild(rotateSlider);
+
+    var applyBtn = new pbfe.Button(_("Apply"));
+    rotateDialog.appendButton(applyBtn);
+    applyBtn.addEventListener("click", function() {
+        rotateDialog.hide();
+        openRotatedImg(rotateSlider.value);
+    });
+
+    rotateDialog.appendHideButton(_("Cancel"));
+
+    rotateSlider.addEventListener("input", function() {
+        angleLabel.text = this.value + "°";
+        rotateCanvas.style.transform = "rotate(" + this.value + "deg)";
+    });
+}
+
+var origImg, origFrames, rotateCanvasInit;
+function showRotateDialog() {
+    if (rotateCanvasInit) {
+        rotateCanvas.width = img.width;
+        rotateCanvas.height = img.height;
+        rotateCtx.drawImage(img, 0, 0);
+        rotateCanvasInit = false;
+    }
+
+    rotateDialog.show();
+}
+
+function renderRotatedImg(src, angle) {
+    var w = src.width;
+    var h = src.height;
+    var absSin = Math.abs(Math.sin(angle));
+    var absCos = Math.abs(Math.cos(angle));
+    var rw = Math.ceil(w * absCos + h * absSin);
+    var rh = Math.ceil(w * absSin + h * absCos);
+
+    renderCanvas.width = rw;
+    renderCanvas.height = rh;
+
+    renderCtx.translate(rw/2, rh/2);
+    renderCtx.rotate(angle);
+    renderCtx.drawImage(src, -w/2, -h/2);
+
+    return createImageBitmap(renderCtx.getImageData(0, 0, rw, rh));
+}
+
+async function openRotatedImg(angle) {
+    if (angle != 0 && angle != 360) {
+        angle = angle * Math.PI / 180;
+
+        if (!origImg) origImg = img;
+        img = await renderRotatedImg(origImg, angle);
+
+        if (gif.isAnimated()) {
+            if (!origFrames) origFrames = gif.frames;
+            var frames = [];
+            for (var i = 0; i < origFrames.length; ++i) {
+                var { info, bitmap } = origFrames[i];
+                var rotBitmap = await renderRotatedImg(bitmap, angle);
+                frames[i] = { info, bitmap: rotBitmap };
+            }
+            gif.frames = frames;
+        }
+    }
+    else if (origImg) {
+        img = origImg;
+        origImg = null;
+        if (origFrames) {
+            gif.frames = origFrames;
+            origFrames = null;
+        }
+    }
+    else
+        return;
+        
+    setMainCanvasesSize(img.width, img.height);
+    editorCanvasInit = true;
+
+    show();
+    reset();
+}
+
+function setMainCanvasesSize(w, h) {
+    imgCanvas.width  = editorCanvas.width  = previewCanvas.width  = w;
+    imgCanvas.height = editorCanvas.height = previewCanvas.height = h;
+}
+
 var img;
 var usingObjectUrl = false;
 var currentName;
 function open(src, successCb) {
     if (usingObjectUrl) {
-        URL.revokeObjectURL(img.src);
+        URL.revokeObjectURL(origImg ? origImg.src : img.src);
         usingObjectUrl = false;
     }
+    origImg = null;
+
     if (gif.reset()) {
         inputs.frame.value = 0;
         inputs.frame.disabled = true;
@@ -621,9 +736,13 @@ function open(src, successCb) {
         loadingDialog.setProgress(1);
         loadingDialog.hide();
 
-        imgCanvas.width  = editorCanvas.width  = previewCanvas.width  = img.width;
-        imgCanvas.height = editorCanvas.height = previewCanvas.height = img.height;
+        setMainCanvasesSize(img.width, img.height);
         editorCanvasInit = true;
+
+        rotateSlider.value = 0;
+        angleLabel.text = "0°";
+        rotateCanvas.style.transform = "";
+        rotateCanvasInit = true;
 
         show();
         reset();
@@ -879,7 +998,7 @@ async function redrawPreview() {
     var flipH = inputs.flipH.checked;
     var flipV = inputs.flipV.checked;
     var src, isBlob;
-    if (gif.isAnimated() || flipH || flipV) {
+    if (gif.isAnimated() || flipH || flipV || !(img instanceof Image)) {
         // Use the image data of the rendered ImageBitmap
         var blob = await renderPreviewImg();
         src = URL.createObjectURL(blob);
