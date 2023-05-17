@@ -697,7 +697,7 @@ function open(src, successCb) {
         URL.revokeObjectURL(origImg ? origImg.src : img.src);
         usingObjectUrl = false;
     }
-    origImg = null;
+    origImg = origFrames = null;
 
     if (gif.reset()) {
         inputs.frame.value = 0;
