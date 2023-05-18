@@ -610,7 +610,7 @@ function initRotateDialog() {
         openRotatedImg(rotateSlider.value);
     });
 
-    rotateDialog.appendHideButton(_("Cancel"));
+    rotateDialog.appendHideButton(_("Cancel"), "secondary");
 
     rotateSlider.addEventListener("input", function() {
         angleLabel.text = this.value + "°";
