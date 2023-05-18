@@ -8,15 +8,15 @@ Simple and accurate avatar cropping tool that runs in your browser. Made with ex
 # Features
 - Works great on both mobile and desktop.
 - Progressive Web App support.
-- GIF support: Can crop a specific GIF frame or export as animated GIF.
+- GIF support: Crop a specific GIF frame or save cropped image as animated GIF.
+- Image rotation/flipping and filters.
+- Preview your avatar as if it was being used on a real website.
 
 # Development
 This project uses Parcel as its build tool. Simply run `npm run start` to start the development server. If this is your first time, run `npm install` first to install the dependencies.
 
-However, since this project uses nothing but plain old web technologies, you could use anything else to serve the `src` folder.
-
 # Build
-Use `npm run build` to build the project. *This is not required as mentioned above.*
+Use `npm run build` to build the project.
 
 # Translations
 The following languages are available for the project:
@@ -33,7 +33,7 @@ Don't see your language on the list? You can help by adding it yourself!
     2. Create a new branch for your translation.
     3. Go to the `i18n` folder.
     4. Copy the `vi-vn.json` file and rename it accordingly.
-        - The name must be a ISO 639-1 code with country (if needed)
+        - The name must be an ISO 639-1 code with country (if needed)
         - e.g. `en-us` is for English (United States)
     5. Translate all the strings in your newly created file.
     6. Add your language to `langs.json`
