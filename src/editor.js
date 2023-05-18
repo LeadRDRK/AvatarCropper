@@ -601,6 +601,7 @@ function initRotateDialog() {
     rotateSlider.step = 0.1;
     rotateSlider.value = 0;
     rotateSlider.element.setAttribute("list", rotateDetents);
+    rotateSlider.element.setAttribute("aria-label", _("Rotation angle"));
     rotateDialog.appendChild(rotateSlider);
 
     var applyBtn = new pbfe.Button(_("Apply"));
