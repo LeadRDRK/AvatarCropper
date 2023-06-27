@@ -50,7 +50,7 @@ function init(container) {
     dialog.appendButton(okBtn);
     okBtn.addEventListener("click", hide);
 
-    var guyUrl = "https://leadrdrk.eu.org/static/generic.png";
+    var guyUrl = "https://leadrdrk.com/static/generic.png";
     banner.addEventListener("dragstart", function(e) {
         e.dataTransfer.setData("text/pain", guyUrl);
     });
