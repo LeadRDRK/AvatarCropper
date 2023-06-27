@@ -1,7 +1,7 @@
 # Avatar Cropper
 Simple and accurate avatar cropping tool that runs in your browser. Made with extremely paranoid people in mind. You'll never miss a single pixel ever again!
 
-**Use it here:** [https://leadrdrk.eu.org/avatarcropper](https://leadrdrk.eu.org/avatarcropper)
+**Use it here:** [https://leadrdrk.com/avatarcropper](https://leadrdrk.com/avatarcropper)
 
 ![worthless promotional image](assets/ac_card.png)
 
