@@ -34,6 +34,13 @@ docker build -t avatarcropper -f Dockerfile .
 # run the container
 docker run --rm -p 1234:1234 avatarcropper:latest
 ````
+Alternatively, use Docker Compose:
+
+````
+# build and run the container via docker-compose.yml
+docker compose up
+````
+
 The application will be accessible at http://127.0.0.1:1234.
 
 # Translations
