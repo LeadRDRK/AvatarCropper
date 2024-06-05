@@ -9,10 +9,10 @@ COPY . .
 
 # Clear npm cache (optional)
 # Install project dependencies
-RUN npm cache clean --force && npm run install
+RUN npm cache clean --force && npm install
 
 # Expose any necessary ports
-EXPOSE 8000
+EXPOSE 1234
 
 # Start your application
-CMD ["npm", "run", "start"]
+CMD ["npm", "start"]
