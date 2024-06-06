@@ -1,0 +1,12 @@
+services:
+
+  avatar-cropper:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: avatar-cropper
+    restart: unless-stopped
+    ports:
+      - 1234:1234/tcp
+    expose:
+      - 1234

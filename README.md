@@ -13,10 +13,35 @@ Simple and accurate avatar cropping tool that runs in your browser. Made with ex
 - Preview your avatar as if it was being used on a real website.
 
 # Development
-This project uses Parcel as its build tool. Simply run `npm run start` to start the development server. If this is your first time, run `npm install` first to install the dependencies.
 
-# Build
+## Barebone
+This project uses Parcel as its build tool. 
+
+Simply run `npm run start` to start the development server. If this is your first time, run `npm install` first to install the dependencies. 
+
 Use `npm run build` to build the project.
+
+## Docker
+
+You can use Docker to build and spawn the application. 
+
+Clone this repo and run the following commands:
+
+````
+# build the image
+docker build -t avatarcropper -f Dockerfile .
+
+# run the container
+docker run --rm -p 1234:1234 avatarcropper:latest
+````
+Alternatively, use Docker Compose:
+
+````
+# build and run the container via docker-compose.yml
+docker compose up
+````
+
+The application will be accessible at http://127.0.0.1:1234.
 
 # Translations
 The following languages are available for the project:
