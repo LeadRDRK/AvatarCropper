@@ -36,7 +36,7 @@ var currentOptions;
 function init(container) {
     dialog = new pbfe.Dialog(_("Filters"));
     dialog.element.style.textAlign = "center";
-    dialog.element.style.minWidth = "22rem";
+    dialog.element.style.minWidth = "min(22rem, 86%)";
     container.appendChild(dialog);
 
     canvas.style.marginTop = "0";

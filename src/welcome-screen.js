@@ -19,6 +19,7 @@ function init(_container, callback) {
     box.alignItems = "center";
 
     var titleBox = new pbfe.Flexbox("column");
+    titleBox.element.id = "titleBox";
     titleBox.gap = "0.25rem";
     
     var title = document.createElement("img");
@@ -64,7 +65,7 @@ function init(_container, callback) {
 
     var buttonsBox = new pbfe.Flexbox("column");
     buttonsBox.element.id = "openButtonsBox";
-    buttonsBox.flexBasis = "20%";
+    //buttonsBox.flexBasis = "310px";
     buttonsBox.gap = "0.5rem";
     
     var openButton = new pbfe.Button(_("Open File..."));

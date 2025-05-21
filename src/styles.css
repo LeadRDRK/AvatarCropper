@@ -44,6 +44,7 @@ a:hover {
     object-fit: contain;
     width: auto;
     height: 3.5rem;
+    max-width: 100%;
 }
 
 #versionLabel {
@@ -89,13 +90,16 @@ a:hover {
     padding: 2rem;
     border-radius: 6px;
     box-shadow: 0 0 16px 6px #1a1a1a;
-    margin-top: 10%;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 50px;
+    flex-basis: unset;
     animation: 0.5s ease-out 0s 1 wsOpen;
 }
 
 @keyframes wsOpen {
-    from { margin-top: 5%; }
-    to { margin-top: 10%; }
+    from { margin-top: 25px; }
+    to { margin-top: 50px; }
 }
 
 #dndOverlay {
@@ -647,20 +651,32 @@ a:hover {
     }
 }
 
+#titleBox {
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
 @media screen and (min-width: 1024px) {
     #welcomeScreen {
         flex-direction: row;
     }
 
     #openButtonsBox {
-        margin-left: 10%;
+        margin-left: 140px;
+        margin-right: 0;
         margin-top: 0;
+        flex-basis: 310px;
         animation: 0.5s ease-out 0s 1 wsOpenRow;
+    }
+
+    #titleBox {
+        margin-left: 0;
+        margin-right: 0;
     }
     
     @keyframes wsOpenRow {
-        from { margin-left: 5%; }
-        to { margin-left: 10%; }
+        from { margin-left: 70px; }
+        to { margin-left: 140px; }
     }
 }
 
