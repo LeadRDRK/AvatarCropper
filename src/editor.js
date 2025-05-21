@@ -92,12 +92,14 @@ function initInnerBox() {
     fullscreenBtn.element.classList.add("innerBoxBtn");
     fullscreenBtn.element.title = _("Toggle fullscreen");
     fullscreenBtn.element.style.right = "0";
+    fullscreenBtn.element.style.lineHeight = "1.4";
     innerBox.appendChild(fullscreenBtn);
 
     var tutorialBtn = new pbfe.Button("?");
     tutorialBtn.element.classList.add("innerBoxBtn");
     tutorialBtn.element.title = _("Show tutorial");
     tutorialBtn.element.style.right = "2.5rem";
+    tutorialBtn.element.style.lineHeight = "1.4";
     innerBox.appendChild(tutorialBtn);
 
     fullscreenBtn.addEventListener("click", function() {
