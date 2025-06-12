@@ -13,10 +13,15 @@ function init(_container, callback) {
     aboutDialog.init(container);
     privacyDialog.init(container);
 
-    box = new pbfe.Flexbox;
+    box = new pbfe.Flexbox("column");
     box.element.id = "welcomeScreen";
     box.justifyContent = "center";
     box.alignItems = "center";
+
+    var innerBox = new pbfe.Flexbox;
+    innerBox.element.id = "welcomeInnerBox";
+    innerBox.justifyContent = "center";
+    innerBox.alignItems = "center";
 
     var titleBox = new pbfe.Flexbox("column");
     titleBox.element.id = "titleBox";
@@ -79,8 +84,9 @@ function init(_container, callback) {
     hint.element.style.fontStyle = "italic";
     buttonsBox.appendChild(hint);
 
-    box.appendChild(titleBox);
-    box.appendChild(buttonsBox);
+    innerBox.appendChild(titleBox);
+    innerBox.appendChild(buttonsBox);
+    box.appendChild(innerBox);
 
     openButton.addEventListener("click", openFilePicker);
     initURLDialog();
