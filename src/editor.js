@@ -868,7 +868,20 @@ function setCanvasScale(scale) {
     var ratio = inputs.scaleDevicePixel.checked ? 1 : devicePixelRatio;
     scale = Math.round(Math.max(0.1, Math.min(scale, 8)) * 1000) / 1000;
     var realScale = scale / ratio;
-    canvasBox.element.style.transform = "scale(" + realScale.toFixed(3) + ")";
+
+    /*
+        from a certain chromium version, images with a high resolution will
+        get cropped off when using scale()
+    */
+    //canvasBox.element.style.transform = "scale(" + realScale.toFixed(3) + ")";
+
+    // Workaround
+    var displayWidth = img.width * realScale + "px";
+    var displayHeight = img.height * realScale + "px";
+    var canvasBoxStyle = canvasBox.element.style;
+    canvasBoxStyle.width  = canvasBoxStyle.minWidth  = displayWidth;
+    canvasBoxStyle.height = canvasBoxStyle.minHeight = displayHeight;
+
     inputs.zoom.value = Math.round(scale * 100);
 
     var newLineWidth = Math.ceil(Math.max(1, 1 / (realScale * devicePixelRatio)));
