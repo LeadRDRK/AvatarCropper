@@ -68,6 +68,16 @@ function init(_container, callback) {
     langSelector.value = localStorage.getItem("lang");
     titleBox.appendChild(langSelector);
 
+    var issuesLink = document.createElement("a");
+    issuesLink.innerText = _("Request new features by creating an issue on GitHub!");
+    issuesLink.href = "https://github.com/LeadRDRK/AvatarCropper/issues";
+    issuesLink.draggable = false;
+    issuesLink.target = "_blank";
+    issuesLink.style.fontSize = "0.9rem";
+    issuesLink.style.marginTop = "8px";
+    issuesLink.style.textAlign = "center";
+    titleBox.element.appendChild(issuesLink);
+
     var buttonsBox = new pbfe.Flexbox("column");
     buttonsBox.element.id = "openButtonsBox";
     //buttonsBox.flexBasis = "310px";
@@ -82,6 +92,8 @@ function init(_container, callback) {
     var hint = new pbfe.Label(_("You can also drag and drop an image here."));
     hint.element.style.textAlign = "center";
     hint.element.style.fontStyle = "italic";
+    hint.element.style.marginTop = "8px";
+    hint.element.style.fontSize = "0.9rem";
     buttonsBox.appendChild(hint);
 
     innerBox.appendChild(titleBox);
