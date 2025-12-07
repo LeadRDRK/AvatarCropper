@@ -5,10 +5,12 @@ Simple and accurate avatar cropping tool that runs in your browser. Made with ex
 
 ![worthless promotional image](assets/ac_card.png)
 
-# ⚠️ Beware of fake/copycat sites ⚠️
-I do not own, operate or endorse "avatarcropper.app" and any other website that claims to be this app specifically. "Avatar Cropper" is not a unique app by any means, but these authors have copied this app specifically, modified it with AI, removed all attributions to the original project and failed to disclose the source code, even going as far as completely claiming it as their own. Such actions are a gross violation of the GNU AGPLv3 which is this project's license, and therefore these copies are unethical, plagiarised AI slop, done with bad intentions in mind.
+### ⚠️ Beware of fake/copycat sites ⚠️
+I do not own, operate or endorse "avatarcropper.app" and any other website that claims to be this app specifically. "Avatar Cropper" is not a unique idea by any means, but these authors have copied this specific app's source code, modified it with AI, removed all attributions to the original project and failed to disclose the source code, even going as far as completely claiming it as their own. Such actions are a gross violation of the GNU AGPLv3 which is this project's license, and therefore these copies are unethical, plagiarised AI slop, done with bad intentions in mind.
 
 **I am not responsible for any of the content on these sites. Use them at your own risk.**
+
+The only canonical site for Avatar Cropper is [https://leadrdrk.com/avatarcropper](https://leadrdrk.com/avatarcropper) unless noted otherwise in the future. You can use the hosted version, or run it locally by yourself as shown below.
 
 # Features
 - Works great on both mobile and desktop.
@@ -77,6 +79,8 @@ Don't see your language on the list? You can help by adding it yourself!
 
 # License
 Licensed under [GNU AGPLv3](LICENSE)
+
+As per the GNU AGPLv3, you may use, modify and host this app as you wish, but you **must credit the original author and disclose the source code, modified or not.** This is not legal advice. Please read the license for the full terms and conditions.
 
 External project licenses:
 - [IBM Plex Sans](https://github.com/ibm/plex): Open Font License
