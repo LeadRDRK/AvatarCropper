@@ -24,6 +24,7 @@
 }
 
 .pbfeButton:hover {
+    color: #eee;
     background-color: #4e7183;
     background-image: linear-gradient(#3e6d8e, #31546d);
     transform: scale(1.05, 1.05);

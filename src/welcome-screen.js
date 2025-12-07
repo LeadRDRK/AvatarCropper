@@ -15,7 +15,6 @@ function init(_container, callback) {
 
     box = new pbfe.Flexbox("column");
     box.element.id = "welcomeScreen";
-    box.justifyContent = "center";
     box.alignItems = "center";
 
     var innerBox = new pbfe.Flexbox;

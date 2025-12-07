@@ -73,6 +73,8 @@ a:hover {
 }
 
 #welcomeInnerBox {
+    margin: auto 0;
+    padding: 64px 0;
     flex-direction: column;
 }
 

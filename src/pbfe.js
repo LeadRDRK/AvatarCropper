@@ -159,8 +159,8 @@ Object.defineProperty(Label.prototype, "text", {
     }
 })
 
-function Button(text, type) {
-    var element = document.createElement("button");
+function Button(text, type, useAnchor) {
+    var element = document.createElement(useAnchor === true ? "a" : "button");
     if (text) element.innerText = text;
     if (type) element.classList.add(type);
     this.element = element;
@@ -168,6 +168,8 @@ function Button(text, type) {
 }
 
 Button.prototype = inherit(Label, "Button");
+addElementProperty(Button, "href");
+addElementProperty(Button, "target");
 
 function Dialog(titleText) {
     var element = document.createElement("div");
