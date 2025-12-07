@@ -20,8 +20,6 @@ The only canonical site for Avatar Cropper is [https://leadrdrk.com/avatarcroppe
 - Preview your avatar as if it was being used on a real website.
 
 # Development
-
-## Barebone
 This project uses Parcel as its build tool. 
 
 Simply run `npm run start` to start the development server. If this is your first time, run `npm install` first to install the dependencies. 
@@ -29,8 +27,7 @@ Simply run `npm run start` to start the development server. If this is your firs
 Use `npm run build` to build the project.
 
 ## Docker
-
-You can use Docker to build and spawn the application. 
+You can also use Docker to build and run the app. **Note that this is only intended for local usage such as during development. Do not deploy this to your public site.**
 
 Clone this repo and run the following commands:
 
