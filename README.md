@@ -5,6 +5,11 @@ Simple and accurate avatar cropping tool that runs in your browser. Made with ex
 
 ![worthless promotional image](assets/ac_card.png)
 
+# ⚠️ Beware of fake/copycat sites ⚠️
+I do not own, operate or endorse "avatarcropper.app" and any other website that claims to be this app specifically. "Avatar Cropper" is not a unique app by any means, but these authors have copied this app specifically, modified it with AI, removed all attributions to the original project and failed to disclose the source code, even going as far as completely claiming it as their own. Such actions are a gross violation of the GNU AGPLv3 which is this project's license, and therefore these copies are unethical, plagiarised AI slop, done with bad intentions in mind.
+
+**I am not responsible for any of the content on these sites. Use them at your own risk.**
+
 # Features
 - Works great on both mobile and desktop.
 - Progressive Web App support.
