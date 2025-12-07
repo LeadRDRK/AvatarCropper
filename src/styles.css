@@ -380,6 +380,14 @@ a:hover {
     margin-bottom: 0.25rem;
 }
 
+#saveQuickOptionsBox {
+    margin-bottom: 8px;
+}
+
+#saveQuickOptionsBox .pbfeLabel {
+    margin-left: 8px;
+}
+
 #imgActionsContainer {
     display: flex;
     flex-wrap: wrap;

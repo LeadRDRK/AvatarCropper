@@ -201,6 +201,7 @@ function initMenuBox() {
         /* Crop Shape */
         createSectionTitle(_("Crop Shape")),
         shapeBtnContainer,
+        inputs.create("cropToShape", _("Crop to shape"), "checkbox"),
         inputs.create("showGuidelines", _("Show guidelines"), "checkbox"),
         inputs.create("guideColor", _("Guidelines color"), "color"),
 
@@ -521,6 +522,7 @@ function showGifOptions() {
     gifOptionsDialog.show();
 }
 
+var saveCtsCheckbox;
 function initSaveDialog() {
     imageFilters.init(container);
     webPreview.init(container);
@@ -537,6 +539,25 @@ function initSaveDialog() {
     renderCanvas = document.createElement("canvas");
     renderCtx = renderCanvas.getContext("2d", { willReadFrequently: true });
     saveDialog.body.appendChild(renderCanvas);
+
+    var quickOptionsBox = new pbfe.Flexbox;
+    quickOptionsBox.element.id = "saveQuickOptionsBox";
+    quickOptionsBox.alignItems = "center";
+    quickOptionsBox.justifyContent = "center";
+    saveDialog.appendChild(quickOptionsBox);
+
+    var ctsCheckbox = new pbfe.Input("checkbox");
+    var checkboxEl = ctsCheckbox.element;
+    checkboxEl.setAttribute("aria-label", _("Crop to shape"));
+    checkboxEl.addEventListener("change", function() {
+        inputs.cropToShape.checked = checkboxEl.checked;
+        render();
+    });
+    quickOptionsBox.appendChild(ctsCheckbox);
+    saveCtsCheckbox = checkboxEl;
+
+    var circleCheckboxLabel = new pbfe.Label(_("Crop to shape"));
+    quickOptionsBox.appendChild(circleCheckboxLabel);
 
     var actionsContainer = new pbfe.Widget;
     actionsContainer.element.id = "imgActionsContainer";
@@ -577,6 +598,7 @@ function initSaveDialog() {
 }
 
 function showSaveDialog() {
+    saveCtsCheckbox.checked = inputs.cropToShape.checked;
     render();
     saveDialog.show();
 }
@@ -1116,6 +1138,19 @@ function render(canvas, filter) {
 
     if (filter) ctx.filter = filter;
     drawCroppedImage(canvas, ctx);
+
+    if (inputs.cropToShape.checked && cropShape == cropShapes.CIRCLE) {
+        var cw = canvas.width / 2;
+        var ch = canvas.height / 2;
+
+        ctx.globalCompositeOperation = "destination-in";
+        ctx.beginPath();
+        ctx.ellipse(cw, ch, cw, ch, 0, 0, 2 * Math.PI);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+
+        ctx.globalCompositeOperation = "source-over";
+    }
 }
 
 function saveFile(href, filename) {
